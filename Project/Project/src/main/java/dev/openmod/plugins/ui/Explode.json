@@ -1,0 +1,16 @@
+{
+  "name": "Explode",
+  "category": "Interactions",
+  "properties": [],
+  "inputs": [
+    { "name": "connector", "type": "connector" },
+    { "name": "Level <Level>", "type": "level" },
+    { "name": "X <Double>", "type": "double" },
+    { "name": "Y <Double>", "type": "double" },
+    { "name": "Z <Double>", "type": "double" },
+    { "name": "Radius <Float>", "type": "float" }
+  ],
+  "outputs": [{ "name": "connector", "type": "connector" }],
+  "showInContext": true,
+  "plugin": "Explode"
+}

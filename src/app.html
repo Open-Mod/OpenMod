@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="libs/litegraph/litegraph.css" />
+    <link rel="stylesheet" href="libs/litegraph/litegraph-editor.css" />
+    <script src="libs/litegraph/litegraph.js"></script>
+    <script src="libs/litegraph/litegraph-editor.js"></script>
+    <script>
+      const ipc = require("electron").ipcRenderer;
+      const fs = require("fs-extra");
+      const pathModule = require("path");
+      const appPath = ipc.sendSync("appPath");
+      const isDev = ipc.sendSync("isDev");
+      let selected = ipc.sendSync("selected");
+    </script>
+    %sveltekit.head%
+  </head>
+  <body>
+    %sveltekit.body%
+  </body>
+</html>

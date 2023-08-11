@@ -1,0 +1,18 @@
+{
+  "asar": false,
+  "appId": "OpenMod",
+  "productName": "OpenMod",
+  "target": "NSIS",
+  "extraFiles": ["Project"],
+  "win": {
+    "icon": "static/favicon.ico",
+    "requestedExecutionLevel": "requireAdministrator"
+  },
+  "nsis": {
+    "installerIcon": "static/favicon.ico",
+    "uninstallerIcon": "static/favicon.ico",
+    "uninstallDisplayName": "OpenMod",
+    "createDesktopShortcut": true
+  },
+  "files": ["src/electron.cjs", { "from": "build", "to": "" }]
+}

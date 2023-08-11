@@ -1,0 +1,207 @@
+<script>
+  import { onMount } from "svelte";
+  import Accordion from "../../components/Accordion.svelte";
+  import Error from "../../components/Error.svelte";
+  import Success from "../../components/Success.svelte";
+  let loottables = {};
+  let blocks = {};
+  let projectPath = "";
+  let path = "";
+  let blocksPath = "";
+  let projectName = "";
+  onMount(() => {
+    if (!selected) {
+      alert("Please select a project!");
+      return (location.href = "/");
+    }
+    projectPath = pathModule.join(selected, "Project");
+    path = pathModule.join(projectPath, "src", "data", "loottables.json");
+    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
+    loottables = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    Object.keys(loottables).forEach((loottable) => {
+      loottables[loottable].name = loottable;
+    });
+    selectedLoottable = Object.keys(loottables)[0] ?? "";
+  });
+  let selectedLoottable = "";
+  let name = "";
+  let error = "";
+  let success = "";
+  function add() {
+    name = `new_loottable_${Object.keys(loottables).length + 1}`;
+    loottables[name] = {
+      name,
+      for: "none",
+      json: "{}",
+    };
+    selectedLoottable = name;
+  }
+  function save() {
+    const obj = {};
+    const blockloottables = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "loot_tables",
+      "blocks"
+    );
+    fs.rmSync(blockloottables, { recursive: true, force: true });
+    fs.mkdirSync(blockloottables);
+    Object.keys(loottables).forEach((loottable) => {
+      const name = loottables[loottable].name
+        .replace(/\s/g, "-")
+        .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
+        .toLowerCase();
+      obj[name] = {};
+      Object.keys(loottables[loottable]).forEach((property) => {
+        if (property == "name") return;
+        if (property == "json") {
+          if (
+            parse(loottables[loottable].json).type == "minecraft:block" &&
+            blocks[loottables[loottable].for].dropItem
+          ) {
+            const blockloottablePath = pathModule.join(
+              blockloottables,
+              `${loottables[loottable].for}.json`
+            );
+            fs.writeFileSync(blockloottablePath, loottables[loottable].json);
+          }
+        }
+        obj[name][property] = loottables[loottable][property];
+      });
+    });
+    fs.writeJSONSync(path, obj);
+    loottables = obj;
+    Object.keys(loottables).forEach((loottable) => {
+      loottables[loottable].name = loottable;
+    });
+    selectedLoottable = Object.keys(loottables)[0];
+    success = "Loottables saved successfully!";
+    setTimeout(() => {
+      success = "";
+    }, 2000);
+  }
+  function deleteLoottable() {
+    if (!selectedLoottable) return;
+    delete loottables[selectedLoottable];
+    loottables = loottables;
+    selectedLoottable = Object.keys(loottables)[0];
+    updateEditor();
+  }
+  function convertToCamelCase(inputString) {
+    const words = inputString.split("_");
+    const convertedString = words
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+    return convertedString;
+  }
+  function setDefault() {
+    if (parse(loottables[selectedLoottable].json).type == "minecraft:block") {
+      loottables[selectedLoottable].for = Object.keys(blocks)[0];
+    }
+  }
+  function parse(json) {
+    let data = {};
+    try {
+      data = JSON.parse(json);
+    } catch {}
+    return data;
+  }
+</script>
+
+<svelte:head>
+  <title>OpenMod - Loottables</title>
+</svelte:head>
+<div class="flex flex-col w-full p-12 gap-3">
+  <h1 class="text-3xl font-bold">Selected Loottable:</h1>
+  <div class="flex flex-row w-full gap-3">
+    <select
+      class="select select-bordered font-normal text-base w-full"
+      bind:value={selectedLoottable}
+    >
+      {#if !Object.keys(loottables).length}
+        <option disabled value={selectedLoottable}>No loottables</option>
+      {/if}
+      {#each Object.keys(loottables) as loottable}
+        <option value={loottable}>{loottable}</option>
+      {/each}
+    </select>
+    <div class="flex gap-1">
+      <a class="tooltip tooltip-top" data-tip="Add">
+        <button class="btn btn-warning" on:click={add}
+          ><i class="fa-solid fa-plus text-lg" /></button
+        ></a
+      >
+      <a class="tooltip tooltip-top" data-tip="Save">
+        <button class="btn btn-success" on:click={save}
+          ><i class="fa-solid fa-floppy-disk text-lg" /></button
+        >
+      </a>
+      <a class="tooltip tooltip-top" data-tip="Delete">
+        <button class="btn btn-error" on:click={deleteLoottable}
+          ><i class="fa-solid fa-trash text-lg" /></button
+        >
+      </a>
+    </div>
+  </div>
+  <div class="w-full h-full overflow-y-auto">
+    {#if loottables[selectedLoottable]}
+      <Accordion title="General">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="text-lg">Name</label>
+            <input
+              type="text"
+              class="input w-full"
+              bind:value={loottables[selectedLoottable].name}
+            />
+          </div>
+          {#if parse(loottables[selectedLoottable].json).type == "minecraft:block"}
+            <div>
+              <label class="text-lg">For Block</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={loottables[selectedLoottable].for}
+              >
+                {#if !Object.keys(blocks).filter((block) => blocks[block].dropItem).length}
+                  <option disabled value={loottables[selectedLoottable].for}
+                    >No blocks</option
+                  >
+                {/if}
+                {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
+                  <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}</select
+              >
+            </div>
+          {/if}
+          <div class="col-start-1 col-span-3">
+            <label class="text-lg"
+              >Loot Table JSON (use <a
+                class="text-warning"
+                href="https://misode.github.io/loot-table/?version=1.20.1/"
+                target="_blank"
+                >https://misode.github.io/loot-table/?version=1.20.1/</a
+              >)</label
+            >
+            <textarea
+              class="textarea w-full h-[40vh] resize-none"
+              bind:value={loottables[selectedLoottable].json}
+              on:input={setDefault}
+            />
+          </div>
+        </div></Accordion
+      >
+    {/if}
+  </div>
+</div>
+<Error {error} />
+<Success {success} />

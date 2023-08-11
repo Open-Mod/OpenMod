@@ -1,0 +1,14 @@
+{
+  "name": "On Use",
+  "category": "Events",
+  "for": "item",
+  "properties": [],
+  "inputs": [],
+  "outputs": [
+    { "name": "connector", "type": "connector" },
+    { "name": "Item <Item>", "type": "item" },
+    { "name": "Level <Level>", "type": "level" }
+  ],
+  "showInContext": false,
+  "plugin": "OnUse_Item"
+}

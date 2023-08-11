@@ -1,0 +1,14 @@
+{
+  "name": "Get Player Position",
+  "category": "Variables",
+  "properties": [],
+  "inputs": [{ "name": "connector", "type": "connector" }],
+  "outputs": [
+    { "name": "connector", "type": "connector" },
+    { "name": "X <Double>", "type": "double" },
+    { "name": "Y <Double>", "type": "double" },
+    { "name": "Z <Double>", "type": "double" }
+  ],
+  "showInContext": true,
+  "plugin": "GetPlayerPosition"
+}

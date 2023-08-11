@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+  font-family: Cascadia;
+  src: url("fonts/Cascadia.ttf");
+}
+@font-face {
+  font-family: Inter;
+  src: url("fonts/Inter.ttf");
+}
+* {
+  font-family: Inter;
+}
+body {
+  overflow: hidden;
+}
