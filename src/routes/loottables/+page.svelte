@@ -5,6 +5,7 @@
   import Success from "../../components/Success.svelte";
   let loottables = {};
   let blocks = {};
+  let defaultItems = [];
   let projectPath = "";
   let path = "";
   let blocksPath = "";
@@ -22,6 +23,7 @@
     ].name;
     loottables = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(loottables).forEach((loottable) => {
       loottables[loottable].name = loottable;
     });
@@ -119,17 +121,17 @@
 </script>
 
 <svelte:head>
-  <title>OpenMod - Loottables</title>
+  <title>OpenMod - Loot Tables</title>
 </svelte:head>
 <div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected Loottable:</h1>
+  <h1 class="text-3xl font-bold">Selected Loot Table:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
       bind:value={selectedLoottable}
     >
       {#if !Object.keys(loottables).length}
-        <option disabled value={selectedLoottable}>No loottables</option>
+        <option disabled value={selectedLoottable}>No loot tables</option>
       {/if}
       {#each Object.keys(loottables) as loottable}
         <option value={loottable}>{loottable}</option>
@@ -179,8 +181,11 @@
                 {/if}
                 {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
-                {/each}</select
-              >
+                {/each}
+                {#each defaultItems as item}
+                  <option value={item}>{item}</option>
+                {/each}
+              </select>
             </div>
           {/if}
           <div class="col-start-1 col-span-3">

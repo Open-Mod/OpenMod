@@ -54,11 +54,11 @@
         this.size = n.size;
         for (let index = 0; index < n.inputs.length; index++) {
           const ip = n.inputs[index];
-          this.addInput(ip.name, ip.type);
+          this.addInput(ip.name, ip.type != "any" ? ip.type : undefined);
         }
         for (let index = 0; index < n.outputs.length; index++) {
           const op = n.outputs[index];
-          this.addOutput(op.name, op.type);
+          this.addOutput(op.name, op.type != "any" ? op.type : undefined);
         }
         for (let index = 0; index < n.properties.length; index++) {
           const property = n.properties[index];
@@ -224,17 +224,45 @@
       });
     });
     Object.keys(items).forEach((item) => {
-      const modelPath = pathModule.join(itemModels, `${item}.json`);
-      fs.writeJSONSync(modelPath, {
-        parent: "minecraft:item/generated",
-        textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
-      });
+      const modelPath = pathModule.join(toolModels, `${item}.json`);
+      if (items[item].modelType == "default") {
+        fs.writeJSONSync(modelPath, {
+          parent: "minecraft:item/generated",
+          textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
+        });
+      } else if (items[item].modelType == "blockbench") {
+        const model = items[item].model;
+        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+        const textures = items[item].textures;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(toolTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeJSONSync(modelPath, modelData, "base64");
+      }
     });
     Object.keys(blocks).forEach((block) => {
       const modelPath = pathModule.join(toolModels, `${block}.json`);
-      fs.writeJSONSync(modelPath, {
-        parent: `${projectName.toLowerCase()}:block/${block}`,
-      });
+      if (blocks[block].modelType == "default") {
+        fs.writeJSONSync(modelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+        const textures = blocks[block].textures;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(toolTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeJSONSync(modelPath, modelData, "base64");
+      }
     });
     fs.writeJSONSync(path, obj);
     tools = obj;
@@ -303,8 +331,12 @@
           )
         ) {
           const ev = LiteGraph.createNode(`${n.category}/${n.name}`);
-          ev.pos = [100, ev.size[1] * (i + 1) * 2.5];
           editor.graph.add(ev);
+          const node = editor.graph._nodes[i - 1]?.getBounding();
+          const y = node ? node[1] + node[3] + 50 : 30;
+          const x = node ? node[0] + node[2] + 20 : 30;
+          if (y < editor.canvas.height) ev.pos = [30, y];
+          else ev.pos = [x, 30];
         }
       });
   }

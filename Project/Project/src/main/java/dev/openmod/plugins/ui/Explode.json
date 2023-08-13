@@ -1,7 +1,20 @@
 {
   "name": "Explode",
   "category": "Interactions",
-  "properties": [],
+  "properties": [
+    {
+      "name": "With Fire?",
+      "type": "combo",
+      "values": [true, false],
+      "value": true
+    },
+    {
+      "name": "Destroy Blocks?",
+      "type": "combo",
+      "values": [true, false],
+      "value": true
+    }
+  ],
   "inputs": [
     { "name": "connector", "type": "connector" },
     { "name": "Level <Level>", "type": "level" },

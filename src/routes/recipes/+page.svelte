@@ -6,6 +6,7 @@
   let recipes = {};
   let items = {};
   let blocks = {};
+  let defaultItems = [];
   let projectPath = "";
   let path = "";
   let itemsPath = "";
@@ -26,6 +27,7 @@
     recipes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(recipes).forEach((recipe) => {
       recipes[recipe].name = recipe;
     });
@@ -85,47 +87,83 @@
       const key = {};
       if (firstItem.trim()) {
         key["1"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].firstItem}`,
+          item: `${
+            recipes[recipe].firstItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].firstItem}`,
         };
       }
       if (secondItem.trim()) {
         key["2"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].secondItem}`,
+          item: `${
+            recipes[recipe].secondItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].secondItem}`,
         };
       }
       if (thirdItem.trim()) {
         key["3"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].thirdItem}`,
+          item: `${
+            recipes[recipe].thirdItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].thirdItem}`,
         };
       }
       if (fourthItem.trim()) {
         key["4"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].fourthItem}`,
+          item: `${
+            recipes[recipe].fourthItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].fourthItem}`,
         };
       }
       if (fifthItem.trim()) {
         key["5"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].fifthItem}`,
+          item: `${
+            recipes[recipe].fifthItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].fifthItem}`,
         };
       }
       if (sixthItem.trim()) {
         key["6"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].sixthItem}`,
+          item: `${
+            recipes[recipe].sixthItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].sixthItem}`,
         };
       }
       if (seventhItem.trim()) {
         key["7"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].seventhItem}`,
+          item: `${
+            recipes[recipe].seventhItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].seventhItem}`,
         };
       }
       if (eighthItem.trim()) {
         key["8"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].eighthItem}`,
+          item: `${
+            recipes[recipe].eighthItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].eighthItem}`,
         };
       }
       if (ninethItem.trim()) {
         key["9"] = {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].ninethItem}`,
+          item: `${
+            recipes[recipe].ninethItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].ninethItem}`,
         };
       }
       fs.writeJSONSync(recipePath, {
@@ -137,7 +175,11 @@
         ],
         key,
         result: {
-          item: `${projectName.toLowerCase()}:${recipes[recipe].resultItem}`,
+          item: `${
+            recipes[recipe].resultItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].resultItem}`,
           count: recipes[recipe].resultCount,
         },
       });
@@ -242,6 +284,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -256,6 +301,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -269,6 +317,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>
@@ -285,6 +336,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -298,6 +352,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>
@@ -313,6 +370,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -326,6 +386,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>
@@ -341,6 +404,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -355,6 +421,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
+              {/each}
             </select>
           </div>
           <div>
@@ -368,6 +437,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>

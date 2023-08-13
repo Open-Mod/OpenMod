@@ -1451,7 +1451,11 @@
       this.change();
       return;
     }
-    if (!LiteGraph.registered_node_types[node.type].showInContext) return;
+    if (
+      LiteGraph.registered_node_types[node.type] &&
+      !LiteGraph.registered_node_types[node.type].showInContext
+    )
+      return;
     if (this._nodes_by_id[node.id] == null) {
       return;
     } //not found
@@ -2425,9 +2429,22 @@
           }
         }
         continue;
-      }
-
-      if (info[j] == null) {
+      } else if (j == "inputs") {
+        info.inputs.forEach((i) => {
+          const index = this.inputs.findIndex((ip) => ip.name == i.name);
+          if (index > -1) this.inputs[index] = i;
+        });
+      } else if (j == "outputs") {
+        info.outputs.forEach((o) => {
+          const index = this.outputs.findIndex((op) => op.name == o.name);
+          if (index > -1) this.outputs[index] = o;
+        });
+      } else if (j == "widgets") {
+        info.widgets.forEach((w) => {
+          const index = this.widgets.findIndex((wi) => wi.name == w.name);
+          if (index > -1) this.widgets[index] = w;
+        });
+      } else if (info[j] == null) {
         continue;
       } else if (typeof info[j] == "object") {
         //object
@@ -5967,9 +5984,9 @@ LGraphNode.prototype.executeAction = function(action)
         if (!this.connecting_node && !node.flags.collapsed && !this.live_mode) {
           //Search for corner for resize
           if (
-            !skip_action &&
-            node.resizable !== false &&
-            isInsideRectangle(
+            skip_action ||
+            node.resizable !== true ||
+            !isInsideRectangle(
               e.canvasX,
               e.canvasY,
               node.pos[0] + node.size[0] - 5,
@@ -5978,11 +5995,6 @@ LGraphNode.prototype.executeAction = function(action)
               10
             )
           ) {
-            this.graph.beforeChange();
-            this.resizing_node = node;
-            this.canvas.style.cursor = "se-resize";
-            skip_action = true;
-          } else {
             //search for outputs
             if (node.outputs) {
               for (var i = 0, l = node.outputs.length; i < l; ++i) {
@@ -6542,20 +6554,7 @@ LGraphNode.prototype.executeAction = function(action)
 
         //Search for corner
         if (this.canvas) {
-          if (
-            isInsideRectangle(
-              e.canvasX,
-              e.canvasY,
-              node.pos[0] + node.size[0] - 5,
-              node.pos[1] + node.size[1] - 5,
-              5,
-              5
-            )
-          ) {
-            this.canvas.style.cursor = "se-resize";
-          } else {
-            this.canvas.style.cursor = "crosshair";
-          }
+          this.canvas.style.cursor = "crosshair";
         }
       } else {
         //not over a node

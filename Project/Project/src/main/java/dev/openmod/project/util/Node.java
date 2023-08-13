@@ -1,27 +1,21 @@
 package dev.openmod.project.util;
 
+import dev.openmod.project.init.ItemInit;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.RegistryObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Node <T>{
+public class Node {
     public Map data;
     private Map nodeData;
     private ArrayList nodes;
     private IEventBus bus;
-    private T item;
-    public Node(Map n, Map nodeData, ArrayList nodes, IEventBus bus, T item) {
+    private RegistryObject item;
+    public Node(Map n, Map nodeData, ArrayList nodes, IEventBus bus, RegistryObject item) {
         this.data = n;
         this.nodeData = nodeData;
         this.nodes = nodes;
@@ -31,6 +25,33 @@ public class Node <T>{
     public void TriggerNext(String outputName) {
         IEventBus bus = this.bus;
         ArrayList outputs = (ArrayList) this.data.get("outputs");
+        for(Object nodeEntry : this.nodes) {
+            Map node = (Map)nodeEntry;
+            ArrayList inputs = (ArrayList) node.get("inputs");
+            ArrayList foundOutputs = (ArrayList) node.get("outputs");
+            boolean isEvent = true;
+            for(Object inputEntry : inputs) {
+                Map input = (Map) inputEntry;
+                boolean isConnector = ((String) input.get("type")).equals("connector");
+                if(isConnector) {
+                    isEvent = false;
+                    break;
+                }
+            }
+            for(Object outputEntry : foundOutputs) {
+                Map output = (Map) outputEntry;
+                boolean isConnector = ((String) output.get("type")).equals("connector");
+                if(isConnector) {
+                    isEvent = false;
+                    break;
+                }
+            }
+            if(isEvent) {
+                String plugin = (String) node.get("plugin");
+                Node n = new Node(node, this.nodeData, this.nodes, bus, this.item);
+                //${plugins}
+            }
+        }
         for(Object outputEntry : outputs) {
             Map output = (Map)outputEntry;
             boolean matched = ((String) output.get("name")).equals(outputName);
@@ -46,8 +67,8 @@ public class Node <T>{
                             boolean found = ((Number) foundInput.get("link")).intValue() == link.intValue();
                             if(found) {
                                 String plugin = (String) foundNode.get("plugin");
-                                T data = this.item;
-                                Node n = new Node<>(foundNode, this.nodeData, this.nodes, bus, data);
+                                RegistryObject data = this.item;
+                                Node n = new Node(foundNode, this.nodeData, this.nodes, bus, data);
                                 //${plugins}
                                 break;
                             }

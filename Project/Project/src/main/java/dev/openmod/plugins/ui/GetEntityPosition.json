@@ -1,14 +1,13 @@
 {
-  "name": "Get Player Position",
+  "name": "Get Entity Position",
   "category": "Variables",
   "properties": [],
-  "inputs": [{ "name": "connector", "type": "connector" }],
+  "inputs": [{ "name": "Entity <Entity>", "type": "entity" }],
   "outputs": [
-    { "name": "connector", "type": "connector" },
     { "name": "X <Double>", "type": "double" },
     { "name": "Y <Double>", "type": "double" },
     { "name": "Z <Double>", "type": "double" }
   ],
   "showInContext": true,
-  "plugin": "GetPlayerPosition"
+  "plugin": "GetEntityPosition"
 }

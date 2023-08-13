@@ -15,3 +15,14 @@
 body {
   overflow: hidden;
 }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #fbbd23;
+  border-radius: 7px;
+}

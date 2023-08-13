@@ -1,5 +1,5 @@
 {
-  "name": "On Use",
+  "name": "On Consume",
   "category": "Events",
   "for": "item",
   "properties": [],
@@ -7,8 +7,9 @@
   "outputs": [
     { "name": "connector", "type": "connector" },
     { "name": "Item <Item>", "type": "item" },
-    { "name": "Level <Level>", "type": "level" }
+    { "name": "Level <Level>", "type": "level" },
+    { "name": "Player <Entity>", "type": "entity" }
   ],
   "showInContext": false,
-  "plugin": "OnUse_Item"
+  "plugin": "OnConsume"
 }

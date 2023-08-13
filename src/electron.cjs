@@ -93,9 +93,9 @@ ipcMain.handle("select", (ev, path) => {
   selected = path;
 });
 ipcMain.handle("dialog", async (ev, property, ...filters) => {
-  const filtersData = [...filters];
+  const filtersData = [...filters].flat();
   const response = await dialog.showOpenDialog({
-    properties: [property],
+    properties: [property].flat(),
     filters: filtersData.length ? filtersData : undefined,
   });
   return response.canceled ? undefined : response;

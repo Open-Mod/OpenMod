@@ -7,6 +7,7 @@
   let tools = {};
   let items = {};
   let blocks = {};
+  let defaultItems = [];
   let projectPath = "";
   let path = "";
   let toolsPath = "";
@@ -30,6 +31,7 @@
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(tiers).forEach((tier) => {
       tiers[tier].name = tier;
       tiers[tier].repairIngredient = tiers[tier].repairIngredient.trim()
@@ -161,6 +163,15 @@
             />
           </div>
           <div>
+            <label class="text-lg">Uses</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={tiers[selectedTier].uses}
+            />
+          </div>
+          <div>
             <label class="text-lg">Enchantability</label>
             <input
               type="number"
@@ -193,7 +204,7 @@
               class="select font-normal text-base w-full"
               bind:value={tiers[selectedTier].repairIngredient}
             >
-              {#if ![...Object.keys(tools), ...Object.keys(items), ...Object.keys(blocks)].length}
+              {#if ![...Object.keys(tools), ...Object.keys(items), ...Object.keys(blocks), ...defaultItems].length}
                 <option disabled value={tiers[selectedTier].repairIngredient}
                   >No items</option
                 >
@@ -206,6 +217,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>

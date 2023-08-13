@@ -50,11 +50,11 @@
         this.size = n.size;
         for (let index = 0; index < n.inputs.length; index++) {
           const ip = n.inputs[index];
-          this.addInput(ip.name, ip.type);
+          this.addInput(ip.name, ip.type != "any" ? ip.type : undefined);
         }
         for (let index = 0; index < n.outputs.length; index++) {
           const op = n.outputs[index];
-          this.addOutput(op.name, op.type);
+          this.addOutput(op.name, op.type != "any" ? op.type : undefined);
         }
         for (let index = 0; index < n.properties.length; index++) {
           const property = n.properties[index];
@@ -68,7 +68,7 @@
               {
                 property: property.name,
                 step: property.step * 10,
-                precision: property.step < 1 ? undefined : 0
+                precision: property.step < 1 ? undefined : 0,
               }
             );
           } else if (property.type.toLowerCase() == "button") {
@@ -135,7 +135,9 @@
       rarity: "common",
       fireResistant: false,
       food: false,
-      texture: "",
+      modelType: "default",
+      model: "",
+      texture: [],
       food_alwaysEat: false,
       food_fast: false,
       food_meat: false,
@@ -193,9 +195,9 @@
       obj[name] = {};
       Object.keys(items[item]).forEach((property) => {
         if (property == "name") return;
-        if (property == "texture") {
-          const texture = items[item][property];
-          if (texture) {
+        if (property == "texture" && items[item].modelType == "default") {
+          const texture = items[item][property][0];
+          if (texture && items[item].modelType == "default") {
             const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
             const texturePath = pathModule.join(
               itemTextures,
@@ -206,27 +208,80 @@
               /^data:([A-Za-z-+\/]+);base64,(.+)$/
             )[2];
             fs.writeFileSync(texturePath, textureData, "base64");
-            fs.writeJSONSync(modelPath, {
-              parent: "minecraft:item/generated",
-              textures: { layer0: `${projectName.toLowerCase()}:item/${name}` },
-            });
+            if (items[item].modelType == "default") {
+              fs.writeJSONSync(modelPath, {
+                parent: "minecraft:item/generated",
+                textures: {
+                  layer0: `${projectName.toLowerCase()}:item/${name}`,
+                },
+              });
+            }
           }
+        } else if (
+          property == "texture" &&
+          items[item].modelType == "blockbench"
+        ) {
+          const modelPath = pathModule.join(itemModels, `${name}.json`);
+          const model = items[item].model;
+          const modelData = model.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          const textures = items[item][property];
+          textures.forEach((texture) => {
+            const texturePath = pathModule.join(
+              itemTextures,
+              `${texture.name}`
+            );
+            const textureData = texture.data.match(
+              /^data:([A-Za-z-+\/]+);base64,(.+)$/
+            )[2];
+            fs.writeFileSync(texturePath, textureData, "base64");
+          });
+          fs.writeJSONSync(modelPath, modelData, "base64");
         }
         obj[name][property] = items[item][property];
       });
     });
     Object.keys(tools).forEach((tool) => {
       const modelPath = pathModule.join(itemModels, `${tool}.json`);
-      fs.writeJSONSync(modelPath, {
-        parent: "minecraft:item/generated",
-        textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
-      });
+      if (tools[tool].modelType == "default") {
+        fs.writeJSONSync(modelPath, {
+          parent: "minecraft:item/generated",
+          textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
+        });
+      } else if (tools[tool].modelType == "blockbench") {
+        const model = tools[tool].model;
+        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+        const textures = tools[tool].textures;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(itemTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeJSONSync(modelPath, modelData, "base64");
+      }
     });
     Object.keys(blocks).forEach((block) => {
       const modelPath = pathModule.join(itemModels, `${block}.json`);
-      fs.writeJSONSync(modelPath, {
-        parent: `${projectName.toLowerCase()}:block/${block}`,
-      });
+      if (blocks[block].modelType == "default") {
+        fs.writeJSONSync(modelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+        const textures = blocks[block].textures;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(itemTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeJSONSync(modelPath, modelData, "base64");
+      }
     });
     fs.writeJSONSync(path, obj);
     items = obj;
@@ -246,6 +301,48 @@
     selectedItem = Object.keys(items)[0];
     updateEditor();
   }
+  async function chooseModel() {
+    const response = await ipc.invoke("dialog", [
+      "openFile",
+      "multiSelections",
+    ]);
+    if (response) {
+      const paths = response.filePaths
+        .sort((file) => (file.endsWith(".json") ? -1 : 1))
+        .map(
+          (file) =>
+            `data:${
+              file.endsWith(".json") ? `application/json` : `image/png`
+            };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`
+        );
+      const model = paths.shift();
+      items[selectedItem].model = model;
+      items[selectedItem].textures = paths;
+    }
+  }
+  function setModel(ev) {
+    let i = 0;
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      if (i == 0) {
+        items[selectedItem].model = event.target.result;
+        items[selectedItem].texture = [];
+      } else
+        items[selectedItem].texture.push({
+          name: files[i].name,
+          data: event.target.result,
+        });
+    };
+    reader.onloadend = function () {
+      i++;
+      if (!files[i]) return;
+      reader.readAsDataURL(files[i]);
+    };
+    const files = [...ev.dataTransfer.files].sort((file) =>
+      file.name.endsWith(".json") ? -1 : 1
+    );
+    reader.readAsDataURL(files[0]);
+  }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
   }
@@ -256,13 +353,13 @@
         response.filePaths[0].split("\\").join("/"),
         "base64"
       );
-      items[selectedItem].texture = `data:image/png;base64,${texture}`;
+      items[selectedItem].texture = [`data:image/png;base64,${texture}`];
     }
   }
   function setTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      items[selectedItem].texture = event.target.result;
+      items[selectedItem].texture = [event.target.result];
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -302,19 +399,21 @@
   function updateEditor() {
     if (!selectedItem || !editor) return;
     editor.graph.configure(items[selectedItem].node_data.graph);
-    nodes
-      .filter((n) => !n.showInContext)
-      .forEach((n, i) => {
-        if (
-          !editor.graph._nodes.find(
-            (node) => node.type == `${n.category}/${n.name}`
-          )
-        ) {
-          const ev = LiteGraph.createNode(`${n.category}/${n.name}`);
-          ev.pos = [100, ev.size[1] * (i + 1) * 2.5];
-          editor.graph.add(ev);
-        }
-      });
+    [...nodes.filter((n) => !n.showInContext)].forEach((n, i) => {
+      if (
+        !editor.graph._nodes.find(
+          (node) => node.type == `${n.category}/${n.name}`
+        )
+      ) {
+        const ev = LiteGraph.createNode(`${n.category}/${n.name}`);
+        editor.graph.add(ev);
+        const node = editor.graph._nodes[i - 1]?.getBounding();
+        const y = node ? node[1] + node[3] + 50 : 30;
+        const x = node ? node[0] + node[2] + 20 : 30;
+        if (y < editor.canvas.height) ev.pos = [30, y];
+        else ev.pos = [x, 30];
+      }
+    });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -428,17 +527,42 @@
               ></select
             >
           </div>
-          <div class="col-start-1">
-            <label class="text-lg">Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={items[selectedItem].texture}
-              on:error={fallbackTexture}
-              on:click={chooseTexture}
-              on:drop={setTexture}
-              on:dragover|preventDefault
-            />
+          <div>
+            <label class="text-lg">Model Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={items[selectedItem].modelType}
+            >
+              <option value="default">Default</option>
+              <option value="blockbench">Blockbench</option>
+            </select>
           </div>
+          {#if items[selectedItem].modelType == "blockbench"}
+            <div class="col-start-1">
+              <label class="text-lg">Textures & Model</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={items[selectedItem].texture[0].data}
+                on:error={fallbackTexture}
+                on:click={chooseModel}
+                on:drop={setModel}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
+          {#if items[selectedItem].modelType == "default"}
+            <div class="col-start-1">
+              <label class="text-lg">Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={items[selectedItem].texture[0]}
+                on:error={fallbackTexture}
+                on:click={chooseTexture}
+                on:drop={setTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
         </div>
       </Accordion>
       {#if items[selectedItem].food}
