@@ -8,6 +8,7 @@
   let tools = {};
   let tabs = {};
   let tiers = {};
+  let defaultBiomes = [];
   let projectPath = "";
   let path = "";
   let itemsPath = "";
@@ -45,6 +46,7 @@
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
+    defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
     nodes = fs
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
@@ -146,11 +148,25 @@
       instrument: "none",
       sound: "empty",
       pushReaction: "ignore",
+      dropXp: false,
+      minXp: 0,
+      maxXp: 0,
       dropItem: false,
       minedBy: "anything",
       minedByTier: "wood",
       ignitedByLava: true,
       isCollidable: true,
+      isOre: false,
+      oreSize: 1,
+      minChunkSize: 1,
+      maxChunkSize: 1,
+      minHeight: 1,
+      maxHeight: 1,
+      discardChance: 0,
+      worlds: ["overworld"],
+      modelType: "default",
+      model: "",
+      texture: [],
       particleTexture: "",
       upTexture: "",
       downTexture: "",
@@ -251,12 +267,45 @@
       "tags",
       "blocks"
     );
+    const biomeModifier = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "forge",
+      "biome_modifier"
+    );
+    const worldgenConfigured = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "configured_feature"
+    );
+    const worldgenPlaced = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "placed_feature"
+    );
     fs.rmSync(itemModels, { recursive: true, force: true });
     fs.rmSync(blockTextures, { recursive: true, force: true });
     fs.rmSync(blockModels, { recursive: true, force: true });
     fs.rmSync(blockstates, { recursive: true, force: true });
     fs.rmSync(minecraftData, { recursive: true, force: true });
     fs.rmSync(forgeData, { recursive: true, force: true });
+    fs.rmSync(biomeModifier, { recursive: true, force: true });
+    fs.rmSync(worldgenConfigured, { recursive: true, force: true });
+    fs.rmSync(worldgenPlaced, { recursive: true, force: true });
     fs.mkdirSync(itemModels);
     fs.mkdirSync(blockTextures);
     fs.mkdirSync(blockModels);
@@ -264,15 +313,22 @@
     fs.mkdirSync(minecraftData);
     fs.mkdirSync(minecraftMineable);
     fs.mkdirSync(forgeData);
+    fs.mkdirSync(biomeModifier);
+    fs.mkdirSync(worldgenConfigured);
+    fs.mkdirSync(worldgenPlaced);
     Object.keys(blocks).forEach((block) => {
       const name = blocks[block].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
+      const itemModelPath = pathModule.join(itemModels, `${name}.json`);
       Object.keys(blocks[block]).forEach((property) => {
         if (property == "name") return;
-        if (property == "particleTexture") {
+        if (
+          property == "particleTexture" &&
+          blocks[block].modelType == "default"
+        ) {
           const particleTexture = blocks[block].particleTexture;
           const upTexture = blocks[block].upTexture;
           const downTexture = blocks[block].downTexture;
@@ -376,79 +432,187 @@
             modelObj.textures.west = `${projectName.toLowerCase()}:block/left_${name}`;
           }
           fs.writeJSONSync(modelPath, modelObj);
-          const statePath = pathModule.join(blockstates, `${name}.json`);
-          const mineablePath = pathModule.join(
-            minecraftMineable,
-            `${blocks[block].minedBy}.json`
-          );
-          let tierPath;
-          if (["netherite", "gold"].includes(blocks[selectedBlock].minedByTier))
-            tierPath = pathModule.join(
-              forgeData,
-              `needs_${blocks[block].minedByTier}_tool.json`
-            );
-          else if (
-            ["wood", "stone", "iron", "diamond"].includes(
-              blocks[selectedBlock].minedByTier
-            )
-          )
-            tierPath = pathModule.join(
-              minecraftData,
-              `needs_${blocks[block].minedByTier}_tool.json`
-            );
-          else
-            tierPath = pathModule.join(
-              projectMinecraftData,
-              `needs_${blocks[block].minedByTier}_tool.json`
-            );
-          const itemModelPath = pathModule.join(itemModels, `${name}.json`);
-          fs.writeJSONSync(statePath, {
-            variants: {
-              "": {
-                model: `${projectName.toLowerCase()}:block/${name}`,
-              },
-            },
-          });
-          if (blocks[block].dropItem) {
-            if (
-              fs.existsSync(mineablePath) &&
-              blocks[block].minedBy != "anything"
-            ) {
-              const mineable = fs.readJSONSync(mineablePath);
-              const tier = fs.readJSONSync(tierPath);
-              mineable.values.push(`${projectName.toLowerCase()}:${name}`);
-              tier.values.push(`${projectName.toLowerCase()}:${name}`);
-              fs.writeJSONSync(mineablePath, mineable);
-              fs.writeJSONSync(tierPath, tier);
-            } else if (blocks[block].minedBy != "anything") {
-              fs.writeJSONSync(mineablePath, {
-                replace: false,
-                values: [`${projectName.toLowerCase()}:${name}`],
-              });
-              fs.writeJSONSync(tierPath, {
-                replace: false,
-                values: [`${projectName.toLowerCase()}:${name}`],
-              });
-            }
-          }
           fs.writeJSONSync(itemModelPath, {
             parent: `${projectName.toLowerCase()}:block/${name}`,
           });
+        } else if (
+          property == "texture" &&
+          blocks[block].modelType == "blockbench"
+        ) {
+          const modelPath = pathModule.join(blockModels, `${name}.json`);
+          const model = blocks[block].model;
+          const modelData = model.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          const textures = blocks[block].texture;
+          textures.forEach((texture) => {
+            const texturePath = pathModule.join(
+              blockTextures,
+              `${texture.name}`
+            );
+            const textureData = texture.data.match(
+              /^data:([A-Za-z-+\/]+);base64,(.+)$/
+            )[2];
+            fs.writeFileSync(texturePath, textureData, "base64");
+          });
+          fs.writeFileSync(modelPath, modelData, "base64");
+          fs.writeFileSync(itemModelPath, modelData, "base64");
         }
         obj[name][property] = blocks[block][property];
       });
+      const statePath = pathModule.join(blockstates, `${name}.json`);
+      const mineablePath = pathModule.join(
+        minecraftMineable,
+        `${blocks[block].minedBy}.json`
+      );
+      let tierPath;
+      if (["netherite", "gold"].includes(blocks[selectedBlock].minedByTier))
+        tierPath = pathModule.join(
+          forgeData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      else if (
+        ["wood", "stone", "iron", "diamond"].includes(
+          blocks[selectedBlock].minedByTier
+        )
+      )
+        tierPath = pathModule.join(
+          minecraftData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      else
+        tierPath = pathModule.join(
+          projectMinecraftData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      fs.writeJSONSync(statePath, {
+        variants: {
+          "": {
+            model: `${projectName.toLowerCase()}:block/${name}`,
+          },
+        },
+      });
+      if (blocks[block].dropItem) {
+        if (
+          fs.existsSync(mineablePath) &&
+          blocks[block].minedBy != "anything"
+        ) {
+          const mineable = fs.readJSONSync(mineablePath);
+          const tier = fs.readJSONSync(tierPath);
+          mineable.values.push(`${projectName.toLowerCase()}:${name}`);
+          tier.values.push(`${projectName.toLowerCase()}:${name}`);
+          fs.writeJSONSync(mineablePath, mineable);
+          fs.writeJSONSync(tierPath, tier);
+        } else if (blocks[block].minedBy != "anything") {
+          fs.writeJSONSync(mineablePath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${name}`],
+          });
+          fs.writeJSONSync(tierPath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${name}`],
+          });
+        }
+      }
+      if (blocks[block].isOre && blocks[block].worlds.length) {
+        const configurePath = pathModule.join(worldgenConfigured, `${name}.json`);
+        const placedPath = pathModule.join(worldgenPlaced, `${name}.json`);
+        const biomePath = pathModule.join(biomeModifier, `${name}.json`)
+        const targets = [];
+        const biomes = [];
+        blocks[block].worlds.forEach((world) => {
+          let oreType = "";
+          if (world == "overworld")
+            oreType = { tag: "tag_match", ore: "stone_ore_replaceables", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+          else if (world == "nether")
+            oreType = { tag: "block_match", ore: "netherrack", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+          else if (world == "end")
+            oreType = { tag: "block_match", ore: "end_stone", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+          targets.push({
+            target: {
+              predicate_type: `minecraft:${oreType.tag}`,
+              tag: `minecraft:${oreType.ore}`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${name}`,
+            },
+          });
+          biomes.push(oreType.biomes);
+        });
+        fs.writeJSONSync(configurePath, {
+          type: "minecraft:ore",
+          config: {
+            size: blocks[block].oreSize,
+            discard_chance_on_air_exposure: blocks[block].discardChance / 100,
+            targets,
+          },
+        });
+        fs.writeJSONSync(placedPath, {
+          feature: `${projectName.toLowerCase()}:${name}`,
+          placement: [
+            {
+              type: "minecraft:count",
+              count: {
+                type: "minecraft:uniform",
+                value: {
+                  min_inclusive: blocks[block].minChunkSize,
+                  max_inclusive: blocks[block].maxChunkSize,
+                },
+              },
+            },
+            {
+              type: "minecraft:in_square",
+            },
+            {
+              type: "minecraft:height_range",
+              height: {
+                type: "minecraft:trapezoid",
+                min_inclusive: {
+                  absolute: blocks[block].minHeight,
+                },
+                max_inclusive: {
+                  absolute: blocks[block].maxHeight,
+                },
+              },
+            },
+            {
+              type: "minecraft:biome",
+            },
+          ],
+        });
+        fs.writeJSONSync(biomePath, {
+          type: "forge:add_features",
+          features: `${projectName.toLowerCase()}:${name}`,
+          step: "underground_ores",
+          biomes: biomes.flat()
+        })
+      }
     });
     Object.keys(items).forEach((item) => {
       const modelPath = pathModule.join(blockModels, `${item}.json`);
       if (items[item].modelType == "default") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
-        });
+        const texture = items[item].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            blockTextures,
+            `${item}.${textureType}`
+          );
+          const textureData = texture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
+          });
+        }
       } else if (items[item].modelType == "blockbench") {
         const model = items[item].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = items[item].textures;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = items[item].texture;
         textures.forEach((texture) => {
           const texturePath = pathModule.join(blockTextures, `${texture.name}`);
           const textureData = texture.data.match(
@@ -456,20 +620,34 @@
           )[2];
           fs.writeFileSync(texturePath, textureData, "base64");
         });
-        fs.writeJSONSync(modelPath, modelData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     Object.keys(tools).forEach((tool) => {
       const modelPath = pathModule.join(blockModels, `${tool}.json`);
       if (tools[tool].modelType == "default") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
-        });
+        const texture = tools[tool].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            blockTextures,
+            `${tool}.${textureType}`
+          );
+          const textureData = texture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
+          });
+        }
       } else if (tools[tool].modelType == "blockbench") {
         const model = tools[tool].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = tools[tool].textures;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = tools[tool].texture;
         textures.forEach((texture) => {
           const texturePath = pathModule.join(blockTextures, `${texture.name}`);
           const textureData = texture.data.match(
@@ -477,7 +655,7 @@
           )[2];
           fs.writeFileSync(texturePath, textureData, "base64");
         });
-        fs.writeJSONSync(modelPath, modelData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     fs.writeJSONSync(path, obj);
@@ -497,6 +675,51 @@
     blocks = blocks;
     selectedBlock = Object.keys(blocks)[0];
     updateEditor();
+  }
+  async function chooseModel() {
+    const response = await ipc.invoke("dialog", [
+      "openFile",
+      "multiSelections",
+    ]);
+    if (response) {
+      const paths = response.filePaths
+        .sort((file) => (file.endsWith(".json") ? -1 : 1))
+        .map((file) => ({
+          name: file.split("\\")[file.split("\\").length - 1],
+          data: `data:${
+            file.endsWith(".json") ? `application/json` : `image/png`
+          };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
+        }));
+      const model = paths.shift();
+      blocks[selectedBlock].model = model;
+      blocks[selectedBlock].texture = paths;
+    }
+  }
+  function setModel(ev) {
+    let i = 0;
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      if (i == 0) {
+        blocks[selectedBlock].model = {
+          name: files[i].name,
+          data: event.target.result,
+        };
+        blocks[selectedBlock].texture = [];
+      } else
+        blocks[selectedBlock].texture.push({
+          name: files[i].name,
+          data: event.target.result,
+        });
+    };
+    reader.onloadend = function () {
+      i++;
+      if (!files[i]) return;
+      reader.readAsDataURL(files[i]);
+    };
+    const files = [...ev.dataTransfer.files].sort((file) =>
+      file.name.endsWith(".json") ? -1 : 1
+    );
+    reader.readAsDataURL(files[0]);
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
@@ -1034,7 +1257,37 @@
             >
           </div>
           <div>
-            <label class="text-lg">Drops Item</label>
+            <label class="text-lg">Drops Experience?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].dropXp}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if blocks[selectedBlock].dropXp}
+            <div>
+              <label class="text-lg">Minimum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].minXp}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Maximum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].maxXp}
+              />
+            </div>
+          {/if}
+          <div>
+            <label class="text-lg">Drops Item?</label>
             <select
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].dropItem}
@@ -1096,128 +1349,239 @@
               ></select
             >
           </div>
-          <div class="col-start-1">
-            <label class="text-lg">Particle Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].particleTexture}
-              on:error={fallbackTexture}
-              on:click={chooseParticleTexture}
-              on:drop={setParticleTexture}
-              on:dragover|preventDefault
-            />
+          <div>
+            <label class="text-lg">Generate As Ore?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].isOre}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
           </div>
           <div>
-            <label class="text-lg">Up Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].upTexture}
-              on:error={fallbackTexture}
-              on:click={chooseUpTexture}
-              on:drop={setUpTexture}
-              on:dragover|preventDefault
-            />
+            <label class="text-lg">Model Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].modelType}
+            >
+              <option value="default">Default</option>
+              <option value="blockbench">Blockbench</option>
+            </select>
           </div>
-          <div>
-            <label class="text-lg">Down Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].downTexture}
-              on:error={fallbackTexture}
-              on:click={chooseDownTexture}
-              on:drop={setDownTexture}
-              on:dragover|preventDefault
-            />
-          </div>
-          <div>
-            <label class="text-lg">Front Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].frontTexture}
-              on:error={fallbackTexture}
-              on:click={chooseFrontTexture}
-              on:drop={setFrontTexture}
-              on:dragover|preventDefault
-            />
-          </div>
-          <div>
-            <label class="text-lg">Back Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].backTexture}
-              on:error={fallbackTexture}
-              on:click={chooseBackTexture}
-              on:drop={setBackTexture}
-              on:dragover|preventDefault
-            />
-          </div>
-          <div>
-            <label class="text-lg">Right Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].rightTexture}
-              on:error={fallbackTexture}
-              on:click={chooseRightTexture}
-              on:drop={setRightTexture}
-              on:dragover|preventDefault
-            />
-          </div>
-          <div>
-            <label class="text-lg">Left Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={blocks[selectedBlock].leftTexture}
-              on:error={fallbackTexture}
-              on:click={chooseLeftTexture}
-              on:drop={setLeftTexture}
-              on:dragover|preventDefault
-            />
-          </div>
+          {#if blocks[selectedBlock].modelType == "blockbench"}
+            <div class="col-start-1">
+              <label class="text-lg">Textures & Model</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].texture[0]?.data ?? ""}
+                on:error={fallbackTexture}
+                on:click={chooseModel}
+                on:drop={setModel}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
+          {#if blocks[selectedBlock].modelType == "default"}
+            <div class="col-start-1">
+              <label class="text-lg">Particle Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].particleTexture}
+                on:error={fallbackTexture}
+                on:click={chooseParticleTexture}
+                on:drop={setParticleTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Up Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].upTexture}
+                on:error={fallbackTexture}
+                on:click={chooseUpTexture}
+                on:drop={setUpTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Down Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].downTexture}
+                on:error={fallbackTexture}
+                on:click={chooseDownTexture}
+                on:drop={setDownTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Front Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].frontTexture}
+                on:error={fallbackTexture}
+                on:click={chooseFrontTexture}
+                on:drop={setFrontTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Back Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].backTexture}
+                on:error={fallbackTexture}
+                on:click={chooseBackTexture}
+                on:drop={setBackTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Right Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].rightTexture}
+                on:error={fallbackTexture}
+                on:click={chooseRightTexture}
+                on:drop={setRightTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Left Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].leftTexture}
+                on:error={fallbackTexture}
+                on:click={chooseLeftTexture}
+                on:drop={setLeftTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
         </div></Accordion
       >
       <Accordion title="Item">
-        <div>
-          <label class="text-lg">Stack Size</label>
-          <input
-            type="number"
-            min="1"
-            class="input w-full"
-            bind:value={blocks[selectedBlock].stacksTo}
-          />
-        </div>
-        <div>
-          <label class="text-lg">Rarity</label>
-          <select
-            class="select font-normal text-base w-full"
-            bind:value={blocks[selectedBlock].rarity}
-            ><option value="common">Common Rarity</option><option
-              value="uncommon">Uncommon Rarity</option
-            ><option value="rare">Rare Rarity</option><option value="epic"
-              >Epic Rarity</option
-            ></select
-          >
-        </div>
-        <div>
-          <label class="text-lg">Is Fire Resistant?</label>
-          <select
-            class="select font-normal text-base w-full"
-            bind:value={blocks[selectedBlock].fireResistant}
-            ><option value={true}>True</option><option value={false}
-              >False</option
-            ></select
-          >
-        </div>
-        <div>
-          <label class="text-lg">Can Be Repaired?</label>
-          <select
-            class="select font-normal text-base w-full"
-            bind:value={blocks[selectedBlock].setRepair}
-            ><option value={true}>True</option><option value={false}
-              >False</option
-            ></select
-          >
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="text-lg">Stack Size</label>
+            <input
+              type="number"
+              min="1"
+              class="input w-full"
+              bind:value={blocks[selectedBlock].stacksTo}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Rarity</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].rarity}
+              ><option value="common">Common Rarity</option><option
+                value="uncommon">Uncommon Rarity</option
+              ><option value="rare">Rare Rarity</option><option value="epic"
+                >Epic Rarity</option
+              ></select
+            >
+          </div>
+          <div>
+            <label class="text-lg">Is Fire Resistant?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].fireResistant}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          <div>
+            <label class="text-lg">Can Be Repaired?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].setRepair}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
         </div>
       </Accordion>
+      {#if blocks[selectedBlock].isOre}
+        <Accordion title="Ore">
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="text-lg">Vein Size</label>
+              <input
+                type="number"
+                min="1"
+                max="64"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].oreSize}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Minimum Amount Per Chunk</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].minChunkSize}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Maximum Amount Per Chunk</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].maxChunkSize}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Minimum Height</label>
+              <input
+                type="number"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].minHeight}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Maximum Height</label>
+              <input
+                type="number"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].maxHeight}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Discard On Air Exposure (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].discardChance}
+              />
+            </div>
+            <div>
+              <label class="text-lg"
+                >Worlds to generate in</label
+              >
+              <select
+                multiple
+                size="1"
+                class="select font-normal text-base w-full"
+                bind:value={blocks[selectedBlock].worlds}
+                ><option value="overworld">Overworld</option><option
+                  value="nether">The Nether</option
+                ><option value="end">The End</option></select
+              >
+            </div>
+          </div>
+        </Accordion>
+      {/if}
       <Accordion title="Events" style="overflow:hidden;" mount={setEditor}>
         <div id="editor" class="w-full h-[40vh]" />
       </Accordion>

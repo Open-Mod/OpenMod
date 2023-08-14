@@ -197,7 +197,7 @@
         if (property == "name") return;
         if (property == "texture" && items[item].modelType == "default") {
           const texture = items[item][property][0];
-          if (texture && items[item].modelType == "default") {
+          if (texture) {
             const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
             const texturePath = pathModule.join(
               itemTextures,
@@ -208,14 +208,12 @@
               /^data:([A-Za-z-+\/]+);base64,(.+)$/
             )[2];
             fs.writeFileSync(texturePath, textureData, "base64");
-            if (items[item].modelType == "default") {
-              fs.writeJSONSync(modelPath, {
-                parent: "minecraft:item/generated",
-                textures: {
-                  layer0: `${projectName.toLowerCase()}:item/${name}`,
-                },
-              });
-            }
+            fs.writeJSONSync(modelPath, {
+              parent: "minecraft:item/generated",
+              textures: {
+                layer0: `${projectName.toLowerCase()}:item/${name}`,
+              },
+            });
           }
         } else if (
           property == "texture" &&
@@ -223,7 +221,7 @@
         ) {
           const modelPath = pathModule.join(itemModels, `${name}.json`);
           const model = items[item].model;
-          const modelData = model.match(
+          const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
           const textures = items[item][property];
@@ -237,7 +235,7 @@
             )[2];
             fs.writeFileSync(texturePath, textureData, "base64");
           });
-          fs.writeJSONSync(modelPath, modelData, "base64");
+          fs.writeFileSync(modelPath, modelData, "base64");
         }
         obj[name][property] = items[item][property];
       });
@@ -245,14 +243,28 @@
     Object.keys(tools).forEach((tool) => {
       const modelPath = pathModule.join(itemModels, `${tool}.json`);
       if (tools[tool].modelType == "default") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
-        });
+        const texture = tools[tool].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            itemTextures,
+            `${tool}.${textureType}`
+          );
+          const textureData = texture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
+          });
+        }
       } else if (tools[tool].modelType == "blockbench") {
         const model = tools[tool].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = tools[tool].textures;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = tools[tool].texture;
         textures.forEach((texture) => {
           const texturePath = pathModule.join(itemTextures, `${texture.name}`);
           const textureData = texture.data.match(
@@ -260,27 +272,21 @@
           )[2];
           fs.writeFileSync(texturePath, textureData, "base64");
         });
-        fs.writeJSONSync(modelPath, modelData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     Object.keys(blocks).forEach((block) => {
       const modelPath = pathModule.join(itemModels, `${block}.json`);
-      if (blocks[block].modelType == "default") {
+      if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        fs.writeFileSync(modelPath, modelData, "base64");
+      } else {
         fs.writeJSONSync(modelPath, {
           parent: `${projectName.toLowerCase()}:block/${block}`,
         });
-      } else if (blocks[block].modelType == "blockbench") {
-        const model = blocks[block].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = blocks[block].textures;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(itemTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeJSONSync(modelPath, modelData, "base64");
       }
     });
     fs.writeJSONSync(path, obj);
@@ -309,15 +315,15 @@
     if (response) {
       const paths = response.filePaths
         .sort((file) => (file.endsWith(".json") ? -1 : 1))
-        .map(
-          (file) =>
-            `data:${
-              file.endsWith(".json") ? `application/json` : `image/png`
-            };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`
-        );
+        .map((file) => ({
+          name: file.split("\\")[file.split("\\").length - 1],
+          data: `data:${
+            file.endsWith(".json") ? `application/json` : `image/png`
+          };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
+        }));
       const model = paths.shift();
       items[selectedItem].model = model;
-      items[selectedItem].textures = paths;
+      items[selectedItem].texture = paths;
     }
   }
   function setModel(ev) {
@@ -325,7 +331,10 @@
     const reader = new FileReader();
     reader.onload = function (event) {
       if (i == 0) {
-        items[selectedItem].model = event.target.result;
+        items[selectedItem].model = {
+          name: files[i].name,
+          data: event.target.result,
+        };
         items[selectedItem].texture = [];
       } else
         items[selectedItem].texture.push({
@@ -542,7 +551,7 @@
               <label class="text-lg">Textures & Model</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={items[selectedItem].texture[0].data}
+                src={items[selectedItem].texture[0]?.data ?? ""}
                 on:error={fallbackTexture}
                 on:click={chooseModel}
                 on:drop={setModel}

@@ -180,6 +180,39 @@
       "tags",
       "blocks"
     );
+    const biomeModifier = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "forge",
+      "biome_modifier"
+    );
+    const worldgenConfigured = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "configured_feature"
+    );
+    const worldgenPlaced = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "placed_feature"
+    );
     fs.writeFileSync(
       project,
       projectData.replace("${project}", projectName.trim().toLowerCase())
@@ -200,6 +233,9 @@
     fs.ensureDirSync(projectMinecraftData);
     fs.ensureDirSync(minecraftData);
     fs.ensureDirSync(forgeData);
+    fs.ensureDirSync(biomeModifier);
+    fs.ensureDirSync(worldgenConfigured);
+    fs.ensureDirSync(worldgenPlaced);
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
     success = "Project created successfully!";
     setTimeout(() => {

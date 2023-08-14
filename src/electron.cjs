@@ -116,7 +116,7 @@ ipcMain.handle("createProject", async (ev, path) => {
 ipcMain.handle("run", (ev) => {
   const projectPath = pathModule.join(selected, "Project");
   const path = pathModule.join(projectPath, "gradlew.bat");
-  child = child_process.spawn(path, ["runClient"], {
+  child = child_process.spawn(path, ["build", "runClient"], {
     stdio: ["pipe", "pipe", "pipe"],
     cwd: projectPath,
   });

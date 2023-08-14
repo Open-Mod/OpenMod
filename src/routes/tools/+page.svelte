@@ -146,8 +146,9 @@
       rarity: "common",
       fireResistant: false,
       setRepair: true,
-      texture: "",
-      effects: [],
+      modelType: "default",
+      model: "",
+      texture: [],
       node_data: {
         connected_nodes: [],
         graph: {
@@ -199,8 +200,8 @@
       obj[name] = {};
       Object.keys(tools[tool]).forEach((property) => {
         if (property == "name") return;
-        if (property == "texture") {
-          const texture = tools[tool][property];
+        if (property == "texture" && tools[tool].modelType == "default") {
+          const texture = tools[tool][property][0];
           if (texture) {
             const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
             const texturePath = pathModule.join(
@@ -219,6 +220,27 @@
               },
             });
           }
+        } else if (
+          property == "texture" &&
+          tools[tool].modelType == "blockbench"
+        ) {
+          const modelPath = pathModule.join(toolModels, `${name}.json`);
+          const model = tools[tool].model;
+          const modelData = model.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          const textures = tools[tool][property];
+          textures.forEach((texture) => {
+            const texturePath = pathModule.join(
+              toolTextures,
+              `${texture.name}`
+            );
+            const textureData = texture.data.match(
+              /^data:([A-Za-z-+\/]+);base64,(.+)$/
+            )[2];
+            fs.writeFileSync(texturePath, textureData, "base64");
+          });
+          fs.writeFileSync(modelPath, modelData, "base64");
         }
         obj[name][property] = tools[tool][property];
       });
@@ -226,14 +248,28 @@
     Object.keys(items).forEach((item) => {
       const modelPath = pathModule.join(toolModels, `${item}.json`);
       if (items[item].modelType == "default") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
-        });
+        const texture = items[item].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            toolTextures,
+            `${item}.${textureType}`
+          );
+          const textureData = texture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
+          });
+        }
       } else if (items[item].modelType == "blockbench") {
         const model = items[item].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = items[item].textures;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = items[item].texture;
         textures.forEach((texture) => {
           const texturePath = pathModule.join(toolTextures, `${texture.name}`);
           const textureData = texture.data.match(
@@ -241,27 +277,21 @@
           )[2];
           fs.writeFileSync(texturePath, textureData, "base64");
         });
-        fs.writeJSONSync(modelPath, modelData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     Object.keys(blocks).forEach((block) => {
-      const modelPath = pathModule.join(toolModels, `${block}.json`);
-      if (blocks[block].modelType == "default") {
+      const modelPath = pathModule.join(itemModels, `${block}.json`);
+      if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        fs.writeFileSync(modelPath, modelData, "base64");
+      } else {
         fs.writeJSONSync(modelPath, {
           parent: `${projectName.toLowerCase()}:block/${block}`,
         });
-      } else if (blocks[block].modelType == "blockbench") {
-        const model = blocks[block].model;
-        const modelData = model.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-        const textures = blocks[block].textures;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(toolTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeJSONSync(modelPath, modelData, "base64");
       }
     });
     fs.writeJSONSync(path, obj);
@@ -281,6 +311,51 @@
     tools = tools;
     selectedTool = Object.keys(tools)[0];
     updateEditor();
+  }
+  async function chooseModel() {
+    const response = await ipc.invoke("dialog", [
+      "openFile",
+      "multiSelections",
+    ]);
+    if (response) {
+      const paths = response.filePaths
+        .sort((file) => (file.endsWith(".json") ? -1 : 1))
+        .map((file) => ({
+          name: file.split("\\")[file.split("\\").length - 1],
+          data: `data:${
+            file.endsWith(".json") ? `application/json` : `image/png`
+          };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
+        }));
+      const model = paths.shift();
+      tools[selectedTool].model = model;
+      tools[selectedTool].texture = paths;
+    }
+  }
+  function setModel(ev) {
+    let i = 0;
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      if (i == 0) {
+        tools[selectedTool].model = {
+          name: files[i].name,
+          data: event.target.result,
+        };
+        tools[selectedTool].texture = [];
+      } else
+        tools[selectedTool].texture.push({
+          name: files[i].name,
+          data: event.target.result,
+        });
+    };
+    reader.onloadend = function () {
+      i++;
+      if (!files[i]) return;
+      reader.readAsDataURL(files[i]);
+    };
+    const files = [...ev.dataTransfer.files].sort((file) =>
+      file.name.endsWith(".json") ? -1 : 1
+    );
+    reader.readAsDataURL(files[0]);
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
@@ -498,17 +573,42 @@
               ></select
             >
           </div>
-          <div class="col-start-1">
-            <label class="text-lg">Texture</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={tools[selectedTool].texture}
-              on:error={fallbackTexture}
-              on:click={chooseTexture}
-              on:drop={setTexture}
-              on:dragover|preventDefault
-            />
+          <div>
+            <label class="text-lg">Model Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={tools[selectedTool].modelType}
+            >
+              <option value="default">Default</option>
+              <option value="blockbench">Blockbench</option>
+            </select>
           </div>
+          {#if tools[selectedTool].modelType == "blockbench"}
+            <div class="col-start-1">
+              <label class="text-lg">Textures & Model</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={tools[selectedTool].texture[0]?.data ?? ""}
+                on:error={fallbackTexture}
+                on:click={chooseModel}
+                on:drop={setModel}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
+          {#if tools[selectedTool].modelType == "default"}
+            <div class="col-start-1">
+              <label class="text-lg">Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={tools[selectedTool].texture[0]}
+                on:error={fallbackTexture}
+                on:click={chooseTexture}
+                on:drop={setTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
         </div>
       </Accordion>
       <Accordion title="Events" style="overflow:hidden;" mount={setEditor}>

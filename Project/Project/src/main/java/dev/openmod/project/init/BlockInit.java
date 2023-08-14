@@ -6,11 +6,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,6 +38,8 @@ public class BlockInit {
             int fire_resistance = 300 - ((Number) data.get("fire_resistance")).intValue() * 3;
             int lightLevel = ((Number) data.get("lightLevel")).intValue();
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
+            int minXp = ((Number) data.get("minXp")).intValue();
+            int maxXp = ((Number) data.get("maxXp")).intValue();
             float friction = ((Number) data.get("friction")).floatValue() / 100f;
             float jumpFactor = ((Number) data.get("jumpFactor")).floatValue() / 100f;
             float speedFactor = ((Number) data.get("speedFactor")).floatValue() / 100f;
@@ -46,6 +50,7 @@ public class BlockInit {
             String pushReaction = (String) data.get("pushReaction");
             String minedBy = (String) data.get("minedBy");
             String rarity = (String) data.get("rarity");
+            boolean dropXp = (boolean) data.get("dropXp");
             boolean dropItem = (boolean) data.get("dropItem");
             boolean ignitedByLava = (boolean) data.get("ignitedByLava");
             boolean isCollidable = (boolean) data.get("isCollidable");
@@ -263,29 +268,55 @@ public class BlockInit {
                 if(!minedBy.equals("anything")) properties.requiresCorrectToolForDrops();
             if(!tab.equals("none"))
                 TabInit.tabItems.get(tab).put(name, BLOCKS.register(name, () ->  {
-                    Block block = new Block(properties) {
-                        @Override
-                        public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                            if(!ignitedByLava && fire_resistance == 0) {
-                                return super.getFlammability(state, level, pos, direction);
-                            } else return fire_resistance;
-                        }
-                    };
-                    ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
-                    return block;
+                    if(dropXp) {
+                        DropExperienceBlock block = new DropExperienceBlock(properties, UniformInt.of(minXp, maxXp)) {
+                            @Override
+                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                if(!ignitedByLava && fire_resistance == 0) {
+                                    return super.getFlammability(state, level, pos, direction);
+                                } else return fire_resistance;
+                            }
+                        };
+                        ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
+                        return block;
+                    } else {
+                        Block block = new Block(properties) {
+                            @Override
+                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                if(!ignitedByLava && fire_resistance == 0) {
+                                    return super.getFlammability(state, level, pos, direction);
+                                } else return fire_resistance;
+                            }
+                        };
+                        ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
+                        return block;
+                    }
                 }));
             else
                 BLOCKS.register(name, () ->  {
-                    Block block = new Block(properties) {
-                        @Override
-                        public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                            if(!ignitedByLava && fire_resistance == 0) {
-                                return super.getFlammability(state, level, pos, direction);
-                            } else return fire_resistance;
-                        }
-                    };
-                    ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
-                    return block;
+                    if(dropXp) {
+                        DropExperienceBlock block = new DropExperienceBlock(properties, UniformInt.of(minXp, maxXp)) {
+                            @Override
+                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                if(!ignitedByLava && fire_resistance == 0) {
+                                    return super.getFlammability(state, level, pos, direction);
+                                } else return fire_resistance;
+                            }
+                        };
+                        ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
+                        return block;
+                    } else {
+                        Block block = new Block(properties) {
+                            @Override
+                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                if(!ignitedByLava && fire_resistance == 0) {
+                                    return super.getFlammability(state, level, pos, direction);
+                                } else return fire_resistance;
+                            }
+                        };
+                        ItemInit.ITEMS.register(name, () -> new BlockItem(block, itemProperties));
+                        return block;
+                    }
                 });
 
         }

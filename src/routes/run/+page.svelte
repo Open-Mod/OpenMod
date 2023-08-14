@@ -251,6 +251,60 @@
                 new Date()
               )}]: Field "Movement Speed" of block "${block}" must not be empty!`
             );
+          else if (property == "minXp" && blocks[block].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Experience" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxXp" && blocks[block].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Maximum Experience" of block "${block}" must not be empty!`
+            );
+          else if (property == "oreSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Vein Size" of block "${block}" must not be empty!`
+            );
+          else if (property == "discardChance" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Discard On Air Exposure (%)" of block "${block}" must not be empty!`
+            );
+          else if (property == "worlds" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Worlds to generate in" of block "${block}" must not be empty!`
+            );
+          else if (property == "minChunkSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Amount Per Chunk" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxChunkSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Maximum Amount Per Chunk" of block "${block}" must not be empty!`
+            );
+          else if (property == "minHeight" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxHeight" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
+            );
         }
       });
     });
