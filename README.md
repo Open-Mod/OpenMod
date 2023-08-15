@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
-## OpenMod - Minecraft Mod Maker
+# OpenMod - Minecraft Mod Maker
 Introducing OpenMod: Your Complete Minecraft Modding Solution
 
 OpenMod is here to redefine your Minecraft modding experience. Say goodbye to the usual hassles and hello to a new level of creativity.
