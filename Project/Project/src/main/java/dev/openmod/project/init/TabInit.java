@@ -12,6 +12,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class TabInit {
                         break;
                     }
                 }
+                if(item == null) item = RegistryObject.create(new ResourceLocation(icon), ForgeRegistries.ITEMS).get();
                 return new ItemStack(item.asItem());
             });
             properties.displayItems((displayParams, output) -> {

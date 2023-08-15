@@ -56,6 +56,7 @@ public class BlockInit {
             boolean isCollidable = (boolean) data.get("isCollidable");
             boolean fireResistant = (boolean) data.get("fireResistant");
             boolean setRepair = (boolean) data.get("setRepair");
+            properties.noOcclusion();
             properties.strength(resistance, explosion_resistance);
             properties.lightLevel(state -> lightLevel);
             properties.friction(1f - friction);
@@ -148,13 +149,6 @@ public class BlockInit {
             else if (instrument.equals("bit")) properties.instrument(NoteBlockInstrument.BIT);
             else if (instrument.equals("banjo")) properties.instrument(NoteBlockInstrument.BANJO);
             else if (instrument.equals("pling")) properties.instrument(NoteBlockInstrument.PLING);
-            else if (instrument.equals("zombie")) properties.instrument(NoteBlockInstrument.ZOMBIE);
-            else if (instrument.equals("skeleton")) properties.instrument(NoteBlockInstrument.SKELETON);
-            else if (instrument.equals("creeper")) properties.instrument(NoteBlockInstrument.CREEPER);
-            else if (instrument.equals("dragon")) properties.instrument(NoteBlockInstrument.DRAGON);
-            else if (instrument.equals("wither_skeleton")) properties.instrument(NoteBlockInstrument.WITHER_SKELETON);
-            else if (instrument.equals("piglin")) properties.instrument(NoteBlockInstrument.PIGLIN);
-            else if (instrument.equals("custom_head")) properties.instrument(NoteBlockInstrument.CUSTOM_HEAD);
             if (sound.equals("empty")) properties.sound(SoundType.EMPTY);
             else if (sound.equals("wood")) properties.sound(SoundType.WOOD);
             else if (sound.equals("gravel")) properties.sound(SoundType.GRAVEL);

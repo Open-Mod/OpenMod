@@ -22,6 +22,7 @@
     "cpy": "^10.1.0",
     "electron-serve": "^1.1.0",
     "electron-window-state": "^5.0.3",
+    "peerjs": "^1.4.7",
     "tree-kill": "^1.2.2"
   },
   "main": "src/electron.cjs",

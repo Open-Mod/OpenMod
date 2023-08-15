@@ -91,6 +91,7 @@ ipcMain.on("lastLog", (ev) => {
 });
 ipcMain.handle("select", (ev, path) => {
   selected = path;
+  mainwindow.webContents.send("select", path);
 });
 ipcMain.handle("dialog", async (ev, property, ...filters) => {
   const filtersData = [...filters].flat();

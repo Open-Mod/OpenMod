@@ -273,7 +273,7 @@
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
-              )}]: Field "Discard On Air Exposure (%)" of block "${block}" must not be empty!`
+              )}]: Field "Discard On Air Exposure" of block "${block}" must not be empty!`
             );
           else if (property == "worlds" && blocks[block].isOre)
             addError(

@@ -13,7 +13,6 @@
   let toolsPath = "";
   let itemsPath = "";
   let blocksPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -24,9 +23,6 @@
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     tiers = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
@@ -42,6 +38,10 @@
           tiers[tier].repairIngredient;
     });
     selectedTier = Object.keys(tiers)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "tiers.json") return;
+      tiers = data.file.content;
+    };
   });
   let selectedTier = "";
   let name = "";
@@ -63,6 +63,7 @@
         "",
     };
     selectedTier = name;
+    send_changes({ file: "tiers.json", content: tiers });
   }
   function save() {
     const obj = {};
@@ -94,6 +95,7 @@
     tiers = tiers;
     selectedTier = Object.keys(tiers)[0];
     updateEditor();
+    send_changes({ file: "tiers.json", content: tiers });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -109,8 +111,8 @@
 <svelte:head>
   <title>OpenMod - Tiers</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected Tier:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected Tier:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -141,7 +143,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if tiers[selectedTier]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">

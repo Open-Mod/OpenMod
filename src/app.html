@@ -16,6 +16,7 @@
       const ipc = require("electron").ipcRenderer;
       const fs = require("fs-extra");
       const pathModule = require("path");
+      const PeerJS = require("peerjs");
       const appPath = ipc.sendSync("appPath");
       const isDev = ipc.sendSync("isDev");
       let selected = ipc.sendSync("selected");

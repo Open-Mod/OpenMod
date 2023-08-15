@@ -93,6 +93,28 @@
       "textures",
       "item"
     );
+    const toolModels = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "models",
+      "tool"
+    );
+    const toolTextures = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "textures",
+      "tool"
+    );
     const blockModels = pathModule.join(
       projectPath,
       "Project",
@@ -225,6 +247,8 @@
     );
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
+    fs.ensureDirSync(toolModels);
+    fs.ensureDirSync(toolTextures);
     fs.ensureDirSync(blockModels);
     fs.ensureDirSync(blockTextures);
     fs.ensureDirSync(blockstates);
@@ -252,7 +276,7 @@
       current = project;
     } else {
       current = "";
-      selected = "";
+      ipc.invoke("select", "");
     }
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
     success = "Project deleted successfully!";
@@ -269,7 +293,7 @@
   function selectProject(project) {
     ipc.invoke("select", project);
     current = project;
-    selected = current;
+    ipc.invoke("select", current);
   }
 </script>
 

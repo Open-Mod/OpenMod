@@ -4,13 +4,9 @@
   import Error from "../../components/Error.svelte";
   import Success from "../../components/Success.svelte";
   let items = {};
-  let tools = {};
-  let blocks = {};
   let tabs = {};
   let projectPath = "";
   let path = "";
-  let toolsPath = "";
-  let blocksPath = "";
   let tabsPath = "";
   let nodesPath = "";
   let projectName = "";
@@ -21,8 +17,6 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "items.json");
-    toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
-    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     nodesPath = pathModule.join(
       projectPath,
@@ -38,8 +32,6 @@
       selected
     ].name;
     items = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
-    blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     nodes = fs
       .readdirSync(nodesPath)
@@ -120,6 +112,10 @@
       items[item].name = item;
     });
     selectedItem = Object.keys(items)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "items.json") return;
+      items = data.file.content;
+    };
   });
   let selectedItem = "";
   let name = "";
@@ -160,6 +156,7 @@
     };
     selectedItem = name;
     updateEditor();
+    send_changes({ file: "items.json", content: items });
   }
   function save() {
     const obj = {};
@@ -183,16 +180,17 @@
       "models",
       "item"
     );
-    fs.rmSync(itemTextures, { recursive: true, force: true });
     fs.rmSync(itemModels, { recursive: true, force: true });
-    fs.mkdirSync(itemTextures);
+    fs.rmSync(itemTextures, { recursive: true, force: true });
     fs.mkdirSync(itemModels);
+    fs.mkdirSync(itemTextures);
     Object.keys(items).forEach((item) => {
       const name = items[item].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
+      const modelPath = pathModule.join(itemModels, `${name}.json`);
       Object.keys(items[item]).forEach((property) => {
         if (property == "name") return;
         if (property == "texture" && items[item].modelType == "default") {
@@ -203,7 +201,6 @@
               itemTextures,
               `${name}.${textureType}`
             );
-            const modelPath = pathModule.join(itemModels, `${name}.json`);
             const textureData = texture.match(
               /^data:([A-Za-z-+\/]+);base64,(.+)$/
             )[2];
@@ -219,7 +216,6 @@
           property == "texture" &&
           items[item].modelType == "blockbench"
         ) {
-          const modelPath = pathModule.join(itemModels, `${name}.json`);
           const model = items[item].model;
           const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
@@ -240,55 +236,6 @@
         obj[name][property] = items[item][property];
       });
     });
-    Object.keys(tools).forEach((tool) => {
-      const modelPath = pathModule.join(itemModels, `${tool}.json`);
-      if (tools[tool].modelType == "default") {
-        const texture = tools[tool].texture[0];
-        if (texture) {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          const texturePath = pathModule.join(
-            itemTextures,
-            `${tool}.${textureType}`
-          );
-          const textureData = texture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-          fs.writeJSONSync(modelPath, {
-            parent: "minecraft:item/generated",
-            textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
-          });
-        }
-      } else if (tools[tool].modelType == "blockbench") {
-        const model = tools[tool].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const textures = tools[tool].texture;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(itemTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeFileSync(modelPath, modelData, "base64");
-      }
-    });
-    Object.keys(blocks).forEach((block) => {
-      const modelPath = pathModule.join(itemModels, `${block}.json`);
-      if (blocks[block].modelType == "blockbench") {
-        const model = blocks[block].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(modelPath, modelData, "base64");
-      } else {
-        fs.writeJSONSync(modelPath, {
-          parent: `${projectName.toLowerCase()}:block/${block}`,
-        });
-      }
-    });
     fs.writeJSONSync(path, obj);
     items = obj;
     Object.keys(items).forEach((item) => {
@@ -306,6 +253,7 @@
     items = items;
     selectedItem = Object.keys(items)[0];
     updateEditor();
+    send_changes({ file: "items.json", content: items });
   }
   async function chooseModel() {
     const response = await ipc.invoke("dialog", [
@@ -324,6 +272,7 @@
       const model = paths.shift();
       items[selectedItem].model = model;
       items[selectedItem].texture = paths;
+      send_changes({ file: "items.json", content: items });
     }
   }
   function setModel(ev) {
@@ -344,7 +293,8 @@
     };
     reader.onloadend = function () {
       i++;
-      if (!files[i]) return;
+      if (!files[i])
+        return send_changes({ file: "items.json", content: items });
       reader.readAsDataURL(files[i]);
     };
     const files = [...ev.dataTransfer.files].sort((file) =>
@@ -363,12 +313,14 @@
         "base64"
       );
       items[selectedItem].texture = [`data:image/png;base64,${texture}`];
+      send_changes({ file: "items.json", content: items });
     }
   }
   function setTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       items[selectedItem].texture = [event.target.result];
+      send_changes({ file: "items.json", content: items });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -383,10 +335,12 @@
       showIcon: true,
     });
     items[selectedItem].effects = items[selectedItem].effects;
+    send_changes({ file: "items.json", content: items });
   }
   function deleteEffect(i) {
     items[selectedItem].effects.splice(i, 1);
     items[selectedItem].effects = items[selectedItem].effects;
+    send_changes({ file: "items.json", content: items });
   }
   let editor;
   function setEditor() {
@@ -399,6 +353,7 @@
       items[selectedItem].node_data.connected_nodes = [];
       items[selectedItem].node_data.graph = graph.serialize();
       graph.runStep(1);
+      send_changes({ file: "items.json", content: items });
     };
     updateEditor();
     window.onresize = () => {
@@ -438,8 +393,8 @@
 <svelte:head>
   <title>OpenMod - Items</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected item:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected item:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -471,7 +426,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if items[selectedItem]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">

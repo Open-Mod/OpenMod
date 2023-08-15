@@ -28,6 +28,10 @@
       loottables[loottable].name = loottable;
     });
     selectedLoottable = Object.keys(loottables)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "loottables.json") return;
+      loottables = data.file.content;
+    };
   });
   let selectedLoottable = "";
   let name = "";
@@ -41,6 +45,7 @@
       json: "{}",
     };
     selectedLoottable = name;
+    send_changes({ file: "loottables.json", content: loottables });
   }
   function save() {
     const obj = {};
@@ -96,6 +101,7 @@
     loottables = loottables;
     selectedLoottable = Object.keys(loottables)[0];
     updateEditor();
+    send_changes({ file: "loottables.json", content: loottables });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -123,8 +129,8 @@
 <svelte:head>
   <title>OpenMod - Loot Tables</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected Loot Table:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected Loot Table:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -155,7 +161,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if loottables[selectedLoottable]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">

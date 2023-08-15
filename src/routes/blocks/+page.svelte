@@ -4,15 +4,11 @@
   import Error from "../../components/Error.svelte";
   import Success from "../../components/Success.svelte";
   let blocks = {};
-  let items = {};
-  let tools = {};
   let tabs = {};
   let tiers = {};
   let defaultBiomes = [];
   let projectPath = "";
   let path = "";
-  let itemsPath = "";
-  let toolsPath = "";
   let tabsPath = "";
   let tiersPath = "";
   let nodesPath = "";
@@ -24,8 +20,6 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "blocks.json");
-    itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
-    toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     tiersPath = pathModule.join(projectPath, "src", "data", "tiers.json");
     nodesPath = pathModule.join(
@@ -42,8 +36,6 @@
       selected
     ].name;
     blocks = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
-    tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
     defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
@@ -126,6 +118,10 @@
       blocks[block].name = block;
     });
     selectedBlock = Object.keys(blocks)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "blocks.json") return;
+      blocks = data.file.content;
+    };
   });
   let selectedBlock = "";
   let name = "";
@@ -163,6 +159,7 @@
       minHeight: 1,
       maxHeight: 1,
       discardChance: 0,
+      genShape: "minecraft:trapezoid",
       worlds: ["overworld"],
       modelType: "default",
       model: "",
@@ -194,19 +191,10 @@
     };
     selectedBlock = name;
     updateEditor();
+    send_changes({ file: "blocks.json", content: blocks });
   }
   function save() {
     const obj = {};
-    const itemModels = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "models",
-      "item"
-    );
     const blockTextures = pathModule.join(
       projectPath,
       "src",
@@ -297,7 +285,6 @@
       "worldgen",
       "placed_feature"
     );
-    fs.rmSync(itemModels, { recursive: true, force: true });
     fs.rmSync(blockTextures, { recursive: true, force: true });
     fs.rmSync(blockModels, { recursive: true, force: true });
     fs.rmSync(blockstates, { recursive: true, force: true });
@@ -306,7 +293,6 @@
     fs.rmSync(biomeModifier, { recursive: true, force: true });
     fs.rmSync(worldgenConfigured, { recursive: true, force: true });
     fs.rmSync(worldgenPlaced, { recursive: true, force: true });
-    fs.mkdirSync(itemModels);
     fs.mkdirSync(blockTextures);
     fs.mkdirSync(blockModels);
     fs.mkdirSync(blockstates);
@@ -322,7 +308,8 @@
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const itemModelPath = pathModule.join(itemModels, `${name}.json`);
+      const itemModelPath = pathModule.join(blockModels, `item_${name}.json`);
+      const modelPath = pathModule.join(blockModels, `${name}.json`);
       Object.keys(blocks[block]).forEach((property) => {
         if (property == "name") return;
         if (
@@ -336,7 +323,6 @@
           const backTexture = blocks[block].backTexture;
           const rightTexture = blocks[block].rightTexture;
           const leftTexture = blocks[block].leftTexture;
-          const modelPath = pathModule.join(blockModels, `${name}.json`);
           const modelObj = {
             render_type: "minecraft:cutout",
             parent: "minecraft:block/cube",
@@ -439,7 +425,6 @@
           property == "texture" &&
           blocks[block].modelType == "blockbench"
         ) {
-          const modelPath = pathModule.join(blockModels, `${name}.json`);
           const model = blocks[block].model;
           const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
@@ -515,19 +500,40 @@
         }
       }
       if (blocks[block].isOre && blocks[block].worlds.length) {
-        const configurePath = pathModule.join(worldgenConfigured, `${name}.json`);
+        const configurePath = pathModule.join(
+          worldgenConfigured,
+          `${name}.json`
+        );
         const placedPath = pathModule.join(worldgenPlaced, `${name}.json`);
-        const biomePath = pathModule.join(biomeModifier, `${name}.json`)
+        const biomePath = pathModule.join(biomeModifier, `${name}.json`);
         const targets = [];
         const biomes = [];
         blocks[block].worlds.forEach((world) => {
           let oreType = "";
           if (world == "overworld")
-            oreType = { tag: "tag_match", ore: "stone_ore_replaceables", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+            oreType = {
+              tag: "tag_match",
+              ore: "stone_ore_replaceables",
+              biomes: defaultBiomes
+                .filter((biome) => biome.dimension == world)
+                .map((biome) => biome.name),
+            };
           else if (world == "nether")
-            oreType = { tag: "block_match", ore: "netherrack", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+            oreType = {
+              tag: "block_match",
+              ore: "netherrack",
+              biomes: defaultBiomes
+                .filter((biome) => biome.dimension == world)
+                .map((biome) => biome.name),
+            };
           else if (world == "end")
-            oreType = { tag: "block_match", ore: "end_stone", biomes: defaultBiomes.filter(biome => biome.dimension == world).map(biome => biome.name) };
+            oreType = {
+              tag: "block_match",
+              ore: "end_stone",
+              biomes: defaultBiomes
+                .filter((biome) => biome.dimension == world)
+                .map((biome) => biome.name),
+            };
           targets.push({
             target: {
               predicate_type: `minecraft:${oreType.tag}`,
@@ -566,7 +572,7 @@
             {
               type: "minecraft:height_range",
               height: {
-                type: "minecraft:trapezoid",
+                type: blocks[block].genShape,
                 min_inclusive: {
                   absolute: blocks[block].minHeight,
                 },
@@ -584,78 +590,8 @@
           type: "forge:add_features",
           features: `${projectName.toLowerCase()}:${name}`,
           step: "underground_ores",
-          biomes: biomes.flat()
-        })
-      }
-    });
-    Object.keys(items).forEach((item) => {
-      const modelPath = pathModule.join(blockModels, `${item}.json`);
-      if (items[item].modelType == "default") {
-        const texture = items[item].texture[0];
-        if (texture) {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          const texturePath = pathModule.join(
-            blockTextures,
-            `${item}.${textureType}`
-          );
-          const textureData = texture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-          fs.writeJSONSync(modelPath, {
-            parent: "minecraft:item/generated",
-            textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
-          });
-        }
-      } else if (items[item].modelType == "blockbench") {
-        const model = items[item].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const textures = items[item].texture;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(blockTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
+          biomes: biomes.flat(),
         });
-        fs.writeFileSync(modelPath, modelData, "base64");
-      }
-    });
-    Object.keys(tools).forEach((tool) => {
-      const modelPath = pathModule.join(blockModels, `${tool}.json`);
-      if (tools[tool].modelType == "default") {
-        const texture = tools[tool].texture[0];
-        if (texture) {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          const texturePath = pathModule.join(
-            blockTextures,
-            `${tool}.${textureType}`
-          );
-          const textureData = texture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-          fs.writeJSONSync(modelPath, {
-            parent: "minecraft:item/generated",
-            textures: { layer0: `${projectName.toLowerCase()}:item/${tool}` },
-          });
-        }
-      } else if (tools[tool].modelType == "blockbench") {
-        const model = tools[tool].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const textures = tools[tool].texture;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(blockTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     fs.writeJSONSync(path, obj);
@@ -675,6 +611,7 @@
     blocks = blocks;
     selectedBlock = Object.keys(blocks)[0];
     updateEditor();
+    send_changes({ file: "blocks.json", content: blocks });
   }
   async function chooseModel() {
     const response = await ipc.invoke("dialog", [
@@ -693,6 +630,7 @@
       const model = paths.shift();
       blocks[selectedBlock].model = model;
       blocks[selectedBlock].texture = paths;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setModel(ev) {
@@ -713,7 +651,8 @@
     };
     reader.onloadend = function () {
       i++;
-      if (!files[i]) return;
+      if (!files[i])
+        return send_changes({ file: "blocks.json", content: blocks });
       reader.readAsDataURL(files[i]);
     };
     const files = [...ev.dataTransfer.files].sort((file) =>
@@ -740,6 +679,7 @@
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].particleTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -751,12 +691,14 @@
         "base64"
       );
       blocks[selectedBlock].upTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setUpTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].upTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -768,12 +710,14 @@
         "base64"
       );
       blocks[selectedBlock].downTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setDownTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].downTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -785,12 +729,14 @@
         "base64"
       );
       blocks[selectedBlock].frontTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setFrontTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].frontTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -802,12 +748,14 @@
         "base64"
       );
       blocks[selectedBlock].backTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setBackTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].backTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -819,12 +767,14 @@
         "base64"
       );
       blocks[selectedBlock].rightTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setRightTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].rightTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -836,12 +786,14 @@
         "base64"
       );
       blocks[selectedBlock].leftTexture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "blocks.json", content: blocks });
     }
   }
   function setLeftTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       blocks[selectedBlock].leftTexture = event.target.result;
+      send_changes({ file: "blocks.json", content: blocks });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -856,6 +808,7 @@
       blocks[selectedBlock].node_data.connected_nodes = [];
       blocks[selectedBlock].node_data.graph = graph.serialize();
       graph.runStep(1);
+      send_changes({ file: "blocks.json", content: blocks });
     };
     updateEditor();
     window.onresize = () => {
@@ -897,8 +850,8 @@
 <svelte:head>
   <title>OpenMod - Blocks</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected Block:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected Block:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -930,7 +883,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if blocks[selectedBlock]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">
@@ -1115,14 +1068,6 @@
               <option value="didgeridoo">Didgeridoo</option>
               <option value="bit">Bit</option>
               <option value="banjo">Banjo</option>
-              <option value="pling">Pling</option>
-              <option value="zombie">Zombie</option>
-              <option value="skeleton">Skeleton</option>
-              <option value="creeper">Creeper</option>
-              <option value="dragon">Dragon</option>
-              <option value="wither_skeleton">Wither Skeleton</option>
-              <option value="piglin">Piglin</option>
-              <option value="custom_head">Custom Head</option>
             </select>
           </div>
           <div>
@@ -1566,12 +1511,22 @@
               />
             </div>
             <div>
+              <label class="text-lg">Generation Shape</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={blocks[selectedBlock].genShape}
+                ><option value="minecraft:uniform">Uniform</option><option
+                  value="minecraft:trapezoid">Trapezoid</option
+                ></select
+              >
+            </div>
+            <div class="col-span-3">
               <label class="text-lg"
-                >Worlds to generate in</label
+                >Worlds to generate in (hold <a class="text-warning">ctrl</a> to
+                select multiple)</label
               >
               <select
                 multiple
-                size="1"
                 class="select font-normal text-base w-full"
                 bind:value={blocks[selectedBlock].worlds}
                 ><option value="overworld">Overworld</option><option

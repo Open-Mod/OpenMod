@@ -7,6 +7,7 @@
   let items = {};
   let blocks = {};
   let tools = {};
+  let defaultItems = [];
   let projectPath = "";
   let path = "";
   let itemsPath = "";
@@ -27,6 +28,7 @@
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
+    defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(tabs).forEach((tab) => {
       tabs[tab].name = tab;
       tabs[tab].icon = tabs[tab].icon.trim()
@@ -37,6 +39,10 @@
           tabs[tab].icon;
     });
     selectedTab = Object.keys(tabs)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "tabs.json") return;
+      tabs = data.file.content;
+    };
   });
   let selectedTab = "";
   let name = "";
@@ -58,6 +64,7 @@
       alignedRight: false,
     };
     selectedTab = name;
+    send_changes({ file: "tabs.json", content: tabs });
   }
   function save() {
     const obj = {};
@@ -89,6 +96,7 @@
     tabs = tabs;
     selectedTab = Object.keys(tabs)[0];
     updateEditor();
+    send_changes({ file: "tabs.json", content: tabs });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -104,8 +112,8 @@
 <svelte:head>
   <title>OpenMod - Tabs</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected Tab:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected Tab:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -136,7 +144,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if tabs[selectedTab]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">
@@ -171,6 +179,9 @@
               {/each}
               {#each Object.keys(tools) as tool}
                 <option value={tool}>{convertToCamelCase(tool)}</option>
+              {/each}
+              {#each defaultItems as item}
+                <option value={item}>{item}</option>
               {/each}
             </select>
           </div>

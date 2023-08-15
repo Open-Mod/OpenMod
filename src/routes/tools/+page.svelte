@@ -4,14 +4,10 @@
   import Error from "../../components/Error.svelte";
   import Success from "../../components/Success.svelte";
   let tools = {};
-  let items = {};
-  let blocks = {};
   let tabs = {};
   let tiers = {};
   let projectPath = "";
   let path = "";
-  let itemsPath = "";
-  let blocksPath = "";
   let tabsPath = "";
   let tiersPath = "";
   let nodesPath = "";
@@ -23,8 +19,6 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "tools.json");
-    itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
-    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     tiersPath = pathModule.join(projectPath, "src", "data", "tiers.json");
     nodesPath = pathModule.join(
@@ -41,8 +35,6 @@
       selected
     ].name;
     tools = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
-    blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
     nodes = fs
@@ -127,6 +119,10 @@
         : Object.keys(tiers)[0] ?? tools[tool].tier;
     });
     selectedTool = Object.keys(tools)[0] ?? "";
+    window.on_change = (data) => {
+      if (data.file.file != "tools.json") return;
+      tools = data.file.content;
+    };
   });
   let selectedTool = "";
   let name = "";
@@ -165,6 +161,7 @@
     };
     selectedTool = name;
     updateEditor();
+    send_changes({ file: "tools.json", content: tools });
   }
   function save() {
     const obj = {};
@@ -176,7 +173,7 @@
       "assets",
       projectName.toLowerCase(),
       "textures",
-      "item"
+      "tool"
     );
     const toolModels = pathModule.join(
       projectPath,
@@ -186,18 +183,19 @@
       "assets",
       projectName.toLowerCase(),
       "models",
-      "item"
+      "tool"
     );
-    fs.rmSync(toolTextures, { recursive: true, force: true });
     fs.rmSync(toolModels, { recursive: true, force: true });
-    fs.mkdirSync(toolTextures);
+    fs.rmSync(toolTextures, { recursive: true, force: true });
     fs.mkdirSync(toolModels);
+    fs.mkdirSync(toolTextures);
     Object.keys(tools).forEach((tool) => {
       const name = tools[tool].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
+      const modelPath = pathModule.join(toolModels, `${name}.json`);
       Object.keys(tools[tool]).forEach((property) => {
         if (property == "name") return;
         if (property == "texture" && tools[tool].modelType == "default") {
@@ -208,15 +206,14 @@
               toolTextures,
               `${name}.${textureType}`
             );
-            const modelPath = pathModule.join(toolModels, `${name}.json`);
             const textureData = texture.match(
               /^data:([A-Za-z-+\/]+);base64,(.+)$/
             )[2];
             fs.writeFileSync(texturePath, textureData, "base64");
             fs.writeJSONSync(modelPath, {
-              parent: "minecraft:item/generated",
+              parent: "minecraft:tool/generated",
               textures: {
-                layer0: `${projectName.toLowerCase()}:item/${name}`,
+                layer0: `${projectName.toLowerCase()}:tool/${name}`,
               },
             });
           }
@@ -224,7 +221,6 @@
           property == "texture" &&
           tools[tool].modelType == "blockbench"
         ) {
-          const modelPath = pathModule.join(toolModels, `${name}.json`);
           const model = tools[tool].model;
           const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
@@ -245,55 +241,6 @@
         obj[name][property] = tools[tool][property];
       });
     });
-    Object.keys(items).forEach((item) => {
-      const modelPath = pathModule.join(toolModels, `${item}.json`);
-      if (items[item].modelType == "default") {
-        const texture = items[item].texture[0];
-        if (texture) {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          const texturePath = pathModule.join(
-            toolTextures,
-            `${item}.${textureType}`
-          );
-          const textureData = texture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-          fs.writeJSONSync(modelPath, {
-            parent: "minecraft:item/generated",
-            textures: { layer0: `${projectName.toLowerCase()}:item/${item}` },
-          });
-        }
-      } else if (items[item].modelType == "blockbench") {
-        const model = items[item].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const textures = items[item].texture;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(toolTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeFileSync(modelPath, modelData, "base64");
-      }
-    });
-    Object.keys(blocks).forEach((block) => {
-      const modelPath = pathModule.join(itemModels, `${block}.json`);
-      if (blocks[block].modelType == "blockbench") {
-        const model = blocks[block].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(modelPath, modelData, "base64");
-      } else {
-        fs.writeJSONSync(modelPath, {
-          parent: `${projectName.toLowerCase()}:block/${block}`,
-        });
-      }
-    });
     fs.writeJSONSync(path, obj);
     tools = obj;
     Object.keys(tools).forEach((tool) => {
@@ -311,6 +258,7 @@
     tools = tools;
     selectedTool = Object.keys(tools)[0];
     updateEditor();
+    send_changes({ file: "tools.json", content: tools });
   }
   async function chooseModel() {
     const response = await ipc.invoke("dialog", [
@@ -329,6 +277,7 @@
       const model = paths.shift();
       tools[selectedTool].model = model;
       tools[selectedTool].texture = paths;
+      send_changes({ file: "tools.json", content: tools });
     }
   }
   function setModel(ev) {
@@ -349,7 +298,8 @@
     };
     reader.onloadend = function () {
       i++;
-      if (!files[i]) return;
+      if (!files[i])
+        return send_changes({ file: "tools.json", content: tools });
       reader.readAsDataURL(files[i]);
     };
     const files = [...ev.dataTransfer.files].sort((file) =>
@@ -368,12 +318,14 @@
         "base64"
       );
       tools[selectedTool].texture = `data:image/png;base64,${texture}`;
+      send_changes({ file: "tools.json", content: tools });
     }
   }
   function setTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       tools[selectedTool].texture = event.target.result;
+      send_changes({ file: "tools.json", content: tools });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -388,6 +340,7 @@
       tools[selectedTool].node_data.connected_nodes = [];
       tools[selectedTool].node_data.graph = graph.serialize();
       graph.runStep(1);
+      send_changes({ file: "tools.json", content: tools });
     };
     updateEditor();
     window.onresize = () => {
@@ -429,8 +382,8 @@
 <svelte:head>
   <title>OpenMod - Tools</title>
 </svelte:head>
-<div class="flex flex-col w-full p-12 gap-3">
-  <h1 class="text-3xl font-bold">Selected tool:</h1>
+<div class="flex flex-col w-full p-12">
+  <h1 class="text-2xl font-bold mb-1">Selected tool:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -462,7 +415,7 @@
       </a>
     </div>
   </div>
-  <div class="w-full h-full overflow-y-auto">
+  <div class="w-full h-full overflow-y-auto mt-3">
     {#if tools[selectedTool]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">
