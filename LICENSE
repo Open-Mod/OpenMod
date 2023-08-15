@@ -1,3 +1,19 @@
+OpenMod is licensed under the GPL-3.0 license if not otherwise stated in the source
+files or other files of this project.
+
+Custom distributions can (and should) still note that they are a variant
+of original OpenMod project.
+
+"© 2020 Microsoft Corporation. These mappings are provided "as-is" and you
+bear the risk of using them. You may copy and use the mappings for development
+purposes, but you may not redistribute the mappings complete and unmodified.
+Microsoft makes no warranties, express or implied, with respect to the mappings
+provided here.  Use and modification of this document or the source code (in any
+form) of Minecraft: Java Edition is governed by the Minecraft End User License
+Agreement available at https://account.mojang.com/documents/minecraft_eula."
+
+----------------------------------------------------------------------------
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
