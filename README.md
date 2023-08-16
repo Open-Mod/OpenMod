@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/GPLv3-License?style=for-the-badge&label=License&labelColor=white&color=gray
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
+[![Plugins](https://img.shields.io/badge/Plugins-a87550?style=for-the-badge
+)](https://github.com/Open-Mod/Plugins/)
 # OpenMod - Minecraft Mod Maker
 Introducing OpenMod: Your Complete Minecraft Modding Solution
 
