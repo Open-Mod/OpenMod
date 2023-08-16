@@ -14,6 +14,7 @@ Collaborate seamlessly with fellow creators using OpenMod's live collaboration f
 <img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141315713949245522/image.png"/>
 
 Even if coding isn't your speciality, OpenMod has you covered. Our user-friendly visual node system makes coding a breeze, whether you're a beginner or an expert.
+
 <img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141316314833625118/image.png"/>
 
 But that's not all – OpenMod goes beyond the basics. Our plugin system lets other users enhance the app's capabilities. It's a community-driven approach that opens the door to endless possibilities.
