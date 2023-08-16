@@ -21,7 +21,8 @@
     return new Promise((resolve) => {
       const peer = new PeerJS();
       const conns = [peer.connect(id)];
-      const dataPath = pathModule.join(selected, "Project", "src", "data");
+      const current = selected;
+      const dataPath = pathModule.join(current, "Project", "src", "data");
       conns[0].on("data", (packet) => {
         const data = JSON.parse(packet);
         if (data.type == "SETUP") {
@@ -30,6 +31,7 @@
           });
         } else if (data.type == "CHANGE") {
           fs.writeJSONSync(pathModule.join(dataPath, data.flle));
+          if (current != selected) return;
           window.on_change?.(data);
         }
       });
@@ -44,7 +46,8 @@
     return new Promise((resolve) => {
       const peer = new PeerJS();
       const conns = [];
-      const dataPath = pathModule.join(selected, "Project", "src", "data");
+      const current = selected;
+      const dataPath = pathModule.join(current, "Project", "src", "data");
       peer.on("connection", (conn) => {
         conns.push(conn);
         conn.on("data", (packet) => {
@@ -54,6 +57,7 @@
               pathModule.join(dataPath, data.flle.file),
               data.file.data
             );
+            if (current != selected) return;
             window.on_change?.(data);
           }
         });
@@ -84,6 +88,7 @@
     return "";
   }
   function send_changes(file) {
+    if (!peers[selected]) return;
     const packet = JSON.stringify({ type: "CHANGE", file });
     peers[selected].conns.forEach((conn) => {
       conn.send(packet);

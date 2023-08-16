@@ -13750,6 +13750,14 @@ LGraphNode.prototype.executeAction = function(action)
       },
       true
     );
+    document.onclick = (ev) => {
+      if (
+        !editor.contains(ev.target) &&
+        !ev.target.parentElement.classList.contains("litegraph")
+      ) {
+        LiteGraph.closeAllContextMenus();
+      }
+    };
 
     function on_mouse_wheel(e) {
       var pos = parseInt(root.style.top);

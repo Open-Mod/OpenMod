@@ -144,7 +144,7 @@
       setRepair: true,
       modelType: "default",
       model: "",
-      texture: [],
+      texture: [""],
       node_data: {
         connected_nodes: [],
         graph: {

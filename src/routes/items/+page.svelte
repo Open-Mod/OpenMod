@@ -133,7 +133,7 @@
       food: false,
       modelType: "default",
       model: "",
-      texture: [],
+      texture: [""],
       food_alwaysEat: false,
       food_fast: false,
       food_meat: false,
