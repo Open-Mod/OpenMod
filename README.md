@@ -4,16 +4,14 @@
 )](https://github.com/OpenMod/OpenMod/releases)
 [![License](https://img.shields.io/badge/GPLv3-License?style=for-the-badge&label=License&labelColor=gray&color=white
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
-<img align="right" width="250" src="https://cdn.discordapp.com/attachments/1133139460570239166/1140374412063936625/Open-ModHex.png"/>
-
 # OpenMod - Minecraft Mod Maker
 Introducing OpenMod: Your Complete Minecraft Modding Solution
+
+<img align="right" width="250" src="https://cdn.discordapp.com/attachments/1133139460570239166/1140374412063936625/Open-ModHex.png"/>
 
 OpenMod is here to redefine your Minecraft modding experience. Say goodbye to the usual hassles and hello to a new level of creativity.
 
 Collaborate seamlessly with fellow creators using OpenMod's live collaboration feature. Share ideas, work in real-time, and see your mods come to life together.
-
-
 
 <img align="right" width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141315713949245522/image.png"/>
 
