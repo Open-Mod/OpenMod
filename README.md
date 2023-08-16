@@ -9,9 +9,9 @@
 Introducing OpenMod: Your Complete Minecraft Modding Solution
 
 OpenMod is here to redefine your Minecraft modding experience. Say goodbye to the usual hassles and hello to a new level of creativity.
-
-
-
+<br>
+<br>
+<br>
 Collaborate seamlessly with fellow creators using OpenMod's live collaboration feature. Share ideas, work in real-time, and see your mods come to life together.
 <img align="right" width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141315713949245522/image.png"/>
 
