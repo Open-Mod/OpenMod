@@ -3,6 +3,7 @@
 )](https://github.com/Open-Mod/Plugins/)
 [![Download](https://img.shields.io/badge/Download-57874c?style=for-the-badge
 )](https://github.com/Open-Mod/Plugins/)
+
 [![License](https://img.shields.io/badge/GPLv3-License?style=for-the-badge&label=License&labelColor=gray&color=white
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
 # OpenMod - Minecraft Mod Maker
