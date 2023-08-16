@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/GPLv3-License?style=flat-square&label=License&labelColor=gray&color=white
+[![License](https://img.shields.io/badge/GPLv3-License?style=flat-square&label=License&labelColor=white&color=gray
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
 # OpenMod - Minecraft Mod Maker
 Introducing OpenMod: Your Complete Minecraft Modding Solution
