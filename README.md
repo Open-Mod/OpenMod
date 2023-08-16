@@ -4,7 +4,7 @@
 )](https://github.com/OpenMod/OpenMod/releases)
 [![License](https://img.shields.io/badge/GPLv3-License?style=for-the-badge&label=License&labelColor=gray&color=white
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
-<img align="right" width="200" src="https://cdn.discordapp.com/attachments/1133139460570239166/1140374412063936625/Open-ModHex.png"/>
+<img align="right" width="250" src="https://cdn.discordapp.com/attachments/1133139460570239166/1140374412063936625/Open-ModHex.png"/>
 # OpenMod - Minecraft Mod Maker
 Introducing OpenMod: Your Complete Minecraft Modding Solution
 
