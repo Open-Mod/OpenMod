@@ -30,7 +30,10 @@
             fs.writeJSONSync(pathModule.join(dataPath, file.file), file.data);
           });
         } else if (data.type == "CHANGE") {
-          fs.writeJSONSync(pathModule.join(dataPath, data.flle));
+          fs.writeJSONSync(
+            pathModule.join(dataPath, data.flle.file),
+            data.file.data
+          );
           if (current != selected) return;
           window.on_change?.(data);
         }
