@@ -129,7 +129,7 @@
       <i class="fa-solid fa-gift text-center inline-block" />
     </MenuItem>
     <MenuItem tip="Recpies" page="/recipes">
-      <i class="fa-solid fa-table-cells text-center inline-block" />
+      <i class="fa-solid fa-scroll text-center inline-block" />
     </MenuItem>
     <MenuItem tip="Biomes" page="/biomes">
       <i class="fa-solid fa-mountain-sun text-center inline-block" />
