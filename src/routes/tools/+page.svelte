@@ -175,13 +175,12 @@
       "assets",
       projectName.toLowerCase(),
       "models",
-      "tool"
+      "item"
     );
-    fs.rmSync(toolModels, { recursive: true, force: true });
-    fs.rmSync(toolTextures, { recursive: true, force: true });
-    fs.mkdirSync(toolModels);
-    fs.mkdirSync(toolTextures);
+    fs.rmSync(toolTextures, { recursive:true, force:true });
     Object.keys(tools).forEach((tool) => {
+       const oldModel = pathModule.join(toolModels, `${tool}.json`);
+      if(fs.existsSync(oldModel))fs.rmSync(oldModel);
       const name = tools[tool].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))

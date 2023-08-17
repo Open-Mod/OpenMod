@@ -172,11 +172,11 @@
       "models",
       "item"
     );
-    fs.rmSync(itemModels, { recursive: true, force: true });
     fs.rmSync(itemTextures, { recursive: true, force: true });
-    fs.mkdirSync(itemModels);
     fs.mkdirSync(itemTextures);
     Object.keys(items).forEach((item) => {
+      const oldModel = pathModule.join(itemModels, `${item}.json`);
+      if(fs.existsSync(oldModel))fs.rmSync(oldModel);
       const name = items[item].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))

@@ -197,6 +197,16 @@
       "textures",
       "block"
     );
+    const itemModels = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "models",
+      "item"
+    )
     const blockModels = pathModule.join(
       projectPath,
       "src",
@@ -295,12 +305,14 @@
     fs.mkdirSync(worldgenConfigured);
     fs.mkdirSync(worldgenPlaced);
     Object.keys(blocks).forEach((block) => {
+      const oldModel = pathModule.join(itemModels, `${block}.json`);
+      if(fs.existsSync(oldModel))fs.rmSync(oldModel);
       const name = blocks[block].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const itemModelPath = pathModule.join(blockModels, `item_${name}.json`);
+      const itemModelPath = pathModule.join(itemModels, `${name}.json`);
       const modelPath = pathModule.join(blockModels, `${name}.json`);
       Object.keys(blocks[block]).forEach((property) => {
         if (property == "name") return;

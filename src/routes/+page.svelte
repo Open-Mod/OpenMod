@@ -93,17 +93,6 @@
       "textures",
       "item"
     );
-    const toolModels = pathModule.join(
-      projectPath,
-      "Project",
-      "src",
-      "main",
-      "resources",
-      "assets",
-      name.toLowerCase(),
-      "models",
-      "tool"
-    );
     const toolTextures = pathModule.join(
       projectPath,
       "Project",
@@ -247,7 +236,6 @@
     );
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
-    fs.ensureDirSync(toolModels);
     fs.ensureDirSync(toolTextures);
     fs.ensureDirSync(blockModels);
     fs.ensureDirSync(blockTextures);
