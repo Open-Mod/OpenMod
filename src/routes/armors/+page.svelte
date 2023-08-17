@@ -20,7 +20,12 @@
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "armors.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
-    materialsPath = pathModule.join(projectPath, "src", "data", "materials.json");
+    materialsPath = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "materials.json"
+    );
     nodesPath = pathModule.join(
       projectPath,
       "src",
@@ -36,7 +41,9 @@
     ].name;
     armors = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
-    materials = fs.existsSync(materialsPath) ? fs.readJSONSync(materialsPath) : {};
+    materials = fs.existsSync(materialsPath)
+      ? fs.readJSONSync(materialsPath)
+      : {};
     nodes = fs
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
