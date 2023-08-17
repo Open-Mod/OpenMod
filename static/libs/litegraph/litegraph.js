@@ -1,5 +1,13 @@
 //packer version
-
+document.onclick = (ev) => {
+  if (!document.getElementById("editor")) return;
+  if (
+    !editor.contains(ev.target) &&
+    !ev.target.parentElement.classList.contains("litegraph")
+  ) {
+    LiteGraph.closeAllContextMenus();
+  }
+};
 (function (global) {
   // *************************************************************
   //   LiteGraph CLASS                                     *******
@@ -13750,15 +13758,6 @@ LGraphNode.prototype.executeAction = function(action)
       },
       true
     );
-    document.onclick = (ev) => {
-      if (
-        !editor.contains(ev.target) &&
-        !ev.target.parentElement.classList.contains("litegraph")
-      ) {
-        LiteGraph.closeAllContextMenus();
-      }
-    };
-
     function on_mouse_wheel(e) {
       var pos = parseInt(root.style.top);
       root.style.top = (pos + e.deltaY * options.scroll_speed).toFixed() + "px";

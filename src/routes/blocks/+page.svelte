@@ -69,14 +69,6 @@
                 precision: property.step < 1 ? undefined : 0,
               }
             );
-          } else if (property.type.toLowerCase() == "button") {
-            this.addWidget(
-              property.type.toLowerCase(),
-              property.name,
-              null,
-              property.callback,
-              { property: property.name }
-            );
           } else {
             this.addProperty(property.name, property.value);
             this.addWidget(
