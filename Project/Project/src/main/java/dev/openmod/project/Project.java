@@ -18,7 +18,9 @@ public class Project {
         TabInit.init();
         ItemInit.init();
         BlockInit.init();
+        MaterialInit.init();
         TierInit.init();
+        ArmorInit.init();
         ToolInit.init();
         EventInit.init(eventBus);
         ItemInit.ITEMS.register(bus);

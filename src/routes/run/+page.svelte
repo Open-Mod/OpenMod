@@ -46,8 +46,24 @@
       "blocks.json"
     );
     const blocks = fs.existsSync(blocksFile) ? fs.readJSONSync(blocksFile) : {};
+    const armorsFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "armors.json"
+    );
+    const armors = fs.existsSync(toolsFile) ? fs.readJSONSync(armorsFile) : {};
     const toolsFile = pathModule.join(projectPath, "src", "data", "tools.json");
     const tools = fs.existsSync(toolsFile) ? fs.readJSONSync(toolsFile) : {};
+    const materialsFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "materials.json"
+    );
+    const materials = fs.existsSync(tiersFile)
+      ? fs.readJSONSync(materialsFile)
+      : {};
     const tiersFile = pathModule.join(projectPath, "src", "data", "tiers.json");
     const tiers = fs.existsSync(tiersFile) ? fs.readJSONSync(tiersFile) : {};
     const tabsFile = pathModule.join(projectPath, "src", "data", "tabs.json");
@@ -82,6 +98,12 @@
                 new Date()
               )}]: Field "Stack Size" of item "${item}" must not be empty!`
             );
+          else if (property == "burnTime" && items[item].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of item "${item}" must not be empty!`
+            );
           else if (property == "food_nutrition" && items[item].food)
             addError(
               `[${formatDateToHHMMSS(
@@ -115,7 +137,7 @@
               addError(
                 `[${formatDateToHHMMSS(
                   new Date()
-                )}]: Field "Duration (In Seconds)" of effect "${
+                )}]: Field "Duration" of effect "${
                   effect.name
                 }" from item "${item}" must not be empty!`
               );
@@ -129,6 +151,27 @@
               );
           }
         });
+      });
+    });
+    Object.keys(armors).forEach((armor) => {
+      Object.keys(armors[armor]).forEach((property) => {
+        if (
+          armors[armor][property] == null ||
+          String(armors[armor][property]).trim() == ""
+        ) {
+          if (property == "stacksTo")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Stack Size" of armor "${armor}" must not be empty!`
+            );
+          else if (property == "tier")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Tier" of armor "${armor}" must not be empty!`
+            );
+        }
       });
     });
     Object.keys(tools).forEach((tool) => {
@@ -160,6 +203,63 @@
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Tier" of tool "${tool}" must not be empty!`
+            );
+        }
+      });
+    });
+    Object.keys(materials).forEach((material) => {
+      Object.keys(materials[material]).forEach((property) => {
+        if (
+          materials[material][property] == null ||
+          String(materials[material][property]).trim() == ""
+        ) {
+          if (property == "durabilityForHelmet")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Durability For Helmet" of material "${material}" must not be empty!`
+            );
+          else if (property == "durabilityForBoots")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Durability For Boots" of material "${material}" must not be empty!`
+            );
+          else if (property == "durabilityForChestplate")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Durability For Chestplate" of material "${material}" must not be empty!`
+            );
+          else if (property == "durabilityForLeggings")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Durability For Leggings" of material "${material}" must not be empty!`
+            );
+          else if (property == "enchantmentValue")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Enchantability" of material "${material}" must not be empty!`
+            );
+          else if (property == "toughness")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Toughness" of material "${material}" must not be empty!`
+            );
+          else if (property == "knockbackResistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Knockback Resistance" of material "${material}" must not be empty!`
+            );
+          else if (property == "repairIngredient")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Repair With Item" of material "${material}" must not be empty!`
             );
         }
       });

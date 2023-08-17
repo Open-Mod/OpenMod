@@ -121,11 +121,13 @@
       stacksTo: 1,
       tab: "none",
       rarity: "common",
-      fireResistant: false,
+      fuel: false,
       food: false,
+      fireResistant: false,
       modelType: "default",
       model: "",
       texture: [""],
+      burnTime: 1,
       food_alwaysEat: false,
       food_fast: false,
       food_meat: false,
@@ -176,7 +178,7 @@
     fs.mkdirSync(itemTextures);
     Object.keys(items).forEach((item) => {
       const oldModel = pathModule.join(itemModels, `${item}.json`);
-      if(fs.existsSync(oldModel))fs.rmSync(oldModel);
+      if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
       const name = items[item].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
@@ -464,20 +466,41 @@
             >
           </div>
           <div>
-            <label class="text-lg">Is Fire Resistant?</label>
+            <label class="text-lg">Is Fuel?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={items[selectedItem].fireResistant}
+              bind:value={items[selectedItem].fuel}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if items[selectedItem].fuel}
+            <div>
+              <label class="text-lg">Burn Time (In Seconds)</label>
+              <input
+                type="number"
+                min="0"
+                class="input w-full"
+                bind:value={items[selectedItem].burnTime}
+              />
+            </div>
+          {/if}
+          <div>
+            <label class="text-lg">Is Food?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={items[selectedItem].food}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
             >
           </div>
           <div>
-            <label class="text-lg">Is Food?</label>
+            <label class="text-lg">Is Fire Resistant?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={items[selectedItem].food}
+              bind:value={items[selectedItem].fireResistant}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select

@@ -113,11 +113,14 @@
     <MenuItem tip="Blocks" page="/blocks">
       <i class="fa-solid fa-cube text-center inline-block" />
     </MenuItem>
-    <MenuItem tip="Armor" page="/armor">
+    <MenuItem tip="Armors" page="/armors">
       <i class="fa-solid fa-shield-halved text-center inline-block" />
     </MenuItem>
     <MenuItem tip="Tools" page="/tools">
       <i class="fa-solid fa-screwdriver-wrench text-center inline-block" />
+    </MenuItem>
+    <MenuItem tip="Armor Materials" page="/materials">
+      <i class="fa-solid fa-gem text-center inline-block" />
     </MenuItem>
     <MenuItem tip="Tool Tiers" page="/tiers">
       <i class="fa-solid fa-ranking-star text-center inline-block" />
