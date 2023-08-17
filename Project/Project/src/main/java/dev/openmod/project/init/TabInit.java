@@ -32,6 +32,8 @@ public class TabInit {
             Map data = tabEntry.getValue();
             CreativeModeTab.Builder properties = CreativeModeTab.builder();
             String title = (String) data.get("title");
+            String titleColor = (String) data.get("titleColor");
+            String slotColor = (String) data.get("slotColor");
             String icon = (String) data.get("icon");
             boolean withSearchbar = (boolean) data.get("withSearchbar");
             boolean alignedRight = (boolean) data.get("alignedRight");
@@ -42,6 +44,8 @@ public class TabInit {
             if(alignedRight) properties.alignedRight();
             if(hideTitle) properties.hideTitle();
             if(noScrollbar) properties.noScrollBar();
+            properties.withLabelColor(Integer.parseInt(titleColor.substring(1), 16));
+            properties.withSlotColor(Integer.parseInt(slotColor.substring(1), 16));
             properties.icon(() -> {
                 Item item = null;
                 for(Object objectItemEntry : items.entrySet()) {

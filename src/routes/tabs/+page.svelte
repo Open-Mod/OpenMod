@@ -53,6 +53,8 @@
     tabs[name] = {
       name,
       title: convertToCamelCase(name),
+      titleColor: "#000000",
+      slotColor: "#000000",
       icon:
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
@@ -160,12 +162,27 @@
             <div>
               <label class="text-lg">Display Name</label>
               <input
-                type="text"
                 class="input w-full"
                 bind:value={tabs[selectedTab].title}
               />
             </div>
+            <div>
+              <label class="text-lg">Label Color</label>
+              <input
+                type="color"
+                class="w-full"
+                bind:value={tabs[selectedTab].titleColor}
+              />
+            </div>
           {/if}
+          <div>
+            <label class="text-lg">Slot Color</label>
+            <input
+              type="color"
+              class="w-full"
+              bind:value={tabs[selectedTab].slotColor}
+            />
+          </div>
           <div>
             <label class="text-lg">Use item for icon</label>
             <select

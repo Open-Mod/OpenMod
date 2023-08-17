@@ -26,3 +26,14 @@ body {
   background: #fbbd23;
   border-radius: 7px;
 }
+input[type="color"] {
+  appearance: none;
+  background-color: transparent;
+  cursor: pointer;
+  height: 3.45rem;
+  margin-top: -3px;
+}
+input[type="color"]::-webkit-color-swatch {
+  border-radius: var(--rounded-btn, 0.5rem);
+  border: none;
+}
