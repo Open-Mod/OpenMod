@@ -94,10 +94,11 @@ ipcMain.handle("select", (ev, path) => {
   mainwindow.webContents.send("select", path);
 });
 ipcMain.handle("dialog", async (ev, property, ...filters) => {
-  const filtersData = [...filters].flat();
+  const filtersData = [{ name: "File", extensions: filters }];
+  console.log(filtersData);
   const response = await dialog.showOpenDialog({
     properties: [property].flat(),
-    filters: filtersData.length ? filtersData : undefined,
+    filters: filtersData[0].extensions.length ? filtersData : undefined,
   });
   return response.canceled ? undefined : response;
 });

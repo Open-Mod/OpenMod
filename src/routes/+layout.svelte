@@ -128,6 +128,9 @@
     <MenuItem tip="Potions" page="/potions">
       <i class="fa-solid fa-flask text-center inline-block" />
     </MenuItem>
+    <MenuItem tip="Sounds" page="/sounds">
+      <i class="fa-solid fa-volume-high text-center inline-block" />
+    </MenuItem>
     <MenuItem tip="Creative Tabs" page="/tabs">
       <i class="fa-solid fa-layer-group text-center inline-block" />
     </MenuItem>

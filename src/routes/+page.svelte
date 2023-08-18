@@ -71,6 +71,16 @@
       "gradle.properties"
     );
     const propertiesData = fs.readFileSync(properties).toString();
+    const sounds = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "sounds"
+    );
     const itemModels = pathModule.join(
       projectPath,
       "Project",
@@ -235,6 +245,7 @@
         .replace("${project}", name.toLowerCase())
         .replace("${Project}", name.replace(/_/g, " "))
     );
+    fs.ensureDirSync(sounds);
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
     fs.ensureDirSync(armorModels);

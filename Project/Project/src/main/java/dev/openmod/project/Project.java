@@ -16,6 +16,7 @@ public class Project {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
         TabInit.init();
+        SoundInit.init();
         ItemInit.init();
         BlockInit.init();
         MaterialInit.init();
@@ -26,5 +27,6 @@ public class Project {
         ItemInit.ITEMS.register(bus);
         BlockInit.BLOCKS.register(bus);
         TabInit.TABS.register(bus);
+        SoundInit.SOUNDS.register(bus);
     }
 }

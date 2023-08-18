@@ -6,11 +6,13 @@
   let blocks = {};
   let tabs = {};
   let tiers = {};
+  let sounds = {};
   let defaultBiomes = [];
   let projectPath = "";
   let path = "";
   let tabsPath = "";
   let tiersPath = "";
+  let soundsPath = "";
   let nodesPath = "";
   let projectName = "";
   onMount(() => {
@@ -22,6 +24,7 @@
     path = pathModule.join(projectPath, "src", "data", "blocks.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     tiersPath = pathModule.join(projectPath, "src", "data", "tiers.json");
+    soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     nodesPath = pathModule.join(
       projectPath,
       "src",
@@ -38,6 +41,7 @@
     blocks = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
+    sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
     nodes = fs
       .readdirSync(nodesPath)
@@ -134,7 +138,10 @@
       tab: "none",
       mapColor: "none",
       instrument: "none",
-      sound: "empty",
+      breakSound: "none",
+      walkSound: "none",
+      placeSound: "none",
+      hitSound: "none",
       pushReaction: "ignore",
       dropXp: false,
       minXp: 0,
@@ -1083,140 +1090,57 @@
               bind:value={blocks[selectedBlock].instrument}
             >
               <option value="none">None</option>
-              <option value="harp">Harp</option>
-              <option value="basedrum">Basedrum</option>
-              <option value="snare">Snare</option>
-              <option value="hat">Hat</option>
-              <option value="bass">Bass</option>
-              <option value="flute">Flute</option>
-              <option value="bell">Bell</option>
-              <option value="guitar">Guitar</option>
-              <option value="chime">Chime</option>
-              <option value="xylophone">Xylophone</option>
-              <option value="iron_xylophone">Iron Xylophone</option>
-              <option value="cow_bell">Cow Bell</option>
-              <option value="didgeridoo">Didgeridoo</option>
-              <option value="bit">Bit</option>
-              <option value="banjo">Banjo</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
             </select>
           </div>
           <div>
-            <label class="text-lg">Sound</label>
+            <label class="text-lg">Break Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].sound}
+              bind:value={blocks[selectedBlock].breakSound}
             >
-              <option value="empty">None</option>
-              <option value="wood">Wood</option>
-              <option value="gravel">Gravel</option>
-              <option value="grass">Grass</option>
-              <option value="lily_pad">Lily Pad</option>
-              <option value="stone">Stone</option>
-              <option value="metal">Metal</option>
-              <option value="glass">Glass</option>
-              <option value="wool">Wool</option>
-              <option value="sand">Sand</option>
-              <option value="snow">Snow</option>
-              <option value="powder_snow">Powder Snow</option>
-              <option value="ladder">Ladder</option>
-              <option value="anvil">Anvil</option>
-              <option value="slime_block">Slime Block</option>
-              <option value="honey_block">Honey Block</option>
-              <option value="wet_grass">Wet Grass</option>
-              <option value="coral_block">Coral Block</option>
-              <option value="bamboo">Bamboo</option>
-              <option value="bamboo_sapling">Bamboo Sapling</option>
-              <option value="scaffolding">Scaffolding</option>
-              <option value="sweet_berry_bush">Sweet Berry Bush</option>
-              <option value="crop">Crop</option>
-              <option value="hard_crop">Hard Crop</option>
-              <option value="vine">Vine</option>
-              <option value="nether_wart">Nether Wart</option>
-              <option value="lantern">Lantern</option>
-              <option value="stem">Stem</option>
-              <option value="nylium">Nylium</option>
-              <option value="fungus">Fungus</option>
-              <option value="roots">Roots</option>
-              <option value="shroomlight">Shroomlight</option>
-              <option value="weeping_vines">Weeping Vines</option>
-              <option value="twisting_vines">Twisting Vines</option>
-              <option value="soul_sand">Soul Sand</option>
-              <option value="soul_soil">Soul Soil</option>
-              <option value="basalt">Basalt</option>
-              <option value="wart_block">Wart Block</option>
-              <option value="netherrack">Netherrack</option>
-              <option value="nether_bricks">Nether Bricks</option>
-              <option value="nether_sprouts">Nether Sprouts</option>
-              <option value="nether_ore">Nether Ore</option>
-              <option value="bone_block">Bone Block</option>
-              <option value="netherite_block">Netherite Block</option>
-              <option value="ancient_debris">Ancient Debris</option>
-              <option value="lodestone">Lodestone</option>
-              <option value="chain">Chain</option>
-              <option value="nether_gold_ore">Nether Gold Ore</option>
-              <option value="gilded_blackstone">Gilded Blackstone</option>
-              <option value="candle">Candle</option>
-              <option value="amethyst">Amethyst</option>
-              <option value="amethyst_cluster">Amethyst Cluster</option>
-              <option value="small_amethyst_bud">Small Amethyst Bud</option>
-              <option value="medium_amethyst_bud">Medium Amethyst Bud</option>
-              <option value="large_amethyst_bud">Large Amethyst Bud</option>
-              <option value="tuff">Tuff</option>
-              <option value="calcite">Calcite</option>
-              <option value="dripstone_block">Dripstone Block</option>
-              <option value="pointed_dripstone">Pointed Dripstone</option>
-              <option value="copper">Copper</option>
-              <option value="cave_vines">Cave Vines</option>
-              <option value="spore_blossom">Spore Blossom</option>
-              <option value="azalea">Azalea</option>
-              <option value="flowering_azalea">Flowering Azalea</option>
-              <option value="moss_carpet">Moss Carpet</option>
-              <option value="pink_petals">Pink Petals</option>
-              <option value="moss">Moss</option>
-              <option value="big_dripleaf">Big Dripleaf</option>
-              <option value="small_dripleaf">Small Dripleaf</option>
-              <option value="rooted_dirt">Rooted Dirt</option>
-              <option value="hanging_roots">Hanging Roots</option>
-              <option value="azalea_leaves">Azalea Leaves</option>
-              <option value="sculk_sensor">Sculk Sensor</option>
-              <option value="sculk_catalyst">Sculk Catalyst</option>
-              <option value="sculk">Sculk</option>
-              <option value="sculk_vein">Sculk Vein</option>
-              <option value="sculk_shrieker">Sculk Shrieker</option>
-              <option value="glow_lichen">Glow Lichen</option>
-              <option value="deepslate">Deepslate</option>
-              <option value="deepslate_bricks">Deepslate Bricks</option>
-              <option value="deepslate_tiles">Deepslate Tiles</option>
-              <option value="polished_deepslate">Polished Deepslate</option>
-              <option value="froglight">Froglight</option>
-              <option value="frogspawn">Frogspawn</option>
-              <option value="mangrove_roots">Mangrove Roots</option>
-              <option value="muddy_mangrove_roots">Muddy Mangrove Roots</option>
-              <option value="mud">Mud</option>
-              <option value="mud_bricks">Mud Bricks</option>
-              <option value="packed_mud">Packed Mud</option>
-              <option value="hanging_sign">Hanging Sign</option>
-              <option value="nether_wood_hanging_sign"
-                >Nether Wood Hanging Sign</option
-              >
-              <option value="bamboo_wood_hanging_sign"
-                >Bamboo Wood Hanging Sign</option
-              >
-              <option value="bamboo_wood">Bamboo Wood</option>
-              <option value="nether_wood">Nether Wood</option>
-              <option value="cherry_wood">Cherry Wood</option>
-              <option value="cherry_sapling">Cherry Sapling</option>
-              <option value="cherry_leaves">Cherry Leaves</option>
-              <option value="cherry_wood_hanging_sign"
-                >Cherry Wood Hanging Sign</option
-              >
-              <option value="chiseled_bookshelf">Chiseled Bookshelf</option>
-              <option value="suspicious_sand">Suspicious Sand</option>
-              <option value="suspicious_gravel">Suspicious Gravel</option>
-              <option value="decorated_pot">Decorated Pot</option>
-              <option value="decorated_pot_cracked"
-                >Decorated Pot Cracked</option
-              >
+              <option value="none">None</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Walk Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].walkSound}
+            >
+              <option value="none">None</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Place Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].placeSound}
+            >
+              <option value="none">None</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Hit Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].hitSound}
+            >
+              <option value="none">None</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
             </select>
           </div>
           <div>
