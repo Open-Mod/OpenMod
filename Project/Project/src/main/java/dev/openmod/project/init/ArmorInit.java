@@ -3,7 +3,6 @@ package dev.openmod.project.init;
 import dev.openmod.project.util.Util;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.checkerframework.checker.nullness.qual.Nullable;
