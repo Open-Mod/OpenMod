@@ -1090,9 +1090,21 @@
               bind:value={blocks[selectedBlock].instrument}
             >
               <option value="none">None</option>
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
-              {/each}
+              <option value="harp">Harp</option>
+              <option value="basedrum">Basedrum</option>
+              <option value="snare">Snare</option>
+              <option value="hat">Hat</option>
+              <option value="bass">Bass</option>
+              <option value="flute">Flute</option>
+              <option value="bell">Bell</option>
+              <option value="guitar">Guitar</option>
+              <option value="chime">Chime</option>
+              <option value="xylophone">Xylophone</option>
+              <option value="iron_xylophone">Iron Xylophone</option>
+              <option value="cow_bell">Cow Bell</option>
+              <option value="didgeridoo">Didgeridoo</option>
+              <option value="bit">Bit</option>
+              <option value="banjo">Banjo</option>
             </select>
           </div>
           <div>

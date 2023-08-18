@@ -204,6 +204,22 @@ public class BlockInit {
             else if (mapColor.equals("deepslate")) properties.mapColor(MapColor.DEEPSLATE);
             else if (mapColor.equals("raw_iron")) properties.mapColor(MapColor.RAW_IRON);
             else if (mapColor.equals("glow_lichen")) properties.mapColor(MapColor.GLOW_LICHEN);
+            if (instrument.equals("harp")) properties.instrument(NoteBlockInstrument.HARP);
+            else if (instrument.equals("basedrum")) properties.instrument(NoteBlockInstrument.BASEDRUM);
+            else if (instrument.equals("snare")) properties.instrument(NoteBlockInstrument.SNARE);
+            else if (instrument.equals("hat")) properties.instrument(NoteBlockInstrument.HAT);
+            else if (instrument.equals("bass")) properties.instrument(NoteBlockInstrument.BASS);
+            else if (instrument.equals("flute")) properties.instrument(NoteBlockInstrument.FLUTE);
+            else if (instrument.equals("bell")) properties.instrument(NoteBlockInstrument.BELL);
+            else if (instrument.equals("guitar")) properties.instrument(NoteBlockInstrument.GUITAR);
+            else if (instrument.equals("chime")) properties.instrument(NoteBlockInstrument.CHIME);
+            else if (instrument.equals("xylophone")) properties.instrument(NoteBlockInstrument.XYLOPHONE);
+            else if (instrument.equals("iron_xylophone")) properties.instrument(NoteBlockInstrument.IRON_XYLOPHONE);
+            else if (instrument.equals("cow_bell")) properties.instrument(NoteBlockInstrument.COW_BELL);
+            else if (instrument.equals("didgeridoo")) properties.instrument(NoteBlockInstrument.DIDGERIDOO);
+            else if (instrument.equals("bit")) properties.instrument(NoteBlockInstrument.BIT);
+            else if (instrument.equals("banjo")) properties.instrument(NoteBlockInstrument.BANJO);
+            else if (instrument.equals("pling")) properties.instrument(NoteBlockInstrument.PLING);
             Supplier<SoundEvent> aBreakSound = null;
             Supplier<SoundEvent> aWalkSound = null;
             Supplier<SoundEvent> aPlaceSound = null;
@@ -227,7 +243,6 @@ public class BlockInit {
                 }
             }
             properties.sound(new ForgeSoundType(1f, 1f, aBreakSound, aWalkSound, aPlaceSound, aHitSound, aWalkSound ));
-           // properties.instrument(NoteBlockInstrument(instrument, aBreakSound, null));
             if(pushReaction.equals("ignore")) properties.pushReaction(PushReaction.IGNORE);
             else if(pushReaction.equals("block")) properties.pushReaction(PushReaction.BLOCK);
             else if(pushReaction.equals("push_only")) properties.pushReaction(PushReaction.PUSH_ONLY);
