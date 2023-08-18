@@ -1,4 +1,4 @@
-<img width="500" height="10" src="https://cdn.discordapp.com/attachments/867406024808726619/1142159137367662733/OpenMod.png"/>
+<img src="https://cdn.discordapp.com/attachments/867406024808726619/1142159137367662733/OpenMod.png"/>
 
 [![Plugins](https://img.shields.io/badge/Plugins-a87550?style=for-the-badge
 )](https://github.com/Open-Mod/Plugins/)
