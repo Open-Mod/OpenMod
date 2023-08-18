@@ -7,12 +7,14 @@
   let tools = {};
   let items = {};
   let blocks = {};
+  let sounds = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
   let toolsPath = "";
   let itemsPath = "";
   let blocksPath = "";
+  let soundsPath = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -23,10 +25,12 @@
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     materials = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(materials).forEach((material) => {
       materials[material].name = material;
@@ -64,6 +68,7 @@
       enchantmentValue: 15,
       toughness: 100,
       knockbackResistance: 0,
+      equipSound: "default",
       repairIngredient:
         Object.keys(tools)[0] ??
         Object.keys(items)[0] ??
@@ -345,6 +350,18 @@
               class="input w-full"
               bind:value={materials[selectedMaterial].knockbackResistance}
             />
+          </div>
+          <div>
+            <label class="text-lg">Equip Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={materials[selectedMaterial].equipSound}
+            >
+              <option value="default">Default</option>
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
           </div>
           <div>
             <label class="text-lg">Repair With Item</label>

@@ -1,11 +1,10 @@
 package dev.openmod.project.init;
 
-import dev.openmod.project.Project;
 import dev.openmod.project.util.ModArmorMaterial;
 import dev.openmod.project.util.Util;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -13,6 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class MaterialInit {
     public static final Map<String, ModArmorMaterial> materialItems = new HashMap<String, ModArmorMaterial>();
@@ -32,8 +32,15 @@ public class MaterialInit {
             int enchantmentValue = ((Number) data.get("enchantmentValue")).intValue();
             float toughness = ((Number) data.get("toughness")).floatValue();
             float knockbackResistance = ((Number) data.get("knockbackResistance")).floatValue();
+            String equipSound = (String) data.get("equipSound");
             String repairIngredient = (String) data.get("repairIngredient");
-            materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, SoundEvents.ARMOR_EQUIP_GENERIC, () -> {
+            SoundEvent aEquipSound = SoundEvents.ARMOR_EQUIP_GENERIC;
+            for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                if(soundEntry.getKey().equals(aEquipSound)) {
+                    aEquipSound = soundEntry.get();
+                    break;
+                }
+            materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
                 Item item = null;
                 for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
                     if(itemEntry.getKey().equals(repairIngredient)) {
