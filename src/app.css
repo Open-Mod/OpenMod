@@ -37,3 +37,11 @@ input[type="color"]::-webkit-color-swatch {
   border-radius: var(--rounded-btn, 0.5rem);
   border: none;
 }
+.tippy-box[data-theme~="dark"][data-placement^="right"] {
+  background-color: hsl(var(--n));
+  color: hsl(var(--bc) / var(--tw-text-opacity, 1));
+}
+.tippy-box[data-theme~="dark"][data-placement^="right"] > .tippy-arrow::before {
+  border-right-color: hsl(var(--n));
+  transform: scale(0.5);
+}
