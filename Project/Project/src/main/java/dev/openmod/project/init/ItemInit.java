@@ -96,19 +96,20 @@ public class ItemInit {
                 properties.food(foodProperties.build());
             }
             if(!tab.equals("none")) TabInit.tabItems.get(tab).put(name, ITEMS.register(name, () ->
+                    fuel ?
                 new Item(properties) {
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                }
+                } :  new Item(properties)
             ));
-            else ITEMS.register(name, () -> new Item(properties)  {
+            else ITEMS.register(name, () -> fuel ? new Item(properties)  {
                 @Override
                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                     return ((Number) burnTime).intValue();
                 }
-            });
+            } :  new Item(properties));
         }
     }
 }

@@ -174,8 +174,19 @@
       "models",
       "item"
     );
-    fs.rmSync(itemTextures, { recursive: true, force: true });
-    fs.mkdirSync(itemTextures);
+    const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    Object.keys(old).forEach((item) => {
+      if (old[item].modelType == "default") {
+        old[item].texture.forEach((texture) => {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          fs.rmSync(pathModule.join(itemTextures, `${item}.${textureType}`));
+        });
+      } else if (old[item].modelType == "blockbench") {
+        old[item].texture.forEach((texture) => {
+          fs.rmSync(pathModule.join(itemTextures, `${texture.name}`));
+        });
+      }
+    });
     Object.keys(items).forEach((item) => {
       const oldModel = pathModule.join(itemModels, `${item}.json`);
       if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
@@ -388,7 +399,7 @@
   <title>OpenMod - Items</title>
 </svelte:head>
 <div class="flex flex-col w-full p-12">
-  <h1 class="text-2xl font-bold mb-1">Selected item:</h1>
+  <h1 class="text-2xl font-bold mb-1">Selected Item:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"

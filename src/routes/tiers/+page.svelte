@@ -60,7 +60,7 @@
         Object.keys(tools)[0] ??
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
-        "",
+        defaultItems[0],
     };
     selectedTier = name;
     send_changes({ file: "tiers.json", content: tiers });
@@ -206,11 +206,6 @@
               class="select font-normal text-base w-full"
               bind:value={tiers[selectedTier].repairIngredient}
             >
-              {#if ![...Object.keys(tools), ...Object.keys(items), ...Object.keys(blocks), ...defaultItems].length}
-                <option disabled value={tiers[selectedTier].repairIngredient}
-                  >No items</option
-                >
-              {/if}
               {#each Object.keys(tools) as tool}
                 <option value={tool}>{convertToCamelCase(tool)}</option>
               {/each}

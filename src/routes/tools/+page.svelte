@@ -132,11 +132,20 @@
       tier: Object.keys(tiers)[0] ?? "",
       tab: "none",
       rarity: "common",
+      fuel: false,
+      food: false,
       fireResistant: false,
       setRepair: true,
       modelType: "default",
       model: "",
       texture: [""],
+      burnTime: 1,
+      food_alwaysEat: false,
+      food_fast: false,
+      food_meat: false,
+      food_nutrition: 0,
+      food_saturationMod: 0,
+      effects: [],
       node_data: {
         connected_nodes: [],
         graph: {
@@ -165,7 +174,7 @@
       "assets",
       projectName.toLowerCase(),
       "textures",
-      "tool"
+      "item"
     );
     const toolModels = pathModule.join(
       projectPath,
@@ -177,7 +186,19 @@
       "models",
       "item"
     );
-    fs.rmSync(toolTextures, { recursive: true, force: true });
+    const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    Object.keys(old).forEach((tool) => {
+      if (old[tool].modelType == "default") {
+        old[tool].texture.forEach((texture) => {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          fs.rmSync(pathModule.join(toolTextures, `${tool}.${textureType}`));
+        });
+      } else if (old[tool].modelType == "blockbench") {
+        old[tool].texture.forEach((texture) => {
+          fs.rmSync(pathModule.join(toolTextures, `${texture.name}`));
+        });
+      }
+    });
     Object.keys(tools).forEach((tool) => {
       const oldModel = pathModule.join(toolModels, `${tool}.json`);
       if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
@@ -204,7 +225,7 @@
             fs.writeJSONSync(modelPath, {
               parent: "minecraft:item/generated",
               textures: {
-                layer0: `${projectName.toLowerCase()}:tool/${name}`,
+                layer0: `${projectName.toLowerCase()}:item/${name}`,
               },
             });
           }
@@ -308,17 +329,35 @@
         response.filePaths[0].split("\\").join("/"),
         "base64"
       );
-      tools[selectedTool].texture = `data:image/png;base64,${texture}`;
+      tools[selectedTool].texture = [`data:image/png;base64,${texture}`];
       send_changes({ file: "tools.json", content: tools });
     }
   }
   function setTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      tools[selectedTool].texture = event.target.result;
+      tools[selectedTool].texture = [event.target.result];
       send_changes({ file: "tools.json", content: tools });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
+  }
+  function addEffect() {
+    tools[selectedTool].effects.push({
+      name: "absorption",
+      probability: 0,
+      duration: 0,
+      amplifier: 1,
+      ambient: true,
+      visible: true,
+      showIcon: true,
+    });
+    tools[selectedTool].effects = tools[selectedTool].effects;
+    send_changes({ file: "tools.json", content: tools });
+  }
+  function deleteEffect(i) {
+    tools[selectedTool].effects.splice(i, 1);
+    tools[selectedTool].effects = tools[selectedTool].effects;
+    send_changes({ file: "tools.json", content: tools });
   }
   let editor;
   function setEditor() {
@@ -374,7 +413,7 @@
   <title>OpenMod - Tools</title>
 </svelte:head>
 <div class="flex flex-col w-full p-12">
-  <h1 class="text-2xl font-bold mb-1">Selected tool:</h1>
+  <h1 class="text-2xl font-bold mb-1">Selected Tool:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -498,6 +537,37 @@
             >
           </div>
           <div>
+            <label class="text-lg">Is Fuel?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={tools[selectedTool].fuel}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if tools[selectedTool].fuel}
+            <div>
+              <label class="text-lg">Burn Time (In Seconds)</label>
+              <input
+                type="number"
+                min="0"
+                class="input w-full"
+                bind:value={tools[selectedTool].burnTime}
+              />
+            </div>
+          {/if}
+          <div>
+            <label class="text-lg">Is Food?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={tools[selectedTool].food}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          <div>
             <label class="text-lg">Is Fire Resistant?</label>
             <select
               class="select font-normal text-base w-full"
@@ -555,6 +625,191 @@
           {/if}
         </div>
       </Accordion>
+      {#if tools[selectedTool].food}
+        <Accordion title="Food">
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="text-lg">Always Eatable?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={tools[selectedTool].food_alwaysEat}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Eat Fast?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={tools[selectedTool].food_fast}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Is Meat?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={tools[selectedTool].food_meat}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Nutrition</label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.5"
+                class="input w-full"
+                bind:value={tools[selectedTool].food_nutrition}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Saturation (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                class="input w-full"
+                bind:value={tools[selectedTool].food_saturationMod}
+              />
+            </div>
+          </div>
+        </Accordion>
+        <Accordion title="Effects">
+          <div class="flex flex-col gap-3">
+            {#each tools[selectedTool].effects as effect, index}
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="text-lg">Effect</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.name}
+                  >
+                    <option value="absorption">Absorption</option>
+                    <option value="bad_omen">Bad Omen</option>
+                    <option value="blindness">Blindness</option>
+                    <option value="confusion">Nausea</option>
+                    <option value="conduit_power">Conduit Power</option>
+                    <option value="damage_boost">Damage Boost</option>
+                    <option value="damage_resistance">Damage Resistance</option>
+                    <option value="darkness">Darkness</option>
+                    <option value="dig_slowdown">Dig Slowdown</option>
+                    <option value="dig_speed">Dig Speed</option>
+                    <option value="dolphins_grace">Dolphin's Grace</option>
+                    <option value="fire_resistance">Fire Resistance</option>
+                    <option value="glowing">Glowing</option>
+                    <option value="harm">Harm</option>
+                    <option value="heal">Heal</option>
+                    <option value="health_boost">Health Boost</option>
+                    <option value="hero_of_the_village"
+                      >Hero Of The Village</option
+                    >
+                    <option value="hunger">Hunger</option>
+                    <option value="invisibility">Invisibility</option>
+                    <option value="jump">Jump</option>
+                    <option value="levitation">Levitation</option>
+                    <option value="luck">Luck</option>
+                    <option value="movement_slowdown">Movement Slowdown</option>
+                    <option value="movement_speed">Movement Speed</option>
+                    <option value="night_vision">Night Vision</option>
+                    <option value="poison">Poison</option>
+                    <option value="regeneration">Regeneration</option>
+                    <option value="saturation">Saturation</option>
+                    <option value="slow_falling">Slow Falling</option>
+                    <option value="unluck">Unluck</option>
+                    <option value="water_breathing">Water Breathing</option>
+                    <option value="weakness">Weakness</option>
+                    <option value="wither">Wither</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-lg">Probability (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    class="input w-full"
+                    bind:value={effect.probability}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg">Duration (In Seconds)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    class="input w-full"
+                    bind:value={effect.duration}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg">Level</label>
+                  <input
+                    type="number"
+                    min="1"
+                    class="input w-full"
+                    bind:value={effect.amplifier}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg"> Is Ambient?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.ambient}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <div>
+                  <label class="text-lg">Is Visible?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.visible}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <div>
+                  <label class="text-lg">Show Icon?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.showIcon}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <a
+                  class="tooltip tooltip-top mr-auto mt-auto"
+                  data-tip="Delete"
+                >
+                  <button
+                    class="btn btn-error text-lg"
+                    on:click={deleteEffect.bind(this, index)}
+                  >
+                    <i class="fa-solid fa-trash" />
+                  </button>
+                </a>
+              </div>
+            {/each}
+            <a class="tooltip tooltip-top" data-tip="Add">
+              <button
+                class="btn btn-warning w-full text-lg"
+                on:click={addEffect}
+              >
+                <i class="fa-solid fa-plus" />
+              </button>
+            </a>
+          </div>
+        </Accordion>
+      {/if}
       <Accordion title="Events" style="overflow:hidden;" mount={setEditor}>
         <div id="editor" class="w-full h-[40vh]" />
       </Accordion>

@@ -52,7 +52,7 @@
       "data",
       "armors.json"
     );
-    const armors = fs.existsSync(toolsFile) ? fs.readJSONSync(armorsFile) : {};
+    const armors = fs.existsSync(armorsFile) ? fs.readJSONSync(armorsFile) : {};
     const toolsFile = pathModule.join(projectPath, "src", "data", "tools.json");
     const tools = fs.existsSync(toolsFile) ? fs.readJSONSync(toolsFile) : {};
     const materialsFile = pathModule.join(
@@ -61,7 +61,7 @@
       "data",
       "materials.json"
     );
-    const materials = fs.existsSync(tiersFile)
+    const materials = fs.existsSync(materialsFile)
       ? fs.readJSONSync(materialsFile)
       : {};
     const tiersFile = pathModule.join(projectPath, "src", "data", "tiers.json");
@@ -153,6 +153,169 @@
         });
       });
     });
+    Object.keys(blocks).forEach((block) => {
+      Object.keys(blocks[block]).forEach((property) => {
+        if (
+          blocks[block][property] == null ||
+          String(blocks[block][property]).trim() == ""
+        ) {
+          if (property == "resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Resistance" of block "${block}" must not be empty!`
+            );
+          else if (property == "explosion_resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Explosion Resistance" of block "${block}" must not be empty!`
+            );
+          else if (property == "fire_resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Fire Resistance" of block "${block}" must not be empty!`
+            );
+          else if (property == "lightLevel")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Light Level" of block "${block}" must not be empty!`
+            );
+          else if (property == "friction")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Friction" of block "${block}" must not be empty!`
+            );
+          else if (property == "jumpFactor")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Jump Power" of block "${block}" must not be empty!`
+            );
+          else if (property == "speedFactor")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Movement Speed" of block "${block}" must not be empty!`
+            );
+          else if (property == "stacksTo")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Stack Size" of block "${block}" must not be empty!`
+            );
+          else if (property == "burnTime" && blocks[block].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of block "${block}" must not be empty!`
+            );
+          else if (property == "food_nutrition" && blocks[block].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Nutrition" of block "${block}" must not be empty!`
+            );
+          else if (property == "food_saturationMod" && blocks[block].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Saturation" of block "${block}" must not be empty!`
+            );
+          else if (property == "minXp" && blocks[block].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Experience" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxXp" && blocks[block].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Maximum Experience" of block "${block}" must not be empty!`
+            );
+          else if (property == "oreSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Vein Size" of block "${block}" must not be empty!`
+            );
+          else if (property == "discardChance" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Discard On Air Exposure" of block "${block}" must not be empty!`
+            );
+          else if (property == "worlds" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Worlds to generate in" of block "${block}" must not be empty!`
+            );
+          else if (property == "minChunkSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Amount Per Chunk" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxChunkSize" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Maximum Amount Per Chunk" of block "${block}" must not be empty!`
+            );
+          else if (property == "minHeight" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
+            );
+          else if (property == "maxHeight" && blocks[block].isOre)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
+            );
+        }
+      });
+      if (!blocks[block].food) return;
+      blocks[block].effects.forEach((effect) => {
+        Object.keys(effect).forEach((property) => {
+          if (
+            effect[property] == null ||
+            String(effect[property]).trim() == ""
+          ) {
+            if (property == "probability")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Probability" of effect "${
+                  effect.name
+                }" from block "${block}" must not be empty!`
+              );
+            else if (property == "duration")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Duration" of effect "${
+                  effect.name
+                }" from block "${block}" must not be empty!`
+              );
+            else if (property == "amplifier")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Level" of effect "${
+                  effect.name
+                }" from block "${block}" must not be empty!`
+              );
+          }
+        });
+      });
+    });
     Object.keys(armors).forEach((armor) => {
       Object.keys(armors[armor]).forEach((property) => {
         if (
@@ -165,11 +328,17 @@
                 new Date()
               )}]: Field "Stack Size" of armor "${armor}" must not be empty!`
             );
-          else if (property == "tier")
+          else if (property == "material")
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
-              )}]: Field "Tier" of armor "${armor}" must not be empty!`
+              )}]: Field "Material" of armor "${armor}" must not be empty!`
+            );
+          else if (property == "burnTime" && armors[armor].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of armor "${armor}" must not be empty!`
             );
         }
       });
@@ -204,7 +373,59 @@
                 new Date()
               )}]: Field "Tier" of tool "${tool}" must not be empty!`
             );
+          else if (property == "burnTime" && tools[tool].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of tool "${tool}" must not be empty!`
+            );
+          else if (property == "food_nutrition" && tools[tool].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Nutrition" of tool "${tool}" must not be empty!`
+            );
+          else if (property == "food_saturationMod" && tools[tool].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Saturation" of tool "${tool}" must not be empty!`
+            );
         }
+      });
+      if (!tools[tool].food) return;
+      tools[tool].effects.forEach((effect) => {
+        Object.keys(effect).forEach((property) => {
+          if (
+            effect[property] == null ||
+            String(effect[property]).trim() == ""
+          ) {
+            if (property == "probability")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Probability" of effect "${
+                  effect.name
+                }" from tool "${tool}" must not be empty!`
+              );
+            else if (property == "duration")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Duration" of effect "${
+                  effect.name
+                }" from tool "${tool}" must not be empty!`
+              );
+            else if (property == "amplifier")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Level" of effect "${
+                  effect.name
+                }" from tool "${tool}" must not be empty!`
+              );
+          }
+        });
       });
     });
     Object.keys(materials).forEach((material) => {
@@ -299,111 +520,6 @@
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Repair With Item" of tier "${tier}" must not be empty!`
-            );
-        }
-      });
-    });
-    Object.keys(blocks).forEach((block) => {
-      Object.keys(blocks[block]).forEach((property) => {
-        if (
-          blocks[block][property] == null ||
-          String(blocks[block][property]).trim() == ""
-        ) {
-          if (property == "resistance")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Resistance" of block "${block}" must not be empty!`
-            );
-          else if (property == "explosion_resistance")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Explosion Resistance" of block "${block}" must not be empty!`
-            );
-          else if (property == "fire_resistance")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Fire Resistance" of block "${block}" must not be empty!`
-            );
-          else if (property == "lightLevel")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Light Level" of block "${block}" must not be empty!`
-            );
-          else if (property == "friction")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Friction" of block "${block}" must not be empty!`
-            );
-          else if (property == "jumpFactor")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Jump Power" of block "${block}" must not be empty!`
-            );
-          else if (property == "speedFactor")
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Movement Speed" of block "${block}" must not be empty!`
-            );
-          else if (property == "minXp" && blocks[block].dropXp)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Minimum Experience" of block "${block}" must not be empty!`
-            );
-          else if (property == "maxXp" && blocks[block].dropXp)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Maximum Experience" of block "${block}" must not be empty!`
-            );
-          else if (property == "oreSize" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Vein Size" of block "${block}" must not be empty!`
-            );
-          else if (property == "discardChance" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Discard On Air Exposure" of block "${block}" must not be empty!`
-            );
-          else if (property == "worlds" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Worlds to generate in" of block "${block}" must not be empty!`
-            );
-          else if (property == "minChunkSize" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Minimum Amount Per Chunk" of block "${block}" must not be empty!`
-            );
-          else if (property == "maxChunkSize" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Maximum Amount Per Chunk" of block "${block}" must not be empty!`
-            );
-          else if (property == "minHeight" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
-            );
-          else if (property == "maxHeight" && blocks[block].isOre)
-            addError(
-              `[${formatDateToHHMMSS(
-                new Date()
-              )}]: Field "Minimum Height" of block "${block}" must not be empty!`
             );
         }
       });

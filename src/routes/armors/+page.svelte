@@ -137,11 +137,13 @@
       material: Object.keys(materials)[0] ?? "",
       tab: "none",
       rarity: "common",
+      fuel: false,
       fireResistant: false,
       setRepair: true,
       modelType: "default",
       model: "",
       texture: [""],
+      burnTime: 1,
       node_data: {
         connected_nodes: [],
         graph: {
@@ -170,7 +172,7 @@
       "assets",
       projectName.toLowerCase(),
       "textures",
-      "armor"
+      "item"
     );
     const armorModels = pathModule.join(
       projectPath,
@@ -182,7 +184,19 @@
       "models",
       "item"
     );
-    fs.rmSync(armorTextures, { recursive: true, force: true });
+    const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    Object.keys(old).forEach((armor) => {
+      if (old[armor].modelType == "default") {
+        old[armor].texture.forEach((texture) => {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          fs.rmSync(pathModule.join(armorTextures, `${armor}.${textureType}`));
+        });
+      } else if (old[armor].modelType == "blockbench") {
+        old[armor].texture.forEach((texture) => {
+          fs.rmSync(pathModule.join(armorTextures, `${texture.name}`));
+        });
+      }
+    });
     Object.keys(armors).forEach((armor) => {
       const oldModel = pathModule.join(armorModels, `${armor}.json`);
       if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
@@ -209,7 +223,7 @@
             fs.writeJSONSync(modelPath, {
               parent: "minecraft:item/generated",
               textures: {
-                layer0: `${projectName.toLowerCase()}:armor/${name}`,
+                layer0: `${projectName.toLowerCase()}:item/${name}`,
               },
             });
           }
@@ -313,14 +327,14 @@
         response.filePaths[0].split("\\").join("/"),
         "base64"
       );
-      armors[selectedArmor].texture = `data:image/png;base64,${texture}`;
+      armors[selectedArmor].texture[0] = `data:image/png;base64,${texture}`;
       send_changes({ file: "armors.json", content: armors });
     }
   }
   function setTexture(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      armors[selectedArmor].texture = event.target.result;
+      armors[selectedArmor].texture[0] = event.target.result;
       send_changes({ file: "armors.json", content: armors });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
@@ -379,7 +393,7 @@
   <title>OpenMod - Armors</title>
 </svelte:head>
 <div class="flex flex-col w-full p-12">
-  <h1 class="text-2xl font-bold mb-1">Selected armor:</h1>
+  <h1 class="text-2xl font-bold mb-1">Selected Armor:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
@@ -484,6 +498,27 @@
             >
           </div>
           <div>
+            <label class="text-lg">Is Fuel?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={armors[selectedArmor].fuel}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if armors[selectedArmor].fuel}
+            <div>
+              <label class="text-lg">Burn Time (In Seconds)</label>
+              <input
+                type="number"
+                min="0"
+                class="input w-full"
+                bind:value={armors[selectedArmor].burnTime}
+              />
+            </div>
+          {/if}
+          <div>
             <label class="text-lg">Is Fire Resistant?</label>
             <select
               class="select font-normal text-base w-full"
@@ -528,7 +563,7 @@
           {/if}
           {#if armors[selectedArmor].modelType == "default"}
             <div class="col-start-1">
-              <label class="text-lg">Texture</label>
+              <label class="text-lg">Item Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
                 src={armors[selectedArmor].texture[0]}

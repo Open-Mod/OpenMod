@@ -93,7 +93,7 @@
       "textures",
       "item"
     );
-    const armorTextures = pathModule.join(
+    const armorModels = pathModule.join(
       projectPath,
       "Project",
       "src",
@@ -102,18 +102,8 @@
       "assets",
       name.toLowerCase(),
       "textures",
+      "models",
       "armor"
-    );
-    const toolTextures = pathModule.join(
-      projectPath,
-      "Project",
-      "src",
-      "main",
-      "resources",
-      "assets",
-      name.toLowerCase(),
-      "textures",
-      "tool"
     );
     const blockModels = pathModule.join(
       projectPath,
@@ -247,8 +237,7 @@
     );
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
-    fs.ensureDirSync(armorTextures);
-    fs.ensureDirSync(toolTextures);
+    fs.ensureDirSync(armorModels);
     fs.ensureDirSync(blockModels);
     fs.ensureDirSync(blockTextures);
     fs.ensureDirSync(blockstates);

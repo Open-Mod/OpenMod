@@ -78,6 +78,38 @@ public class EventInit {
                 }
             }
         }
+        Map armorNodeData = new HashMap();
+        Map<String, Map> armors = Util.readFileAsJSON("../src/data/armors.json");
+        for (Map.Entry<String, Map> armorEntry : armors.entrySet()) {
+            Map data = armorEntry.getValue();
+            Map node_data = (Map) data.get("node_data");
+            ArrayList connected_nodes = (ArrayList) node_data.get("connected_nodes");
+            for(Object nodeEntry : connected_nodes) {
+                Map node = (Map)nodeEntry;
+                ArrayList inputs = (ArrayList) node.get("inputs");
+                boolean isEvent = true;
+                for(Object inputEntry : inputs) {
+                    Map input = (Map) inputEntry;
+                    boolean isConnector = ((String) input.get("type")).equals("connector");
+                    if(isConnector) {
+                        isEvent = false;
+                        break;
+                    }
+                }
+                if(isEvent) {
+                    String plugin = (String) node.get("plugin");
+                    RegistryObject item = null;
+                    for(RegistryObject<Item> entry : ItemInit.ITEMS.getEntries()) {
+                        if(armorEntry.getKey().equals(entry.getKey().location().getPath())) {
+                            item = entry;
+                            break;
+                        }
+                    }
+                    Node n = new Node(node, armorNodeData, connected_nodes, bus, item);
+                    //${plugins}
+                }
+            }
+        }
         Map toolNodeData = new HashMap();
         Map<String, Map> tools = Util.readFileAsJSON("../src/data/tools.json");
         for (Map.Entry<String, Map> toolEntry : tools.entrySet()) {
