@@ -1,15 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  import Error from "../../components/Error.svelte";
-  import Success from "../../components/Success.svelte";
   let sounds = {};
   let projectPath = "";
   let path = "";
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -29,8 +27,6 @@
   });
   let selectedSound = "";
   let name = "";
-  let error = "";
-  let success = "";
   function add() {
     name = `new_sound_${Object.keys(sounds).length + 1}`;
     sounds[name] = {
@@ -81,10 +77,7 @@
       sounds[sound].name = sound;
     });
     selectedSound = Object.keys(sounds)[0];
-    success = "Sounds saved successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Sounds saved successfully!");
   }
   function deleteSound() {
     if (!selectedSound) return;
@@ -185,5 +178,3 @@
     {/if}
   </div>
 </div>
-<Error {error} />
-<Success {success} />

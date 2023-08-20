@@ -3,11 +3,17 @@
   import { onMount } from "svelte";
   import Menu from "../components/Menu.svelte";
   import MenuItem from "../components/MenuItem.svelte";
+  import Error from "../components/Error.svelte";
+  import Success from "../components/Success.svelte";
   let PeerJS;
+  let error = "";
+  let success = "";
   const peers = {};
   const states = {};
   onMount(async () => {
     PeerJS = (await import("peerjs")).default;
+    window.error = err;
+    window.success = succ;
     window.connect = connect;
     window.host = host;
     window.disconnect = disconnect;
@@ -17,6 +23,14 @@
       selected = p;
     });
   });
+  function err(err) {
+    error = err;
+    setTimeout(() => (error = ""), 2000);
+  }
+  function succ(succ) {
+    success = succ;
+    setTimeout(() => (success = ""), 2000);
+  }
   function connect(id) {
     return new Promise((resolve) => {
       const peer = new PeerJS();
@@ -155,3 +169,5 @@
   </Menu>
   <slot />
 </div>
+<Error {error} />
+<Success {success} />

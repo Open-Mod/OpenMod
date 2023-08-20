@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-
   let running = false;
   let errors = [];
   let output = "";
@@ -9,7 +8,7 @@
   let path = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");

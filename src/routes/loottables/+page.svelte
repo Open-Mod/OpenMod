@@ -1,8 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  import Error from "../../components/Error.svelte";
-  import Success from "../../components/Success.svelte";
   let loottables = {};
   let blocks = {};
   let defaultItems = [];
@@ -12,7 +10,7 @@
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -35,8 +33,6 @@
   });
   let selectedLoottable = "";
   let name = "";
-  let error = "";
-  let success = "";
   function add() {
     name = `new_loottable_${Object.keys(loottables).length + 1}`;
     loottables[name] = {
@@ -90,10 +86,7 @@
       loottables[loottable].name = loottable;
     });
     selectedLoottable = Object.keys(loottables)[0];
-    success = "Loottables saved successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Loottables saved successfully!");
   }
   function deleteLoottable() {
     if (!selectedLoottable) return;
@@ -214,5 +207,3 @@
     {/if}
   </div>
 </div>
-<Error {error} />
-<Success {success} />

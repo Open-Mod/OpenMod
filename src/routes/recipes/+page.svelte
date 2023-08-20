@@ -1,8 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  import Error from "../../components/Error.svelte";
-  import Success from "../../components/Success.svelte";
   let recipes = {};
   let items = {};
   let blocks = {};
@@ -14,7 +12,7 @@
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -39,8 +37,6 @@
   });
   let selectedRecipe = "";
   let name = "";
-  let error = "";
-  let success = "";
   function add() {
     name = `new_recipe_${Object.keys(recipes).length + 1}`;
     recipes[name] = {
@@ -199,10 +195,7 @@
       recipes[recipe].name = recipe;
     });
     selectedRecipe = Object.keys(recipes)[0];
-    success = "Recipes saved successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Recipes saved successfully!");
   }
   function deleteRecipe() {
     if (!selectedRecipe) return;
@@ -454,5 +447,3 @@
     {/if}
   </div>
 </div>
-<Error {error} />
-<Success {success} />

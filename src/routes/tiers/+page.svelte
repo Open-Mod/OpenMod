@@ -1,8 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  import Error from "../../components/Error.svelte";
-  import Success from "../../components/Success.svelte";
   let tiers = {};
   let tools = {};
   let items = {};
@@ -15,7 +13,7 @@
   let blocksPath = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -45,8 +43,6 @@
   });
   let selectedTier = "";
   let name = "";
-  let error = "";
-  let success = "";
   function add() {
     name = `new_tier_${Object.keys(tiers).length + 1}`;
     tiers[name] = {
@@ -84,10 +80,7 @@
       tiers[tier].name = tier;
     });
     selectedTier = Object.keys(tiers)[0];
-    success = "Tiers saved successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Tiers saved successfully!");
   }
   function deleteTier() {
     if (!selectedTier) return;
@@ -225,5 +218,3 @@
     {/if}
   </div>
 </div>
-<Error {error} />
-<Success {success} />

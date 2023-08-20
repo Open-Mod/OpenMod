@@ -1,12 +1,13 @@
 <script>
   import { onMount } from "svelte";
+  import Info from "../../components/Info.svelte";
   let state = 0;
   let projectPath = "";
   let id = "";
   let connid = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -23,7 +24,7 @@
       disconnect();
       id = await host();
     } else if (value == 2) {
-      if (!connid) return alert("Please enter the ID to connect to!");
+      if (!connid) return error("Please enter the ID to connect to!");
       disconnect();
       id = await connect(connid);
     }
@@ -49,7 +50,7 @@
       <input class="input w-full bg-neutral" bind:value={connid} />
     {/if}
   </div>
-  <div class="join gap-[2px]">
+  <div class="join gap-[2px] mb-7">
     <a class="tooltip tooltip-top" data-tip="Connect">
       <button
         class="join-item btn {state == 2
@@ -75,4 +76,7 @@
       ></a
     >
   </div>
+  <Info
+    info="Connecting to an user will overwrite your selected project's files!"
+  />
 </div>

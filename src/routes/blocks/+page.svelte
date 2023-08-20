@@ -1,8 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  import Error from "../../components/Error.svelte";
-  import Success from "../../components/Success.svelte";
   let blocks = {};
   let tabs = {};
   let tiers = {};
@@ -17,7 +15,7 @@
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      alert("Please select a project!");
+      error("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -121,8 +119,6 @@
   });
   let selectedBlock = "";
   let name = "";
-  let error = "";
-  let success = "";
   let nodes = [];
   function add() {
     name = `new_block_${Object.keys(blocks).length + 1}`;
@@ -619,10 +615,7 @@
       blocks[block].name = block;
     });
     selectedBlock = Object.keys(blocks)[0];
-    success = "Blocks saved successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Blocks saved successfully!");
   }
   function deleteBlock() {
     if (!selectedBlock) return;
@@ -1715,5 +1708,3 @@
     {/if}
   </div>
 </div>
-<Error {error} />
-<Success {success} />
