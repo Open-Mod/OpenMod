@@ -30,6 +30,10 @@ body {
   background: hsl(var(--bc) / var(--tw-text-opacity, 0.7));
   border-radius: 7px;
 }
+.menu::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--bc) / var(--tw-text-opacity, 1));
+  border-radius: 7px;
+}
 .menu::-webkit-scrollbar {
   width: 5px;
   height: 5px;
