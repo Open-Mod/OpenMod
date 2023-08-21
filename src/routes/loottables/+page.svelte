@@ -63,20 +63,18 @@
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
+      if (
+        parse(loottables[loottable].json).type == "minecraft:block" &&
+        blocks[loottables[loottable].for].dropItem
+      ) {
+        const blockloottablePath = pathModule.join(
+          blockloottables,
+          `${loottables[loottable].for}.json`
+        );
+        fs.writeFileSync(blockloottablePath, loottables[loottable].json);
+      }
       Object.keys(loottables[loottable]).forEach((property) => {
         if (property == "name") return;
-        if (property == "json") {
-          if (
-            parse(loottables[loottable].json).type == "minecraft:block" &&
-            blocks[loottables[loottable].for].dropItem
-          ) {
-            const blockloottablePath = pathModule.join(
-              blockloottables,
-              `${loottables[loottable].for}.json`
-            );
-            fs.writeFileSync(blockloottablePath, loottables[loottable].json);
-          }
-        }
         obj[name][property] = loottables[loottable][property];
       });
     });

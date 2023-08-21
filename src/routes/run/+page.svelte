@@ -544,17 +544,48 @@
           recipes[recipe][property] == null ||
           String(recipes[recipe][property]).trim() == ""
         ) {
-          if (property == "resultCount")
+          if (
+            property == "resultCount" &&
+            (recipes[recipe].type == "shaped" ||
+              recipes[recipe].type == "shapeless")
+          )
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Result Item Count" of recipe "${recipe}" must not be empty!`
+            );
+          else if (
+            property == "firstItem" &&
+            recipes[recipe].type == "smelting"
+          )
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Item" of recipe "${recipe}" must not be empty!`
             );
           else if (property == "resultItem")
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Result Item" of recipe "${recipe}" must not be empty!`
+            );
+          else if (
+            property == "experience" &&
+            recipes[recipe].type == "smelting"
+          )
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Experience" of recipe "${recipe}" must not be empty!`
+            );
+          else if (
+            property == "cookingTime" &&
+            recipes[recipe].type == "smelting"
+          )
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Cooking Time" of recipe "${recipe}" must not be empty!`
             );
         }
       });

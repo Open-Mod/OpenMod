@@ -204,10 +204,8 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(toolModels, `${name}.json`);
-      Object.keys(tools[tool]).forEach((property) => {
-        if (property == "name") return;
-        if (property == "texture" && tools[tool].modelType == "default") {
-          const texture = tools[tool][property][0];
+      if (tools[tool].modelType == "default") {
+          const texture = tools[tool].textur[0];
           if (texture) {
             const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
             const texturePath = pathModule.join(
@@ -226,14 +224,13 @@
             });
           }
         } else if (
-          property == "texture" &&
           tools[tool].modelType == "blockbench"
         ) {
           const model = tools[tool].model;
           const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = tools[tool][property];
+          const textures = tools[tool].texture;
           textures.forEach((texture) => {
             const texturePath = pathModule.join(
               toolTextures,
@@ -246,6 +243,8 @@
           });
           fs.writeFileSync(modelPath, modelData, "base64");
         }
+      Object.keys(tools[tool]).forEach((property) => {
+        if (property == "name") return;
         obj[name][property] = tools[tool][property];
       });
     });

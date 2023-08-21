@@ -202,48 +202,42 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(armorModels, `${name}.json`);
-      Object.keys(armors[armor]).forEach((property) => {
-        if (property == "name") return;
-        if (property == "texture" && armors[armor].modelType == "default") {
-          const texture = armors[armor][property][0];
-          if (texture) {
-            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-            const texturePath = pathModule.join(
-              armorTextures,
-              `${name}.${textureType}`
-            );
-            const textureData = texture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-            fs.writeJSONSync(modelPath, {
-              parent: "minecraft:item/generated",
-              textures: {
-                layer0: `${projectName.toLowerCase()}:item/${name}`,
-              },
-            });
-          }
-        } else if (
-          property == "texture" &&
-          armors[armor].modelType == "blockbench"
-        ) {
-          const model = armors[armor].model;
-          const modelData = model.data.match(
+      if (armors[armor].modelType == "default") {
+        const texture = armors[armor].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            armorTextures,
+            `${name}.${textureType}`
+          );
+          const textureData = texture.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = armors[armor][property];
-          textures.forEach((texture) => {
-            const texturePath = pathModule.join(
-              armorTextures,
-              `${texture.name}`
-            );
-            const textureData = texture.data.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: {
+              layer0: `${projectName.toLowerCase()}:item/${name}`,
+            },
           });
-          fs.writeFileSync(modelPath, modelData, "base64");
         }
+      } else if (armors[armor].modelType == "blockbench") {
+        const model = armors[armor].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = armors[armor].texture;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(armorTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+      }
+      Object.keys(armors[armor]).forEach((property) => {
+        if (property == "name") return;
         obj[name][property] = armors[armor][property];
       });
     });
