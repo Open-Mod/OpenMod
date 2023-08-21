@@ -192,10 +192,8 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(itemModels, `${name}.json`);
-      Object.keys(items[item]).forEach((property) => {
-        if (property == "name") return;
-        if (property == "texture" && items[item].modelType == "default") {
-          const texture = items[item][property][0];
+       if (tems[item].modelType == "default") {
+          const texture = items[item].texture[0];
           if (texture) {
             const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
             const texturePath = pathModule.join(
@@ -214,14 +212,13 @@
             });
           }
         } else if (
-          property == "texture" &&
           items[item].modelType == "blockbench"
         ) {
           const model = items[item].model;
           const modelData = model.data.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = items[item][property];
+          const textures = items[item];
           textures.forEach((texture) => {
             const texturePath = pathModule.join(
               itemTextures,
@@ -234,6 +231,8 @@
           });
           fs.writeFileSync(modelPath, modelData, "base64");
         }
+      Object.keys(items[item]).forEach((property) => {
+        if (property == "name") return;
         obj[name][property] = items[item][property];
       });
     });

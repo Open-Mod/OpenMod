@@ -41,6 +41,7 @@
     name = `new_recipe_${Object.keys(recipes).length + 1}`;
     recipes[name] = {
       name,
+      type: "shaped",
       resultCount: 1,
       resultItem: "",
       firstItem: "none",
@@ -85,105 +86,107 @@
       const seventhItem = recipes[recipe].seventhItem == "none" ? " " : "7";
       const eighthItem = recipes[recipe].eighthItem == "none" ? " " : "8";
       const ninethItem = recipes[recipe].ninethItem == "none" ? " " : "9";
-      const key = {};
-      if (firstItem.trim()) {
-        key["1"] = {
-          item: `${
-            recipes[recipe].firstItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].firstItem}`,
-        };
+      if (recipes[recipe].type == "shaped") {
+        const key = {};
+        if (firstItem.trim()) {
+          key["1"] = {
+            item: `${
+              recipes[recipe].firstItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].firstItem}`,
+          };
+        }
+        if (secondItem.trim()) {
+          key["2"] = {
+            item: `${
+              recipes[recipe].secondItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].secondItem}`,
+          };
+        }
+        if (thirdItem.trim()) {
+          key["3"] = {
+            item: `${
+              recipes[recipe].thirdItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].thirdItem}`,
+          };
+        }
+        if (fourthItem.trim()) {
+          key["4"] = {
+            item: `${
+              recipes[recipe].fourthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fourthItem}`,
+          };
+        }
+        if (fifthItem.trim()) {
+          key["5"] = {
+            item: `${
+              recipes[recipe].fifthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fifthItem}`,
+          };
+        }
+        if (sixthItem.trim()) {
+          key["6"] = {
+            item: `${
+              recipes[recipe].sixthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].sixthItem}`,
+          };
+        }
+        if (seventhItem.trim()) {
+          key["7"] = {
+            item: `${
+              recipes[recipe].seventhItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].seventhItem}`,
+          };
+        }
+        if (eighthItem.trim()) {
+          key["8"] = {
+            item: `${
+              recipes[recipe].eighthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].eighthItem}`,
+          };
+        }
+        if (ninethItem.trim()) {
+          key["9"] = {
+            item: `${
+              recipes[recipe].ninethItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].ninethItem}`,
+          };
+        }
+        fs.writeJSONSync(recipePath, {
+          type: "minecraft:crafting_shaped",
+          pattern: [
+            `${firstItem}${secondItem}${thirdItem}`,
+            `${fourthItem}${fifthItem}${sixthItem}`,
+            `${seventhItem}${eighthItem}${ninethItem}`,
+          ],
+          key,
+          result: {
+            item: `${
+              recipes[recipe].resultItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].resultItem}`,
+            count: recipes[recipe].resultCount,
+          },
+        });
       }
-      if (secondItem.trim()) {
-        key["2"] = {
-          item: `${
-            recipes[recipe].secondItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].secondItem}`,
-        };
-      }
-      if (thirdItem.trim()) {
-        key["3"] = {
-          item: `${
-            recipes[recipe].thirdItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].thirdItem}`,
-        };
-      }
-      if (fourthItem.trim()) {
-        key["4"] = {
-          item: `${
-            recipes[recipe].fourthItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].fourthItem}`,
-        };
-      }
-      if (fifthItem.trim()) {
-        key["5"] = {
-          item: `${
-            recipes[recipe].fifthItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].fifthItem}`,
-        };
-      }
-      if (sixthItem.trim()) {
-        key["6"] = {
-          item: `${
-            recipes[recipe].sixthItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].sixthItem}`,
-        };
-      }
-      if (seventhItem.trim()) {
-        key["7"] = {
-          item: `${
-            recipes[recipe].seventhItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].seventhItem}`,
-        };
-      }
-      if (eighthItem.trim()) {
-        key["8"] = {
-          item: `${
-            recipes[recipe].eighthItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].eighthItem}`,
-        };
-      }
-      if (ninethItem.trim()) {
-        key["9"] = {
-          item: `${
-            recipes[recipe].ninethItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].ninethItem}`,
-        };
-      }
-      fs.writeJSONSync(recipePath, {
-        type: "minecraft:crafting_shaped",
-        pattern: [
-          `${firstItem}${secondItem}${thirdItem}`,
-          `${fourthItem}${fifthItem}${sixthItem}`,
-          `${seventhItem}${eighthItem}${ninethItem}`,
-        ],
-        key,
-        result: {
-          item: `${
-            recipes[recipe].resultItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].resultItem}`,
-          count: recipes[recipe].resultCount,
-        },
-      });
       Object.keys(recipes[recipe]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = recipes[recipe][property];
@@ -262,6 +265,16 @@
               class="input w-full"
               bind:value={recipes[selectedRecipe].name}
             />
+          </div>
+          <div>
+            <label class="text-lg">Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={recipes[selectedRecipe].type}
+              ><option value="shaped">Shaped</option>
+              <option value="shapeless">Shapeless</option>
+              <option value="smelting">Smelting</option>
+            </select>
           </div>
           <div>
             <label class="text-lg">Result Item Count</label>

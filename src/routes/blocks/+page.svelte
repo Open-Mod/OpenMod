@@ -325,10 +325,7 @@
       obj[name] = {};
       const itemModelPath = pathModule.join(itemModels, `${name}.json`);
       const modelPath = pathModule.join(blockModels, `${name}.json`);
-      Object.keys(blocks[block]).forEach((property) => {
-        if (property == "name") return;
-        if (
-          property == "particleTexture" &&
+      if (
           blocks[block].modelType == "default"
         ) {
           const particleTexture = blocks[block].particleTexture;
@@ -437,7 +434,6 @@
             parent: `${projectName.toLowerCase()}:block/${name}`,
           });
         } else if (
-          property == "texture" &&
           blocks[block].modelType == "blockbench"
         ) {
           const model = blocks[block].model;
@@ -458,8 +454,6 @@
           fs.writeFileSync(modelPath, modelData, "base64");
           fs.writeFileSync(itemModelPath, modelData, "base64");
         }
-        obj[name][property] = blocks[block][property];
-      });
       const statePath = pathModule.join(blockstates, `${name}.json`);
       const mineablePath = pathModule.join(
         minecraftMineable,
@@ -608,6 +602,10 @@
           biomes: biomes.flat(),
         });
       }
+            Object.keys(blocks[block]).forEach((property) => {
+        if (property == "name") return;
+        obj[name][property] = blocks[block][property];
+      });
     });
     fs.writeJSONSync(path, obj);
     blocks = obj;

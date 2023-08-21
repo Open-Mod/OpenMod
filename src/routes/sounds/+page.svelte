@@ -57,16 +57,12 @@
       soundsObj[name] = {
         sounds: [`${projectName.toLowerCase()}:${name}`],
       };
+      const Sound = sounds[sound].sound.data;
+      const soundPath = pathModule.join(soundsPath, `${name}.ogg`);
+      const soundData = Sound.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+      fs.writeFileSync(soundPath, soundData, "base64");
       Object.keys(sounds[sound]).forEach((property) => {
         if (property == "name") return;
-        if (property == "sound") {
-          const Sound = sounds[sound][property].data;
-          const soundPath = pathModule.join(soundsPath, `${name}.ogg`);
-          const soundData = Sound.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(soundPath, soundData, "base64");
-        }
         obj[name][property] = sounds[sound][property];
       });
     });

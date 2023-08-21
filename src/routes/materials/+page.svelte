@@ -96,34 +96,32 @@
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
+      const texture1 = tools[tool].texture[0];
+      const texture2 = tools[tool].texture[1];
+      if (texture1) {
+        const textureType = texture1.match(/[^:/]\w+(?=;|,)/)[0];
+        const texturePath = pathModule.join(
+          textureArmorModels,
+          `${name}.${textureType}`
+        );
+        const textureData = texture1.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        fs.writeFileSync(texturePath, textureData, "base64");
+      }
+      if (texture2) {
+        const textureType = texture2.match(/[^:/]\w+(?=;|,)/)[0];
+        const texturePath = pathModule.join(
+          textureArmorModels,
+          `${name}.${textureType}`
+        );
+        const textureData = texture2.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        fs.writeFileSync(texturePath, textureData, "base64");
+      }
       Object.keys(materials[material]).forEach((property) => {
         if (property == "name") return;
-        if (property == "texture") {
-          const texture1 = tools[tool][property][0];
-          const texture2 = tools[tool][property][1];
-          if (texture1) {
-            const textureType = texture1.match(/[^:/]\w+(?=;|,)/)[0];
-            const texturePath = pathModule.join(
-              textureArmorModels,
-              `${name}.${textureType}`
-            );
-            const textureData = texture1.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-          }
-          if (texture2) {
-            const textureType = texture2.match(/[^:/]\w+(?=;|,)/)[0];
-            const texturePath = pathModule.join(
-              textureArmorModels,
-              `${name}.${textureType}`
-            );
-            const textureData = texture2.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-          }
-        }
         obj[name][property] = materials[material][property];
       });
     });
