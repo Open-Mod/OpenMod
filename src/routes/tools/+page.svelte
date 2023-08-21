@@ -185,14 +185,18 @@
     const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     Object.keys(old).forEach((tool) => {
       if (old[tool].modelType == "default") {
-        old[tool].texture.forEach((texture) => {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          fs.rmSync(pathModule.join(toolTextures, `${tool}.${textureType}`));
-        });
+        old[tool].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+            fs.rmSync(pathModule.join(toolTextures, `${tool}.${textureType}`));
+          });
       } else if (old[tool].modelType == "blockbench") {
-        old[tool].texture.forEach((texture) => {
-          fs.rmSync(pathModule.join(toolTextures, `${texture.name}`));
-        });
+        old[tool].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            fs.rmSync(pathModule.join(toolTextures, `${texture.name}`));
+          });
       }
     });
     Object.keys(tools).forEach((tool) => {
@@ -205,44 +209,39 @@
       obj[name] = {};
       const modelPath = pathModule.join(toolModels, `${name}.json`);
       if (tools[tool].modelType == "default") {
-          const texture = tools[tool].textur[0];
-          if (texture) {
-            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-            const texturePath = pathModule.join(
-              toolTextures,
-              `${name}.${textureType}`
-            );
-            const textureData = texture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-            fs.writeJSONSync(modelPath, {
-              parent: "minecraft:item/generated",
-              textures: {
-                layer0: `${projectName.toLowerCase()}:item/${name}`,
-              },
-            });
-          }
-        } else if (
-          tools[tool].modelType == "blockbench"
-        ) {
-          const model = tools[tool].model;
-          const modelData = model.data.match(
+        const texture = tools[tool].textur[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            toolTextures,
+            `${name}.${textureType}`
+          );
+          const textureData = texture.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = tools[tool].texture;
-          textures.forEach((texture) => {
-            const texturePath = pathModule.join(
-              toolTextures,
-              `${texture.name}`
-            );
-            const textureData = texture.data.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: {
+              layer0: `${projectName.toLowerCase()}:item/${name}`,
+            },
           });
-          fs.writeFileSync(modelPath, modelData, "base64");
         }
+      } else if (tools[tool].modelType == "blockbench") {
+        const model = tools[tool].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = tools[tool].texture;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(toolTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+      }
       Object.keys(tools[tool]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = tools[tool][property];

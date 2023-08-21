@@ -173,14 +173,18 @@
     const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     Object.keys(old).forEach((item) => {
       if (old[item].modelType == "default") {
-        old[item].texture.forEach((texture) => {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          fs.rmSync(pathModule.join(itemTextures, `${item}.${textureType}`));
-        });
+        old[item].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+            fs.rmSync(pathModule.join(itemTextures, `${item}.${textureType}`));
+          });
       } else if (old[item].modelType == "blockbench") {
-        old[item].texture.forEach((texture) => {
-          fs.rmSync(pathModule.join(itemTextures, `${texture.name}`));
-        });
+        old[item].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            fs.rmSync(pathModule.join(itemTextures, `${texture.name}`));
+          });
       }
     });
     Object.keys(items).forEach((item) => {
@@ -192,45 +196,40 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(itemModels, `${name}.json`);
-       if (tems[item].modelType == "default") {
-          const texture = items[item].texture[0];
-          if (texture) {
-            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-            const texturePath = pathModule.join(
-              itemTextures,
-              `${name}.${textureType}`
-            );
-            const textureData = texture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-            fs.writeJSONSync(modelPath, {
-              parent: "minecraft:item/generated",
-              textures: {
-                layer0: `${projectName.toLowerCase()}:item/${name}`,
-              },
-            });
-          }
-        } else if (
-          items[item].modelType == "blockbench"
-        ) {
-          const model = items[item].model;
-          const modelData = model.data.match(
+      if (tems[item].modelType == "default") {
+        const texture = items[item].texture[0];
+        if (texture) {
+          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+          const texturePath = pathModule.join(
+            itemTextures,
+            `${name}.${textureType}`
+          );
+          const textureData = texture.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = items[item];
-          textures.forEach((texture) => {
-            const texturePath = pathModule.join(
-              itemTextures,
-              `${texture.name}`
-            );
-            const textureData = texture.data.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: {
+              layer0: `${projectName.toLowerCase()}:item/${name}`,
+            },
           });
-          fs.writeFileSync(modelPath, modelData, "base64");
         }
+      } else if (items[item].modelType == "blockbench") {
+        const model = items[item].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = items[item];
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(itemTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+      }
       Object.keys(items[item]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = items[item][property];

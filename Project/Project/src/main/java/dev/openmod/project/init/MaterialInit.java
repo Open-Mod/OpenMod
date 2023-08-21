@@ -36,21 +36,22 @@ public class MaterialInit {
             String repairIngredient = (String) data.get("repairIngredient");
             SoundEvent aEquipSound = SoundEvents.ARMOR_EQUIP_GENERIC;
             for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                if(soundEntry.getKey().equals(aEquipSound)) {
+                if(equipSound.equals(soundEntry.getKey().location().getPath())) {
                     aEquipSound = soundEntry.get();
                     break;
                 }
-            materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
-                Item item = null;
-                for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                    if(itemEntry.getKey().equals(repairIngredient)) {
-                        item = itemEntry.get();
-                        break;
+                materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
+                    Item item = null;
+                    for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
+                        if(repairIngredient.equals(itemEntry.getKey().location().getPath())) {
+                            item = itemEntry.get();
+                            break;
+                        }
                     }
-                }
-                if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
-                return Ingredient.of(item);
-            }, name, toughness, knockbackResistance));
+                    if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
+                    return Ingredient.of(item);
+                }, name, toughness, knockbackResistance));
+            }
         }
     }
 }

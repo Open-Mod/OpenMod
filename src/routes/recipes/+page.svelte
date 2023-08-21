@@ -41,10 +41,10 @@
     name = `new_recipe_${Object.keys(recipes).length + 1}`;
     recipes[name] = {
       name,
-      type: "shaped",
       resultCount: 1,
       experience: 0,
       cookingTime: 0,
+      type: "shaped",
       resultItem: "",
       firstItem: "none",
       secondItem: "none",
@@ -381,16 +381,6 @@
               bind:value={recipes[selectedRecipe].name}
             />
           </div>
-          <div>
-            <label class="text-lg">Type</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={recipes[selectedRecipe].type}
-              ><option value="shaped">Shaped</option>
-              <option value="shapeless">Shapeless</option>
-              <option value="smelting">Smelting</option>
-            </select>
-          </div>
           {#if recipes[selectedRecipe].type == "shaped" || recipes[selectedRecipe].type == "shapeless"}
             <div>
               <label class="text-lg">Result Item Count</label>
@@ -400,6 +390,16 @@
                 class="input w-full"
                 bind:value={recipes[selectedRecipe].resultCount}
               />
+            </div>
+            <div>
+              <label class="text-lg">Type</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].type}
+                ><option value="shaped">Shaped</option>
+                <option value="shapeless">Shapeless</option>
+                <option value="smelting">Smelting</option>
+              </select>
             </div>
             <div>
               <label class="text-lg">Result Item</label>
@@ -590,6 +590,16 @@
                 class="input w-full"
                 bind:value={recipes[selectedRecipe].cookingTime}
               />
+            </div>
+            <div>
+              <label class="text-lg">Type</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].type}
+                ><option value="shaped">Shaped</option>
+                <option value="shapeless">Shapeless</option>
+                <option value="smelting">Smelting</option>
+              </select>
             </div>
             <div>
               <label class="text-lg">Result Item</label>

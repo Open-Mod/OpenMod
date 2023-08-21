@@ -200,6 +200,30 @@
                 new Date()
               )}]: Field "Movement Speed" of block "${block}" must not be empty!`
             );
+          else if (property == "breakSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Break Sound" of block "${block}" must not be empty!`
+            );
+          else if (property == "walkSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Walk Sound" of block "${block}" must not be empty!`
+            );
+          else if (property == "placeSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Place Sound" of block "${block}" must not be empty!`
+            );
+          else if (property == "hitSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Hit Sound" of block "${block}" must not be empty!`
+            );
           else if (property == "stacksTo")
             addError(
               `[${formatDateToHHMMSS(

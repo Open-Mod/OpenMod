@@ -29,7 +29,7 @@ public class TierInit {
             tierItems.put(name, new ForgeTier(level, uses, attackSpeed, attackDamageBonus, enchantmentValue, BlockTags.create(new ResourceLocation(Project.MODID, "needs_" + name + "_tool")), () -> {
                 Item item = null;
                 for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                    if(itemEntry.getKey().equals(repairIngredient)) {
+                    if(repairIngredient.equals(itemEntry.getKey().location().getPath())) {
                         item = itemEntry.get();
                         break;
                     }

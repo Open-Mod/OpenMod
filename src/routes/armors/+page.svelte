@@ -183,14 +183,20 @@
     const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     Object.keys(old).forEach((armor) => {
       if (old[armor].modelType == "default") {
-        old[armor].texture.forEach((texture) => {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          fs.rmSync(pathModule.join(armorTextures, `${armor}.${textureType}`));
-        });
+        old[armor].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
+            fs.rmSync(
+              pathModule.join(armorTextures, `${armor}.${textureType}`)
+            );
+          });
       } else if (old[armor].modelType == "blockbench") {
-        old[armor].texture.forEach((texture) => {
-          fs.rmSync(pathModule.join(armorTextures, `${texture.name}`));
-        });
+        old[armor].texture
+          .filter((el) => el.length)
+          .forEach((texture) => {
+            fs.rmSync(pathModule.join(armorTextures, `${texture.name}`));
+          });
       }
     });
     Object.keys(armors).forEach((armor) => {

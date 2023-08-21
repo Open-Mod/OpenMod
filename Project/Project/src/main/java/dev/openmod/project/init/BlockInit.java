@@ -16,9 +16,12 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.common.util.ForgeSoundType;
@@ -52,6 +55,7 @@ public class BlockInit {
             float friction = ((Number) data.get("friction")).floatValue() / 100f;
             float jumpFactor = ((Number) data.get("jumpFactor")).floatValue() / 100f;
             float speedFactor = ((Number) data.get("speedFactor")).floatValue() / 100f;
+            String type = (String) data.get("type");
             String tab = (String) data.get("tab");
             String mapColor = (String) data.get("mapColor");
             String instrument = (String) data.get("instrument");
@@ -223,22 +227,19 @@ public class BlockInit {
             Supplier<SoundEvent> aPlaceSound = null;
             Supplier<SoundEvent> aHitSound = null;
             for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                if(soundEntry.getKey().equals(aBreakSound)) {
+                if(breakSound.equals(soundEntry.getKey().location().getPath())) {
                     aBreakSound = () -> soundEntry.get();
-                    break;
                 }
-                if(soundEntry.getKey().equals(aWalkSound)) {
+                if(walkSound.equals(soundEntry.getKey().location().getPath())) {
                     aWalkSound = () -> soundEntry.get();
-                    break;
                 }
-                if(soundEntry.getKey().equals(aPlaceSound)) {
+                if(placeSound.equals(soundEntry.getKey().location().getPath())) {
                     aPlaceSound = () -> soundEntry.get();
-                    break;
                 }
-                if(soundEntry.getKey().equals(aHitSound)) {
+                if(hitSound.equals(soundEntry.getKey().location().getPath())) {
                     aHitSound = () -> soundEntry.get();
-                    break;
                 }
+                if(aBreakSound != null && aWalkSound != null && aPlaceSound != null && aHitSound != null) break;
             }
             properties.sound(new ForgeSoundType(1f, 1f, aBreakSound, aWalkSound, aPlaceSound, aHitSound, aWalkSound ));
             if(pushReaction.equals("ignore")) properties.pushReaction(PushReaction.IGNORE);
@@ -267,22 +268,43 @@ public class BlockInit {
                         } : new BlockItem(block, itemProperties));
                         return block;
                     } else {
-                        Block block = new Block(properties) {
-                            @Override
-                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                                if(!ignitedByLava && fire_resistance == 0) {
-                                    return super.getFlammability(state, level, pos, direction);
-                                } else return fire_resistance;
-                            }
-                        };
-                        ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
-                            @Override
-                            public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                                return ((Number) burnTime).intValue();
-                            }
-                        } : new BlockItem(block, itemProperties));
-                        return block;
+                        if(type.equals("normal")) {
+                            Block block = new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }else if(type.equals("stairs")) {
+                            Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+
+                                ;
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }
                     }
+                    return null;
                 }));
             else
                 BLOCKS.register(name, () ->  {
@@ -303,22 +325,43 @@ public class BlockInit {
                         } : new BlockItem(block, itemProperties));
                         return block;
                     } else {
-                        Block block = new Block(properties) {
-                            @Override
-                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                                if(!ignitedByLava && fire_resistance == 0) {
-                                    return super.getFlammability(state, level, pos, direction);
-                                } else return fire_resistance;
-                            }
-                        };
-                        ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
-                            @Override
-                            public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                                return ((Number) burnTime).intValue();
-                            }
-                        } : new BlockItem(block, itemProperties));
-                        return block;
+                        if(type.equals("normal")) {
+                            Block block = new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }else if(type.equals("stairs")) {
+                            Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+
+                                ;
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }
                     }
+                    return null;
                 });
 
         }

@@ -131,13 +131,14 @@
       friction: 40,
       jumpFactor: 100,
       speedFactor: 100,
+      type: "normal",
       tab: "none",
       mapColor: "none",
       instrument: "none",
-      breakSound: "none",
-      walkSound: "none",
-      placeSound: "none",
-      hitSound: "none",
+      breakSound: "",
+      walkSound: "",
+      placeSound: "",
+      hitSound: "",
       pushReaction: "ignore",
       dropXp: false,
       minXp: 0,
@@ -326,134 +327,196 @@
       const itemModelPath = pathModule.join(itemModels, `${name}.json`);
       const modelPath = pathModule.join(blockModels, `${name}.json`);
       if (
-          blocks[block].modelType == "default"
-        ) {
-          const particleTexture = blocks[block].particleTexture;
-          const upTexture = blocks[block].upTexture;
-          const downTexture = blocks[block].downTexture;
-          const frontTexture = blocks[block].frontTexture;
-          const backTexture = blocks[block].backTexture;
-          const rightTexture = blocks[block].rightTexture;
-          const leftTexture = blocks[block].leftTexture;
-          const modelObj = {
-            render_type: "minecraft:cutout",
-            parent: "minecraft:block/cube",
-            textures: {},
-          };
-          if (particleTexture) {
-            const particleTextureType =
-              particleTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const particleTexturePath = pathModule.join(
-              blockTextures,
-              `particle_${name}.${particleTextureType}`
-            );
-            const particleTextureData = particleTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(
-              particleTexturePath,
-              particleTextureData,
-              "base64"
-            );
-            modelObj.textures.particle = `${projectName.toLowerCase()}:block/particle_${name}`;
-          }
-          if (upTexture) {
-            const upTextureType = upTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const upTexturePath = pathModule.join(
-              blockTextures,
-              `up_${name}.${upTextureType}`
-            );
-            const upTextureData = upTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(upTexturePath, upTextureData, "base64");
-            modelObj.textures.up = `${projectName.toLowerCase()}:block/up_${name}`;
-          }
-          if (downTexture) {
-            const downTextureType = downTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const downTexturePath = pathModule.join(
-              blockTextures,
-              `down_${name}.${downTextureType}`
-            );
-            const downTextureData = downTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(downTexturePath, downTextureData, "base64");
-            modelObj.textures.down = `${projectName.toLowerCase()}:block/down_${name}`;
-          }
-          if (frontTexture) {
-            const frontTextureType = frontTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const frontTexturePath = pathModule.join(
-              blockTextures,
-              `front_${name}.${frontTextureType}`
-            );
-            const frontTextureData = frontTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(frontTexturePath, frontTextureData, "base64");
-            modelObj.textures.north = `${projectName.toLowerCase()}:block/front_${name}`;
-          }
-          if (backTexture) {
-            const backTextureType = backTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const backTexturePath = pathModule.join(
-              blockTextures,
-              `back_${name}.${backTextureType}`
-            );
-            const backTextureData = backTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(backTexturePath, backTextureData, "base64");
-            modelObj.textures.south = `${projectName.toLowerCase()}:block/back_${name}`;
-          }
-          if (rightTexture) {
-            const rightTextureType = rightTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const rightTexturePath = pathModule.join(
-              blockTextures,
-              `right_${name}.${rightTextureType}`
-            );
-            const rightTextureData = rightTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(rightTexturePath, rightTextureData, "base64");
-            modelObj.textures.east = `${projectName.toLowerCase()}:block/right_${name}`;
-          }
-          if (leftTexture) {
-            const leftTextureType = leftTexture.match(/[^:/]\w+(?=;|,)/)[0];
-            const leftTexturePath = pathModule.join(
-              blockTextures,
-              `left_${name}.${leftTextureType}`
-            );
-            const leftTextureData = leftTexture.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(leftTexturePath, leftTextureData, "base64");
-            modelObj.textures.west = `${projectName.toLowerCase()}:block/left_${name}`;
-          }
-          fs.writeJSONSync(modelPath, modelObj);
-          fs.writeJSONSync(itemModelPath, {
-            parent: `${projectName.toLowerCase()}:block/${name}`,
-          });
-        } else if (
-          blocks[block].modelType == "blockbench"
-        ) {
-          const model = blocks[block].model;
-          const modelData = model.data.match(
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "normal"
+      ) {
+        const particleTexture = blocks[block].particleTexture;
+        const upTexture = blocks[block].upTexture;
+        const downTexture = blocks[block].downTexture;
+        const frontTexture = blocks[block].frontTexture;
+        const backTexture = blocks[block].backTexture;
+        const rightTexture = blocks[block].rightTexture;
+        const leftTexture = blocks[block].leftTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/cube",
+          textures: {},
+        };
+        if (particleTexture) {
+          const particleTextureType =
+            particleTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const particleTexturePath = pathModule.join(
+            blockTextures,
+            `particle_${name}.${particleTextureType}`
+          );
+          const particleTextureData = particleTexture.match(
             /^data:([A-Za-z-+\/]+);base64,(.+)$/
           )[2];
-          const textures = blocks[block].texture;
-          textures.forEach((texture) => {
-            const texturePath = pathModule.join(
-              blockTextures,
-              `${texture.name}`
-            );
-            const textureData = texture.data.match(
-              /^data:([A-Za-z-+\/]+);base64,(.+)$/
-            )[2];
-            fs.writeFileSync(texturePath, textureData, "base64");
-          });
-          fs.writeFileSync(modelPath, modelData, "base64");
-          fs.writeFileSync(itemModelPath, modelData, "base64");
+          fs.writeFileSync(particleTexturePath, particleTextureData, "base64");
+          modelObj.textures.particle = `${projectName.toLowerCase()}:block/particle_${name}`;
         }
+        if (upTexture) {
+          const upTextureType = upTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const upTexturePath = pathModule.join(
+            blockTextures,
+            `up_${name}.${upTextureType}`
+          );
+          const upTextureData = upTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(upTexturePath, upTextureData, "base64");
+          modelObj.textures.up = `${projectName.toLowerCase()}:block/up_${name}`;
+        }
+        if (downTexture) {
+          const downTextureType = downTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const downTexturePath = pathModule.join(
+            blockTextures,
+            `down_${name}.${downTextureType}`
+          );
+          const downTextureData = downTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(downTexturePath, downTextureData, "base64");
+          modelObj.textures.down = `${projectName.toLowerCase()}:block/down_${name}`;
+        }
+        if (frontTexture) {
+          const frontTextureType = frontTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const frontTexturePath = pathModule.join(
+            blockTextures,
+            `front_${name}.${frontTextureType}`
+          );
+          const frontTextureData = frontTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(frontTexturePath, frontTextureData, "base64");
+          modelObj.textures.north = `${projectName.toLowerCase()}:block/front_${name}`;
+        }
+        if (backTexture) {
+          const backTextureType = backTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const backTexturePath = pathModule.join(
+            blockTextures,
+            `back_${name}.${backTextureType}`
+          );
+          const backTextureData = backTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(backTexturePath, backTextureData, "base64");
+          modelObj.textures.south = `${projectName.toLowerCase()}:block/back_${name}`;
+        }
+        if (rightTexture) {
+          const rightTextureType = rightTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const rightTexturePath = pathModule.join(
+            blockTextures,
+            `right_${name}.${rightTextureType}`
+          );
+          const rightTextureData = rightTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(rightTexturePath, rightTextureData, "base64");
+          modelObj.textures.east = `${projectName.toLowerCase()}:block/right_${name}`;
+        }
+        if (leftTexture) {
+          const leftTextureType = leftTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const leftTexturePath = pathModule.join(
+            blockTextures,
+            `left_${name}.${leftTextureType}`
+          );
+          const leftTextureData = leftTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(leftTexturePath, leftTextureData, "base64");
+          modelObj.textures.west = `${projectName.toLowerCase()}:block/left_${name}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
+      } else if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "stairs"
+      ) {
+        const innerModelPath = pathModule.join(blockModels, `${name}_inner.json`);
+        const outerModelPath = pathModule.join(blockModels, `${name}_outer.json`);
+        const particleTexture = blocks[block].particleTexture;
+        const topTexture = blocks[block].upTexture;
+        const bottomTexture = blocks[block].downTexture;
+        const sideTexture = blocks[block].rightTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/stairs",
+          textures: {},
+        };
+        if (particleTexture) {
+          const particleTextureType =
+            particleTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const particleTexturePath = pathModule.join(
+            blockTextures,
+            `particle_${name}.${particleTextureType}`
+          );
+          const particleTextureData = particleTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(particleTexturePath, particleTextureData, "base64");
+          modelObj.textures.particle = `${projectName.toLowerCase()}:block/particle_${name}`;
+        }
+        if (topTexture) {
+          const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const topTexturePath = pathModule.join(
+            blockTextures,
+            `top_${name}.${topTextureType}`
+          );
+          const topTextureData = topTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(topTexturePath, topTextureData, "base64");
+          modelObj.textures.top = `${projectName.toLowerCase()}:block/top_${name}`;
+        }
+        if (bottomTexture) {
+          const bottomTextureType = bottomTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const bottomTexturePath = pathModule.join(
+            blockTextures,
+            `bottom_${name}.${bottomTextureType}`
+          );
+          const bottomTextureData = bottomTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
+          modelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${name}`;
+        }
+        if (sideTexture) {
+          const sideTextureType = sideTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const sideTexturePath = pathModule.join(
+            blockTextures,
+            `side_${name}.${sideTextureType}`
+          );
+          const sideTextureData = sideTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(sideTexturePath, sideTextureData, "base64");
+          modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${name}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(innerModelPath, Object.assign({parent:"minecraft:block/inner_stairs"}, modelObj));
+        fs.writeJSONSync(outerModelPath, Object.assign({parent:"minecraft:block/outer_stairs"}, modelObj));
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
+      } else if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = blocks[block].texture;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(blockTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+      }
       const statePath = pathModule.join(blockstates, `${name}.json`);
       const mineablePath = pathModule.join(
         minecraftMineable,
@@ -479,13 +542,225 @@
           projectMinecraftData,
           `needs_${blocks[block].minedByTier}_tool.json`
         );
-      fs.writeJSONSync(statePath, {
-        variants: {
-          "": {
-            model: `${projectName.toLowerCase()}:block/${name}`,
+      if (blocks[block].type == "normal") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+            },
           },
-        },
-      });
+        });
+      } else if (blocks[block].type == "stairs") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "facing=east,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=east,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+            },
+            "facing=east,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=east,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+            },
+            "facing=east,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+            },
+            "facing=east,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=east,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=east,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=east,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=east,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=north,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=north,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=north,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=north,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=south,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+            },
+            "facing=south,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+            },
+            "facing=south,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=south,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=south,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=south,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=south,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=west,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=west,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=west,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${name}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=west,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+          },
+        });
+      }
       if (blocks[block].dropItem) {
         if (
           fs.existsSync(mineablePath) &&
@@ -602,7 +877,7 @@
           biomes: biomes.flat(),
         });
       }
-            Object.keys(blocks[block]).forEach((property) => {
+      Object.keys(blocks[block]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = blocks[block][property];
       });
@@ -990,6 +1265,15 @@
             />
           </div>
           <div>
+            <label class="text-lg">Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].type}
+              ><option value="normal">Normal</option>
+              <option value="stairs">Stairs</option>
+            </select>
+          </div>
+          <div>
             <label class="text-lg">Creative Tab</label>
             <select
               class="select font-normal text-base w-full"
@@ -1104,7 +1388,11 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].breakSound}
             >
-              <option value="none">None</option>
+              {#if !Object.keys(sounds)}
+                <option disabled value={blocks[selectedBlock].breakSound}
+                  >No sounds</option
+                >
+              {/if}
               {#each Object.keys(sounds) as sound}
                 <option value={sound}>{convertToCamelCase(sound)}</option>
               {/each}
@@ -1116,7 +1404,11 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].walkSound}
             >
-              <option value="none">None</option>
+              {#if !Object.keys(sounds)}
+                <option disabled value={blocks[selectedBlock].walkSound}
+                  >No sounds</option
+                >
+              {/if}
               {#each Object.keys(sounds) as sound}
                 <option value={sound}>{convertToCamelCase(sound)}</option>
               {/each}
@@ -1128,7 +1420,11 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].placeSound}
             >
-              <option value="none">None</option>
+              {#if !Object.keys(sounds)}
+                <option disabled value={blocks[selectedBlock].placeSound}
+                  >No sounds</option
+                >
+              {/if}
               {#each Object.keys(sounds) as sound}
                 <option value={sound}>{convertToCamelCase(sound)}</option>
               {/each}
@@ -1140,7 +1436,11 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].hitSound}
             >
-              <option value="none">None</option>
+              {#if !Object.keys(sounds)}
+                <option disabled value={blocks[selectedBlock].hitSound}
+                  >No sounds</option
+                >
+              {/if}
               {#each Object.keys(sounds) as sound}
                 <option value={sound}>{convertToCamelCase(sound)}</option>
               {/each}
@@ -1158,35 +1458,37 @@
               ><option value="normal">Normal</option></select
             >
           </div>
-          <div>
-            <label class="text-lg">Drops Experience?</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].dropXp}
-              ><option value={true}>True</option><option value={false}
-                >False</option
-              ></select
-            >
-          </div>
-          {#if blocks[selectedBlock].dropXp}
+          {#if blocks[selectedBlock].type == "normal"}
             <div>
-              <label class="text-lg">Minimum Experience</label>
-              <input
-                type="number"
-                min="1"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].minXp}
-              />
+              <label class="text-lg">Drops Experience?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={blocks[selectedBlock].dropXp}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
             </div>
-            <div>
-              <label class="text-lg">Maximum Experience</label>
-              <input
-                type="number"
-                min="1"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].maxXp}
-              />
-            </div>
+            {#if blocks[selectedBlock].dropXp}
+              <div>
+                <label class="text-lg">Minimum Experience</label>
+                <input
+                  type="number"
+                  min="1"
+                  class="input w-full"
+                  bind:value={blocks[selectedBlock].minXp}
+                />
+              </div>
+              <div>
+                <label class="text-lg">Maximum Experience</label>
+                <input
+                  type="number"
+                  min="1"
+                  class="input w-full"
+                  bind:value={blocks[selectedBlock].maxXp}
+                />
+              </div>
+            {/if}
           {/if}
           <div>
             <label class="text-lg">Drops Item?</label>
@@ -1284,7 +1586,7 @@
               />
             </div>
           {/if}
-          {#if blocks[selectedBlock].modelType == "default"}
+          {#if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "normal"}
             <div class="col-start-1">
               <label class="text-lg">Particle Texture</label>
               <img
@@ -1359,6 +1661,51 @@
                 on:error={fallbackTexture}
                 on:click={chooseLeftTexture}
                 on:drop={setLeftTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+          {:else if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "stairs"}
+            <div class="col-start-1">
+              <label class="text-lg">Particle Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].particleTexture}
+                on:error={fallbackTexture}
+                on:click={chooseParticleTexture}
+                on:drop={setParticleTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Top Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].upTexture}
+                on:error={fallbackTexture}
+                on:click={chooseUpTexture}
+                on:drop={setUpTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Bottom Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].downTexture}
+                on:error={fallbackTexture}
+                on:click={chooseDownTexture}
+                on:drop={setDownTexture}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Side Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={blocks[selectedBlock].rightTexture}
+                on:error={fallbackTexture}
+                on:click={chooseRightTexture}
+                on:drop={setRightTexture}
                 on:dragover|preventDefault
               />
             </div>
