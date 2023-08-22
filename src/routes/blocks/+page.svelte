@@ -1754,7 +1754,7 @@
           </div>
           {#if blocks[selectedBlock].modelType == "blockbench"}
             <div class="col-start-1">
-              <label class="text-lg">Textures & Model</label>
+              <label class="text-lg">Textures & Model {blocks[selectedBlock].type == "stairs" || blocks[selectedBlock].type == "slab" ? "(Requires 3 models)" : ""}</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
                 src={blocks[selectedBlock].texture[0]?.data ?? ""}

@@ -126,17 +126,17 @@
       {/each}
     </select>
     <div class="flex gap-1">
-      <a class="soundtip soundtip-top" data-tip="Add">
+      <a class="tooltip tooltip-top" data-tip="Add">
         <button class="btn btn-warning" on:click={add}
           ><i class="fa-solid fa-plus text-lg" /></button
         ></a
       >
-      <a class="soundtip soundtip-top" data-tip="Save">
+      <a class="tooltip tooltip-top" data-tip="Save">
         <button class="btn btn-success" on:click={save}
           ><i class="fa-solid fa-floppy-disk text-lg" /></button
         >
       </a>
-      <a class="soundtip soundtip-top" data-tip="Delete">
+      <a class="tooltip tooltip-top" data-tip="Delete">
         <button class="btn btn-error" on:click={deleteSound}
           ><i class="fa-solid fa-trash text-lg" /></button
         >
