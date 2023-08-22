@@ -110,6 +110,18 @@
     });
     Object.keys(blocks).forEach((block) => {
       blocks[block].name = block;
+      blocks[block].breakSound = blocks[block].breakSound.trim()
+        ? blocks[block].breakSound
+        : Object.keys(sounds)[0] ?? blocks[block].breakSound;
+      blocks[block].walkSound = blocks[block].walkSound.trim()
+        ? blocks[block].walkSound
+        : Object.keys(sounds)[0] ?? blocks[block].walkSound;
+      blocks[block].placeSound = blocks[block].placeSound.trim()
+        ? blocks[block].placeSound
+        : Object.keys(sounds)[0] ?? blocks[block].placeSound;
+      blocks[block].hitSound = blocks[block].hitSound.trim()
+        ? blocks[block].hitSound
+        : Object.keys(sounds)[0] ?? blocks[block].hitSound;
     });
     selectedBlock = Object.keys(blocks)[0] ?? "";
     window.on_change = (data) => {
@@ -135,10 +147,10 @@
       tab: "none",
       mapColor: "none",
       instrument: "none",
-      breakSound: "",
-      walkSound: "",
-      placeSound: "",
-      hitSound: "",
+      breakSound: Object.keys(sounds)[0] ?? "",
+      walkSound: Object.keys(sounds)[0] ?? "",
+      placeSound: Object.keys(sounds)[0] ?? "",
+      hitSound: Object.keys(sounds)[0] ?? "",
       pushReaction: "ignore",
       dropXp: false,
       minXp: 0,
@@ -443,7 +455,6 @@
           blockModels,
           `${name}_outer.json`
         );
-        const particleTexture = blocks[block].particleTexture;
         const topTexture = blocks[block].upTexture;
         const bottomTexture = blocks[block].downTexture;
         const sideTexture = blocks[block].rightTexture;
@@ -452,19 +463,6 @@
           parent: "minecraft:block/stairs",
           textures: {},
         };
-        if (particleTexture) {
-          const particleTextureType =
-            particleTexture.match(/[^:/]\w+(?=;|,)/)[0];
-          const particleTexturePath = pathModule.join(
-            blockTextures,
-            `particle_${name}.${particleTextureType}`
-          );
-          const particleTextureData = particleTexture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(particleTexturePath, particleTextureData, "base64");
-          modelObj.textures.particle = `${projectName.toLowerCase()}:block/particle_${name}`;
-        }
         if (topTexture) {
           const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
           const topTexturePath = pathModule.join(
@@ -502,17 +500,160 @@
           modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${name}`;
         }
         fs.writeJSONSync(modelPath, modelObj);
-        fs.writeJSONSync(
-          innerModelPath,
-          Object.assign({ parent: "minecraft:block/inner_stairs" }, modelObj)
-        );
-        fs.writeJSONSync(
-          outerModelPath,
-          Object.assign({ parent: "minecraft:block/outer_stairs" }, modelObj)
-        );
+        fs.writeJSONSync(innerModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/inner_stairs",
+        });
+        fs.writeJSONSync(outerModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/outer_stairs",
+        });
         fs.writeJSONSync(itemModelPath, {
           parent: `${projectName.toLowerCase()}:block/${name}`,
         });
+      } else if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "slab"
+      ) {
+        const blockModelPath = pathModule.join(
+          blockModels,
+          `${name}_block.json`
+        );
+        const topModelPath = pathModule.join(blockModels, `${name}_top.json`);
+        const topTexture = blocks[block].upTexture;
+        const bottomTexture = blocks[block].downTexture;
+        const sideTexture = blocks[block].rightTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/slab",
+          textures: {},
+        };
+        const blockModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/cube",
+          textures: {},
+        };
+        if (topTexture) {
+          const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const topTexturePath = pathModule.join(
+            blockTextures,
+            `top_${name}.${topTextureType}`
+          );
+          const topTextureData = topTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(topTexturePath, topTextureData, "base64");
+          modelObj.textures.top = `${projectName.toLowerCase()}:block/top_${name}`;
+          blockModelObj.textures.up = `${projectName.toLowerCase()}:block/top_${name}`;
+        }
+        if (bottomTexture) {
+          const bottomTextureType = bottomTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const bottomTexturePath = pathModule.join(
+            blockTextures,
+            `bottom_${name}.${bottomTextureType}`
+          );
+          const bottomTextureData = bottomTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
+          modelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${name}`;
+          blockModelObj.textures.down = `${projectName.toLowerCase()}:block/bottom_${name}`;
+        }
+        if (sideTexture) {
+          const sideTextureType = sideTexture.match(/[^:/]\w+(?=;|,)/)[0];
+          const sideTexturePath = pathModule.join(
+            blockTextures,
+            `side_${name}.${sideTextureType}`
+          );
+          const sideTextureData = sideTexture.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(sideTexturePath, sideTextureData, "base64");
+          modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${name}`;
+          blockModelObj.textures.particle = `${projectName.toLowerCase()}:block/side_${name}`;
+          blockModelObj.textures.north = `${projectName.toLowerCase()}:block/side_${name}`;
+          blockModelObj.textures.south = `${projectName.toLowerCase()}:block/side_${name}`;
+          blockModelObj.textures.east = `${projectName.toLowerCase()}:block/side_${name}`;
+          blockModelObj.textures.west = `${projectName.toLowerCase()}:block/side_${name}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(blockModelPath, blockModelObj);
+        fs.writeJSONSync(topModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/slab_top",
+        });
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
+      } else if (
+        blocks[block].modelType == "blockbench" &&
+        blocks[block].type == "stairs"
+      ) {
+        const innerModelPath = pathModule.join(
+          blockModels,
+          `${name}_inner.json`
+        );
+        const outerModelPath = pathModule.join(
+          blockModels,
+          `${name}_outer.json`
+        );
+        const model = blocks[block].model[0];
+        const innerModel = blocks[block].model[1];
+        const outerModel = blocks[block].model[2];
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const innerModelData = innerModel.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const outerModelData = outerModel.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = blocks[block].texture;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(blockTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(innerModelPath, innerModelData, "base64");
+        fs.writeFileSync(outerModelPath, outerModelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+      } else if (
+        blocks[block].modelType == "blockbench" &&
+        blocks[block].type == "slab"
+      ) {
+        const blockModelPath = pathModule.join(
+          blockModels,
+          `${name}_block.json`
+        );
+        const topModelPath = pathModule.join(blockModels, `${name}_top.json`);
+        const model = blocks[block].model[0];
+        const blockModel = blocks[block].model[1];
+        const topModel = blocks[block].model[2];
+        const modelData = model.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const blockModelData = blockModel.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const topModelData = topModel.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        const textures = blocks[block].texture;
+        textures.forEach((texture) => {
+          const texturePath = pathModule.join(blockTextures, `${texture.name}`);
+          const textureData = texture.data.match(
+            /^data:([A-Za-z-+\/]+);base64,(.+)$/
+          )[2];
+          fs.writeFileSync(texturePath, textureData, "base64");
+        });
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(blockModelPath, blockModelData, "base64");
+        fs.writeFileSync(topModelPath, topModelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
       } else if (blocks[block].modelType == "blockbench") {
         const model = blocks[block].model;
         const modelData = model.data.match(
@@ -772,6 +913,20 @@
             },
           },
         });
+      } else if (blocks[block].type == "slab") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "type=bottom": {
+              model: `${projectName.toLowerCase()}:block/${name}`,
+            },
+            "type=double": {
+              model: `${projectName.toLowerCase()}:block/${name}_block`,
+            },
+            "type=top": {
+              model: `${projectName.toLowerCase()}:block/${name}_top`,
+            },
+          },
+        });
       }
       if (blocks[block].dropItem) {
         if (
@@ -935,11 +1090,23 @@
     const reader = new FileReader();
     reader.onload = function (event) {
       if (i == 0) {
-        blocks[selectedBlock].model = {
+        blocks[selectedBlock].model = [
+          {
+            name: files[i].name,
+            data: event.target.result,
+          },
+        ];
+        blocks[selectedBlock].texture = [];
+      } else if (i == 1 && files[i].name.endsWith(".json")) {
+        blocks[selectedBlock].model.push({
           name: files[i].name,
           data: event.target.result,
-        };
-        blocks[selectedBlock].texture = [];
+        });
+      } else if (i == 2 && files[i].name.endsWith(".json")) {
+        blocks[selectedBlock].model.push({
+          name: files[i].name,
+          data: event.target.result,
+        });
       } else
         blocks[selectedBlock].texture.push({
           name: files[i].name,
@@ -1283,6 +1450,8 @@
               bind:value={blocks[selectedBlock].type}
               ><option value="normal">Normal</option>
               <option value="stairs">Stairs</option>
+              <option value="slab">Slab</option>
+              <option value="doors">Doors</option>
             </select>
           </div>
           <div>
@@ -1400,7 +1569,7 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].breakSound}
             >
-              {#if !Object.keys(sounds)}
+              {#if !Object.keys(sounds).length}
                 <option disabled value={blocks[selectedBlock].breakSound}
                   >No sounds</option
                 >
@@ -1416,7 +1585,7 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].walkSound}
             >
-              {#if !Object.keys(sounds)}
+              {#if !Object.keys(sounds).length}
                 <option disabled value={blocks[selectedBlock].walkSound}
                   >No sounds</option
                 >
@@ -1432,7 +1601,7 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].placeSound}
             >
-              {#if !Object.keys(sounds)}
+              {#if !Object.keys(sounds).length}
                 <option disabled value={blocks[selectedBlock].placeSound}
                   >No sounds</option
                 >
@@ -1448,7 +1617,7 @@
               class="select font-normal text-base w-full"
               bind:value={blocks[selectedBlock].hitSound}
             >
-              {#if !Object.keys(sounds)}
+              {#if !Object.keys(sounds).length}
                 <option disabled value={blocks[selectedBlock].hitSound}
                   >No sounds</option
                 >
@@ -1674,19 +1843,8 @@
                 on:dragover|preventDefault
               />
             </div>
-          {:else if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "stairs"}
+          {:else if blocks[selectedBlock].modelType == "default" && (blocks[selectedBlock].type == "stairs" || blocks[selectedBlock].type == "slab")}
             <div class="col-start-1">
-              <label class="text-lg">Particle Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={blocks[selectedBlock].particleTexture}
-                on:error={fallbackTexture}
-                on:click={chooseParticleTexture}
-                on:drop={setParticleTexture}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
               <label class="text-lg">Top Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"

@@ -37,7 +37,12 @@
     name = `new_loottable_${Object.keys(loottables).length + 1}`;
     loottables[name] = {
       name,
-      for: "none",
+      for:
+        Object.keys(
+          Object.keys(blocks).filter((block) => blocks[block].dropItem)
+        )[0] ??
+        defaultItems[0] ??
+        "",
       json: "{}",
     };
     selectedLoottable = name;
@@ -82,6 +87,13 @@
     loottables = obj;
     Object.keys(loottables).forEach((loottable) => {
       loottables[loottable].name = loottable;
+      loottables[loottable].for = loottables[loottable].for.trim()
+        ? loottables[loottable].for
+        : Object.keys(
+            Object.keys(blocks).filter((block) => blocks[block].dropItem)
+          )[0] ??
+          defaultItems[0] ??
+          loottables[loottable].for;
     });
     selectedLoottable = Object.keys(loottables)[0];
     success("Loottables saved successfully!");
