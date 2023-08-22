@@ -435,8 +435,14 @@
         blocks[block].modelType == "default" &&
         blocks[block].type == "stairs"
       ) {
-        const innerModelPath = pathModule.join(blockModels, `${name}_inner.json`);
-        const outerModelPath = pathModule.join(blockModels, `${name}_outer.json`);
+        const innerModelPath = pathModule.join(
+          blockModels,
+          `${name}_inner.json`
+        );
+        const outerModelPath = pathModule.join(
+          blockModels,
+          `${name}_outer.json`
+        );
         const particleTexture = blocks[block].particleTexture;
         const topTexture = blocks[block].upTexture;
         const bottomTexture = blocks[block].downTexture;
@@ -496,8 +502,14 @@
           modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${name}`;
         }
         fs.writeJSONSync(modelPath, modelObj);
-        fs.writeJSONSync(innerModelPath, Object.assign({parent:"minecraft:block/inner_stairs"}, modelObj));
-        fs.writeJSONSync(outerModelPath, Object.assign({parent:"minecraft:block/outer_stairs"}, modelObj));
+        fs.writeJSONSync(
+          innerModelPath,
+          Object.assign({ parent: "minecraft:block/inner_stairs" }, modelObj)
+        );
+        fs.writeJSONSync(
+          outerModelPath,
+          Object.assign({ parent: "minecraft:block/outer_stairs" }, modelObj)
+        );
         fs.writeJSONSync(itemModelPath, {
           parent: `${projectName.toLowerCase()}:block/${name}`,
         });
@@ -1458,37 +1470,35 @@
               ><option value="normal">Normal</option></select
             >
           </div>
-          {#if blocks[selectedBlock].type == "normal"}
+          <div>
+            <label class="text-lg">Drops Experience?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={blocks[selectedBlock].dropXp}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if blocks[selectedBlock].dropXp}
             <div>
-              <label class="text-lg">Drops Experience?</label>
-              <select
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].dropXp}
-                ><option value={true}>True</option><option value={false}
-                  >False</option
-                ></select
-              >
+              <label class="text-lg">Minimum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].minXp}
+              />
             </div>
-            {#if blocks[selectedBlock].dropXp}
-              <div>
-                <label class="text-lg">Minimum Experience</label>
-                <input
-                  type="number"
-                  min="1"
-                  class="input w-full"
-                  bind:value={blocks[selectedBlock].minXp}
-                />
-              </div>
-              <div>
-                <label class="text-lg">Maximum Experience</label>
-                <input
-                  type="number"
-                  min="1"
-                  class="input w-full"
-                  bind:value={blocks[selectedBlock].maxXp}
-                />
-              </div>
-            {/if}
+            <div>
+              <label class="text-lg">Maximum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={blocks[selectedBlock].maxXp}
+              />
+            </div>
           {/if}
           <div>
             <label class="text-lg">Drops Item?</label>

@@ -4,6 +4,7 @@ import dev.openmod.project.Project;
 import dev.openmod.project.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -252,21 +252,56 @@ public class BlockInit {
             if(!tab.equals("none"))
                 TabInit.tabItems.get(tab).put(name, BLOCKS.register(name, () ->  {
                     if(dropXp) {
-                        DropExperienceBlock block = new DropExperienceBlock(properties, UniformInt.of(minXp, maxXp)) {
-                            @Override
-                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                                if(!ignitedByLava && fire_resistance == 0) {
-                                    return super.getFlammability(state, level, pos, direction);
-                                } else return fire_resistance;
-                            }
-                        };
-                        ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
-                            @Override
-                            public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                                return ((Number) burnTime).intValue();
-                            }
-                        } : new BlockItem(block, itemProperties));
-                        return block;
+                        if(type.equals("normal")) {
+                            Block block = new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }else if(type.equals("stairs")) {
+                            Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }
+                        return null;
                     } else {
                         if(type.equals("normal")) {
                             Block block = new Block(properties) {
@@ -292,8 +327,6 @@ public class BlockInit {
                                         return super.getFlammability(state, level, pos, direction);
                                     } else return fire_resistance;
                                 }
-
-                                ;
                             };
                             ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
                                 @Override
@@ -309,21 +342,56 @@ public class BlockInit {
             else
                 BLOCKS.register(name, () ->  {
                     if(dropXp) {
-                        DropExperienceBlock block = new DropExperienceBlock(properties, UniformInt.of(minXp, maxXp)) {
-                            @Override
-                            public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-                                if(!ignitedByLava && fire_resistance == 0) {
-                                    return super.getFlammability(state, level, pos, direction);
-                                } else return fire_resistance;
-                            }
-                        };
-                        ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
-                            @Override
-                            public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                                return ((Number) burnTime).intValue();
-                            }
-                        } : new BlockItem(block, itemProperties));
-                        return block;
+                        if(type.equals("normal")) {
+                            Block block = new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }else if(type.equals("stairs")) {
+                            Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        }
+                        return null;
                     } else {
                         if(type.equals("normal")) {
                             Block block = new Block(properties) {
@@ -349,8 +417,6 @@ public class BlockInit {
                                         return super.getFlammability(state, level, pos, direction);
                                     } else return fire_resistance;
                                 }
-
-                                ;
                             };
                             ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
                                 @Override
