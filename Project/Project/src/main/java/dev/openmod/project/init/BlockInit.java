@@ -243,7 +243,8 @@ public class BlockInit {
                 }
                 if(aBreakSound != null && aWalkSound != null && aPlaceSound != null && aHitSound != null) break;
             }
-            properties.sound(new ForgeSoundType(1f, 1f, aBreakSound, aWalkSound, aPlaceSound, aHitSound, aWalkSound ));
+            ForgeSoundType soundType = new ForgeSoundType(1f, 1f, aBreakSound, aWalkSound, aPlaceSound, aHitSound, aWalkSound );
+            properties.sound(soundType);
             if(pushReaction.equals("ignore")) properties.pushReaction(PushReaction.IGNORE);
             else if(pushReaction.equals("block")) properties.pushReaction(PushReaction.BLOCK);
             else if(pushReaction.equals("push_only")) properties.pushReaction(PushReaction.PUSH_ONLY);
@@ -334,11 +335,11 @@ public class BlockInit {
                                     aOpenSound = soundEntry.get();
                                 }
                                 if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
-                                    aOpenSound = soundEntry.get();
+                                    aCloseSound = soundEntry.get();
                                 }
                                 if(aOpenSound != null && aCloseSound != null ) break;
                             }
-                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, soundType, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -420,11 +421,11 @@ public class BlockInit {
                                     aOpenSound = soundEntry.get();
                                 }
                                 if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
-                                    aOpenSound = soundEntry.get();
+                                    aCloseSound = soundEntry.get();
                                 }
                                 if(aOpenSound != null && aCloseSound != null ) break;
                             }
-                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, soundType, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -526,11 +527,11 @@ public class BlockInit {
                                     aOpenSound = soundEntry.get();
                                 }
                                 if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
-                                    aOpenSound = soundEntry.get();
+                                    aCloseSound = soundEntry.get();
                                 }
                                 if(aOpenSound != null && aCloseSound != null ) break;
                             }
-                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, soundType, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -612,11 +613,11 @@ public class BlockInit {
                                     aOpenSound = soundEntry.get();
                                 }
                                 if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
-                                    aOpenSound = soundEntry.get();
+                                    aCloseSound = soundEntry.get();
                                 }
                                 if(aOpenSound != null && aCloseSound != null ) break;
                             }
-                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, soundType, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
