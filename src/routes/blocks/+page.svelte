@@ -181,7 +181,6 @@
       modelType: "default",
       model: "",
       texture: [],
-      itemTexture: "",
       particleTexture: "",
       upTexture: "",
       downTexture: "",
@@ -352,7 +351,6 @@
         blocks[block].modelType == "default" &&
         blocks[block].type == "normal"
       ) {
-        const itemTexture = blocks[block].itemTexture;
         const particleTexture = blocks[block].particleTexture;
         const upTexture = blocks[block].upTexture;
         const downTexture = blocks[block].downTexture;
@@ -360,27 +358,12 @@
         const backTexture = blocks[block].backTexture;
         const rightTexture = blocks[block].rightTexture;
         const leftTexture = blocks[block].leftTexture;
-        const itemModelObj = {
-          parent: "minecraft:item/generated",
-          textures: {},
-        };
         const modelObj = {
           render_type: "minecraft:cutout",
           parent: "minecraft:block/cube",
           textures: {},
         };
-        if (itemTexture) {
-          const itemTextureType = itemTexture.match(/[^:/]\w+(?=;|,)/)[0];
-          const itemTexturePath = pathModule.join(
-            blockTextures,
-            `${name}_item.${itemTextureType}`
-          );
-          const itemTextureData = itemTexture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-          itemModelObj.textures.layer0 = `${projectName.toLowerCase()}:block/${name}_item`;
-        } else if (particleTexture) {
+        if (particleTexture) {
           const particleTextureType =
             particleTexture.match(/[^:/]\w+(?=;|,)/)[0];
           const particleTexturePath = pathModule.join(
@@ -466,7 +449,9 @@
           modelObj.textures.west = `${projectName.toLowerCase()}:block/left_${name}`;
         }
         fs.writeJSONSync(modelPath, modelObj);
-        fs.writeJSONSync(itemModelPath, itemModelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
       } else if (
         blocks[block].modelType == "default" &&
         blocks[block].type == "stairs"
@@ -479,31 +464,15 @@
           blockModels,
           `${name}_outer.json`
         );
-        const itemTexture = blocks[block].itemTexture;
         const topTexture = blocks[block].upTexture;
         const bottomTexture = blocks[block].downTexture;
         const sideTexture = blocks[block].rightTexture;
-        const itemModelObj = {
-          parent: "minecraft:item/generated",
-          textures: {},
-        };
         const modelObj = {
           render_type: "minecraft:cutout",
           parent: "minecraft:block/stairs",
           textures: {},
         };
-        if (itemTexture) {
-          const itemTextureType = itemTexture.match(/[^:/]\w+(?=;|,)/)[0];
-          const itemTexturePath = pathModule.join(
-            blockTextures,
-            `${name}_item.${itemTextureType}`
-          );
-          const itemTextureData = itemTexture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-          itemModelObj.textures.layer0 = `${projectName.toLowerCase()}:block/${name}_item`;
-        } else if (topTexture) {
+        if (topTexture) {
           const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
           const topTexturePath = pathModule.join(
             blockTextures,
@@ -548,7 +517,9 @@
           ...modelObj,
           parent: "minecraft:block/outer_stairs",
         });
-        fs.writeJSONSync(itemModelPath, itemModelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
       } else if (
         blocks[block].modelType == "default" &&
         blocks[block].type == "slab"
@@ -558,14 +529,9 @@
           `${name}_block.json`
         );
         const topModelPath = pathModule.join(blockModels, `${name}_top.json`);
-        const itemTexture = blocks[block].itemTexture;
         const topTexture = blocks[block].upTexture;
         const bottomTexture = blocks[block].downTexture;
         const sideTexture = blocks[block].rightTexture;
-        const itemModelObj = {
-          parent: "minecraft:item/generated",
-          textures: {},
-        };
         const modelObj = {
           render_type: "minecraft:cutout",
           parent: "minecraft:block/slab",
@@ -576,18 +542,7 @@
           parent: "minecraft:block/cube",
           textures: {},
         };
-        if (itemTexture) {
-          const itemTextureType = itemTexture.match(/[^:/]\w+(?=;|,)/)[0];
-          const itemTexturePath = pathModule.join(
-            blockTextures,
-            `${name}_item.${itemTextureType}`
-          );
-          const itemTextureData = itemTexture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-          itemModelObj.textures.layer0 = `${projectName.toLowerCase()}:block/${name}_item`;
-        } else if (topTexture) {
+       if (topTexture) {
           const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
           const topTexturePath = pathModule.join(
             blockTextures,
@@ -636,7 +591,9 @@
           ...modelObj,
           parent: "minecraft:block/slab_top",
         });
-        fs.writeJSONSync(itemModelPath, itemModelObj);
+         fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
       } else if (
         blocks[block].modelType == "default" &&
         blocks[block].type == "door"
@@ -669,13 +626,8 @@
           blockModels,
           `${name}_top_right_open.json`
         );
-        const itemTexture = blocks[block].itemTexture;
         const topTexture = blocks[block].upTexture;
         const bottomTexture = blocks[block].downTexture;
-        const itemModelObj = {
-          parent: "minecraft:item/generated",
-          textures: {},
-        };
         const modelObj = {
           render_type: "minecraft:cutout",
           parent: "minecraft:block/door_bottom_left",
@@ -716,18 +668,6 @@
           parent: "minecraft:block/door_top_right_open",
           textures: {},
         };
-        if (itemTexture) {
-          const itemTextureType = itemTexture.match(/[^:/]\w+(?=;|,)/)[0];
-          const itemTexturePath = pathModule.join(
-            blockTextures,
-            `${name}_item.${itemTextureType}`
-          );
-          const itemTextureData = itemTexture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-          itemModelObj.textures.layer0 = `${projectName.toLowerCase()}:block/${name}_item`;
-        }
         if (topTexture) {
           const topTextureType = topTexture.match(/[^:/]\w+(?=;|,)/)[0];
           const topTexturePath = pathModule.join(
@@ -774,7 +714,9 @@
         fs.writeJSONSync(topLeftOpenModelPath, topLeftOpenModelObj);
         fs.writeJSONSync(topRightModelPath, topRightModelObj);
         fs.writeJSONSync(topRightOpenModelPath, topRightOpenModelObj);
-        fs.writeJSONSync(itemModelPath, itemModelObj);
+          fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${name}`,
+        });
       } else if (
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "stairs"
@@ -1531,24 +1473,6 @@
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
   }
-  async function chooseItemTexture() {
-    const response = await ipc.invoke("dialog", "openFile", "png");
-    if (response) {
-      const texture = fs.readFileSync(
-        response.filePaths[0].split("\\").join("/"),
-        "base64"
-      );
-      blocks[selectedBlock].itemTexture = `data:image/png;base64,${texture}`;
-    }
-  }
-  function setItemTexture(ev) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      blocks[selectedBlock].itemTexture = event.target.result;
-      send_changes({ file: "blocks.json", content: blocks });
-    };
-    reader.readAsDataURL(ev.dataTransfer.files[0]);
-  }
   async function chooseParticleTexture() {
     const response = await ipc.invoke("dialog", "openFile", "png");
     if (response) {
@@ -2239,18 +2163,6 @@
                 on:error={fallbackTexture}
                 on:click={chooseModel}
                 on:drop={setModel}
-                on:dragover|preventDefault
-              />
-            </div>
-          {:else if blocks[selectedBlock].modelType == "default"}
-            <div class="col-start-1">
-              <label class="text-lg">Item Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={blocks[selectedBlock].itemTexture}
-                on:error={fallbackTexture}
-                on:click={chooseItemTexture}
-                on:drop={setItemTexture}
                 on:dragover|preventDefault
               />
             </div>
