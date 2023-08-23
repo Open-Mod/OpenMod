@@ -216,7 +216,7 @@
             >
           </div>
           <div>
-            <label class="text-lg">Hide Display Name?</label>
+            <label class="text-lg">Can Hide Display Name?</label>
             <select
               class="select font-normal text-base w-full"
               bind:value={tabs[selectedTab].hideTitle}
@@ -226,7 +226,7 @@
             >
           </div>
           <div>
-            <label class="text-lg">Hide Scrollbar?</label>
+            <label class="text-lg">Can Hide Scrollbar?</label>
             <select
               class="select font-normal text-base w-full"
               bind:value={tabs[selectedTab].noScrollbar}

@@ -16,12 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -64,9 +62,12 @@ public class BlockInit {
             String walkSound = (String) data.get("walkSound");
             String placeSound = (String) data.get("placeSound");
             String hitSound = (String) data.get("hitSound");
+            String openSound = (String) data.get("openSound");
+            String closeSound = (String) data.get("closeSound");
             String pushReaction = (String) data.get("pushReaction");
             String minedBy = (String) data.get("minedBy");
             String rarity = (String) data.get("rarity");
+            boolean openedByHand = (boolean) data.get("openedByHand");
             boolean dropXp = (boolean) data.get("dropXp");
             boolean dropItem = (boolean) data.get("dropItem");
             boolean ignitedByLava = (boolean) data.get("ignitedByLava");
@@ -301,8 +302,43 @@ public class BlockInit {
                                 }
                             } : new BlockItem(block, itemProperties));
                             return block;
-                        } else if(type.equals("slabs")) {
+                        } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        } else if(type.equals("door")) {
+                            SoundEvent aOpenSound = null;
+                            SoundEvent aCloseSound = null;
+                            for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                                if(openSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(aOpenSound != null && aCloseSound != null ) break;
+                            }
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -360,8 +396,35 @@ public class BlockInit {
                                 }
                             } : new BlockItem(block, itemProperties));
                             return block;
-                        }  else if(type.equals("slabs")) {
+                        } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        } else if(type.equals("door")) {
+                            SoundEvent aOpenSound = null;
+                            SoundEvent aCloseSound = null;
+                            for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                                if(openSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(aOpenSound != null && aCloseSound != null ) break;
+                            }
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -431,8 +494,43 @@ public class BlockInit {
                                 }
                             } : new BlockItem(block, itemProperties));
                             return block;
-                        } else if(type.equals("slabs")) {
+                        } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        } else if(type.equals("door")) {
+                            SoundEvent aOpenSound = null;
+                            SoundEvent aCloseSound = null;
+                            for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                                if(openSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(aOpenSound != null && aCloseSound != null ) break;
+                            }
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -490,8 +588,35 @@ public class BlockInit {
                                 }
                             } : new BlockItem(block, itemProperties));
                             return block;
-                        }  else if(type.equals("slabs")) {
+                        } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            };
+                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                                @Override
+                                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                                    return ((Number) burnTime).intValue();
+                                }
+                            } : new BlockItem(block, itemProperties));
+                            return block;
+                        } else if(type.equals("door")) {
+                            SoundEvent aOpenSound = null;
+                            SoundEvent aCloseSound = null;
+                            for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                                if(openSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(closeSound.equals(soundEntry.getKey().location().getPath()) && type.equals("door")) {
+                                    aOpenSound = soundEntry.get();
+                                }
+                                if(aOpenSound != null && aCloseSound != null ) break;
+                            }
+                            Block block = new DoorBlock(properties, new BlockSetType(name, openedByHand, SoundType.EMPTY, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound, aCloseSound, aOpenSound)) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {

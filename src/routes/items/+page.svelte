@@ -550,7 +550,7 @@
         <Accordion title="Food">
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="text-lg">Always Eatable?</label>
+              <label class="text-lg">Is Always Eatable?</label>
               <select
                 class="select font-normal text-base w-full"
                 bind:value={items[selectedItem].food_alwaysEat}
@@ -560,7 +560,7 @@
               >
             </div>
             <div>
-              <label class="text-lg">Eat Fast?</label>
+              <label class="text-lg">Can Be Eaten Fast?</label>
               <select
                 class="select font-normal text-base w-full"
                 bind:value={items[selectedItem].food_fast}
@@ -698,7 +698,7 @@
                   >
                 </div>
                 <div>
-                  <label class="text-lg">Show Icon?</label>
+                  <label class="text-lg">Can Show Icon?</label>
                   <select
                     class="select font-normal text-base w-full"
                     bind:value={effect.showIcon}
