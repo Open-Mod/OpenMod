@@ -13,6 +13,7 @@
   let itemsPath = "";
   let blocksPath = "";
   let soundsPath = "";
+  let projectName = "";
   onMount(() => {
     if (!selected) {
       error("Please select a project!");
@@ -24,6 +25,9 @@
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     materials = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
@@ -96,8 +100,8 @@
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const texture1 = tools[tool].texture[0];
-      const texture2 = tools[tool].texture[1];
+      const texture1 = materials[material].texture[0];
+      const texture2 = materials[material].texture[1];
       if (texture1) {
         const textureType = texture1.match(/[^:/]\w+(?=;|,)/)[0];
         const texturePath = pathModule.join(
@@ -325,7 +329,7 @@
             />
           </div>
           <div>
-            <label class="text-lg">Toughness (%)</label>
+            <label class="text-lg">Toughness</label>
             <input
               type="number"
               min="1"
@@ -334,7 +338,7 @@
             />
           </div>
           <div>
-            <label class="text-lg">Knockback Resistance (%)</label>
+            <label class="text-lg">Knockback Resistance</label>
             <input
               type="number"
               min="0"

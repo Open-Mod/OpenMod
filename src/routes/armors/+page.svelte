@@ -136,9 +136,7 @@
       fuel: false,
       fireResistant: false,
       setRepair: true,
-      modelType: "default",
       model: "",
-      texture: [""],
       burnTime: 1,
       node_data: {
         connected_nodes: [],
@@ -160,16 +158,6 @@
   }
   function save() {
     const obj = {};
-    const armorTextures = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "textures",
-      "item"
-    );
     const armorModels = pathModule.join(
       projectPath,
       "src",
@@ -180,25 +168,6 @@
       "models",
       "item"
     );
-    const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    Object.keys(old).forEach((armor) => {
-      if (old[armor].modelType == "default") {
-        old[armor].texture
-          .filter((el) => el.length)
-          .forEach((texture) => {
-            const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-            fs.rmSync(
-              pathModule.join(armorTextures, `${armor}.${textureType}`)
-            );
-          });
-      } else if (old[armor].modelType == "blockbench") {
-        old[armor].texture
-          .filter((el) => el.length)
-          .forEach((texture) => {
-            fs.rmSync(pathModule.join(armorTextures, `${texture.name}`));
-          });
-      }
-    });
     Object.keys(armors).forEach((armor) => {
       const oldModel = pathModule.join(armorModels, `${armor}.json`);
       if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
@@ -208,40 +177,12 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(armorModels, `${name}.json`);
-      if (armors[armor].modelType == "default") {
-        const texture = armors[armor].texture[0];
-        if (texture) {
-          const textureType = texture.match(/[^:/]\w+(?=;|,)/)[0];
-          const texturePath = pathModule.join(
-            armorTextures,
-            `${name}.${textureType}`
-          );
-          const textureData = texture.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-          fs.writeJSONSync(modelPath, {
-            parent: "minecraft:item/generated",
-            textures: {
-              layer0: `${projectName.toLowerCase()}:item/${name}`,
-            },
-          });
-        }
-      } else if (armors[armor].modelType == "blockbench") {
-        const model = armors[armor].model;
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const textures = armors[armor].texture;
-        textures.forEach((texture) => {
-          const texturePath = pathModule.join(armorTextures, `${texture.name}`);
-          const textureData = texture.data.match(
-            /^data:([A-Za-z-+\/]+);base64,(.+)$/
-          )[2];
-          fs.writeFileSync(texturePath, textureData, "base64");
-        });
-        fs.writeFileSync(modelPath, modelData, "base64");
-      }
+      fs.writeJSONSync(modelPath, {
+        parent: "minecraft:item/generated",
+        textures: {
+          layer0: `${projectName.toLowerCase()}:item/${name}`,
+        },
+      });
       Object.keys(armors[armor]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = armors[armor][property];
@@ -262,75 +203,6 @@
     selectedArmor = Object.keys(armors)[0];
     updateEditor();
     send_changes({ file: "armors.json", content: armors });
-  }
-  async function chooseModel() {
-    const response = await ipc.invoke("dialog", [
-      "openFile",
-      "multiSelections",
-    ]);
-    if (response) {
-      const paths = response.filePaths
-        .sort((file) => (file.endsWith(".json") ? -1 : 1))
-        .map((file) => ({
-          name: file.split("\\")[file.split("\\").length - 1],
-          data: `data:${
-            file.endsWith(".json") ? `application/json` : `image/png`
-          };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
-        }));
-      const model = paths.shift();
-      armors[selectedArmor].model = model;
-      armors[selectedArmor].texture = paths;
-      send_changes({ file: "armors.json", content: armors });
-    }
-  }
-  function setModel(ev) {
-    let i = 0;
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      if (i == 0) {
-        armors[selectedArmor].model = {
-          name: files[i].name,
-          data: event.target.result,
-        };
-        armors[selectedArmor].texture = [];
-      } else
-        armors[selectedArmor].texture.push({
-          name: files[i].name,
-          data: event.target.result,
-        });
-    };
-    reader.onloadend = function () {
-      i++;
-      if (!files[i])
-        return send_changes({ file: "armors.json", content: armors });
-      reader.readAsDataURL(files[i]);
-    };
-    const files = [...ev.dataTransfer.files].sort((file) =>
-      file.name.endsWith(".json") ? -1 : 1
-    );
-    reader.readAsDataURL(files[0]);
-  }
-  function fallbackTexture(ev) {
-    ev.target.src = "/images/dropzone.png";
-  }
-  async function chooseTexture() {
-    const response = await ipc.invoke("dialog", "openFile", "png");
-    if (response) {
-      const texture = fs.readFileSync(
-        response.filePaths[0].split("\\").join("/"),
-        "base64"
-      );
-      armors[selectedArmor].texture[0] = `data:image/png;base64,${texture}`;
-      send_changes({ file: "armors.json", content: armors });
-    }
-  }
-  function setTexture(ev) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      armors[selectedArmor].texture[0] = event.target.result;
-      send_changes({ file: "armors.json", content: armors });
-    };
-    reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
   let editor;
   function setEditor() {
@@ -531,42 +403,6 @@
               ></select
             >
           </div>
-          <div>
-            <label class="text-lg">Model Type</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={armors[selectedArmor].modelType}
-            >
-              <option value="default">Default</option>
-              <option value="blockbench">Blockbench</option>
-            </select>
-          </div>
-          {#if armors[selectedArmor].modelType == "blockbench"}
-            <div class="col-start-1">
-              <label class="text-lg">Textures & Model</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={armors[selectedArmor].texture[0]?.data ?? ""}
-                on:error={fallbackTexture}
-                on:click={chooseModel}
-                on:drop={setModel}
-                on:dragover|preventDefault
-              />
-            </div>
-          {/if}
-          {#if armors[selectedArmor].modelType == "default"}
-            <div class="col-start-1">
-              <label class="text-lg">Item Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={armors[selectedArmor].texture[0]}
-                on:error={fallbackTexture}
-                on:click={chooseTexture}
-                on:drop={setTexture}
-                on:dragover|preventDefault
-              />
-            </div>
-          {/if}
         </div>
       </Accordion>
       <Accordion title="Events" style="overflow:hidden;" mount={setEditor}>
