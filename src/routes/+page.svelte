@@ -71,6 +71,26 @@
       "gradle.properties"
     );
     const propertiesData = fs.readFileSync(properties).toString();
+    const animations = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "animations"
+    );
+    const geo = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "geo"
+    );
     const sounds = pathModule.join(
       projectPath,
       "Project",
@@ -245,6 +265,8 @@
         .replace("${project}", name.toLowerCase())
         .replace("${Project}", name.replace(/_/g, " "))
     );
+    fs.ensureDirSync(animations);
+    fs.ensureDirSync(geo);
     fs.ensureDirSync(sounds);
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);

@@ -40,18 +40,18 @@ public class MaterialInit {
                     aEquipSound = soundEntry.get();
                     break;
                 }
-                materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
-                    Item item = null;
-                    for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                        if(repairIngredient.equals(itemEntry.getKey().location().getPath())) {
-                            item = itemEntry.get();
-                            break;
-                        }
-                    }
-                    if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
-                    return Ingredient.of(item);
-                }, name, toughness, knockbackResistance));
             }
+            materialItems.put(name, new ModArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
+                Item item = null;
+                for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
+                    if(repairIngredient.equals(itemEntry.getKey().location().getPath())) {
+                        item = itemEntry.get();
+                        break;
+                    }
+                }
+                if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
+                return Ingredient.of(item);
+            }, name, toughness, knockbackResistance));
         }
     }
 }

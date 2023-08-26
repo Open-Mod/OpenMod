@@ -721,6 +721,9 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "stairs"
       ) {
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:item/${name}`,
+        });
         const innerModelPath = pathModule.join(
           blockModels,
           `${name}_inner.json`
@@ -757,6 +760,9 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "slab"
       ) {
+         fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:item/${name}`,
+        });
         const blockModelPath = pathModule.join(
           blockModels,
           `${name}_block.json`
@@ -790,6 +796,9 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "door"
       ) {
+         fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:item/${name}`,
+        });
         const bottomLeftOpenModelPath = pathModule.join(
           blockModels,
           `${name}_bottom_left_open.json`
@@ -876,6 +885,9 @@
         fs.writeFileSync(topRightOpenModel, topRightOpenModelData, "base64");
         fs.writeFileSync(itemModelPath, modelData, "base64");
       } else if (blocks[block].modelType == "blockbench") {
+         fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:item/${name}`,
+        });
         const model = blocks[block].model;
         const modelData = model.data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
@@ -1425,9 +1437,11 @@
             file.endsWith(".json") ? `application/json` : `image/png`
           };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
         }));
-      const model = paths.shift();
-      blocks[selectedBlock].model = model;
-      blocks[selectedBlock].texture = paths;
+      blocks[selectedBlock].model = [];
+      paths.filter(path => path.name.endsWith(".json")).forEach(path => {
+        blocks[selectedBlock].model.push(path);
+      })
+      blocks[selectedBlock].texture = paths.filter(path => !path.name.endsWith(".json"));
       send_changes({ file: "blocks.json", content: blocks });
     }
   }
