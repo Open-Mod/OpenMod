@@ -255,6 +255,17 @@
       "worldgen",
       "placed_feature"
     );
+    const worldgenBiomes = pathModule.join(
+      projectPath,
+      "Project",
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "biomes"
+    );
     fs.writeFileSync(
       project,
       projectData.replace("${project}", projectName.trim().toLowerCase())
@@ -282,6 +293,7 @@
     fs.ensureDirSync(biomeModifier);
     fs.ensureDirSync(worldgenConfigured);
     fs.ensureDirSync(worldgenPlaced);
+    fs.ensureDirSync(worldgenBiomes);
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
     success = "Project created successfully!";
     setTimeout(() => {

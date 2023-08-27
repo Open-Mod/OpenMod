@@ -76,6 +76,13 @@
     const recipes = fs.existsSync(recipesFile)
       ? fs.readJSONSync(recipesFile)
       : {};
+    const biomesFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "recipes.json"
+    );
+    const biomes = fs.existsSync(biomesFile) ? fs.readJSONSync(biomesFile) : {};
     const loottablesFile = pathModule.join(
       projectPath,
       "src",
@@ -610,6 +617,21 @@
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Cooking Time" of recipe "${recipe}" must not be empty!`
+            );
+        }
+      });
+    });
+    Object.keys(biomes).forEach((biome) => {
+      Object.keys(biomes[biome]).forEach((property) => {
+        if (
+          biomes[biome][property] == null ||
+          String(biomes[biome][property]).trim() == ""
+        ) {
+          if (property == "json")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Biome JSON" of biome "${biome}" must not be empty!`
             );
         }
       });
