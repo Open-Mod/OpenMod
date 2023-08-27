@@ -260,7 +260,7 @@
         );
         const textures = armors[armor].texture;
         const texturePath = pathModule.join(armorTextures, `${name}.png`);
-        const textureData = textures[1].data.match(
+        const textureData = textures[0].data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
         )[2];
         fs.writeFileSync(texturePath, textureData, "base64");
@@ -297,10 +297,11 @@
     send_changes({ file: "armors.json", content: armors });
   }
   async function chooseModel() {
-    const response = await ipc.invoke("dialog", [
-      "openFile",
-      "multiSelections"
-    ],["json", "png"]);
+    const response = await ipc.invoke(
+      "dialog",
+      ["openFile", "multiSelections"],
+      ["json", "png"]
+    );
     if (response) {
       const paths = response.filePaths
         .sort((file) => (file.endsWith(".json") ? -1 : 1))
@@ -313,9 +314,9 @@
       armors[selectedArmor].model = [
         paths.find((path) => path.name.endsWith(".geo.json")),
       ];
-      armors[selectedArmor].texture = paths
-        .filter((path) => !path.name.endsWith(".json"))
-        .sort((path) => (path.name.startsWith("item") ? -1 : 1));
+      armors[selectedArmor].texture = paths.filter(
+        (path) => !path.name.endsWith(".json")
+      );
       send_changes({ file: "armors.json", content: armors });
     }
   }
