@@ -267,7 +267,7 @@
     const response = await ipc.invoke("dialog", [
       "openFile",
       "multiSelections",
-    ]);
+    ], ["json", "png"]);
     if (response) {
       const paths = response.filePaths
         .sort((file) => (file.endsWith(".json") ? -1 : 1))

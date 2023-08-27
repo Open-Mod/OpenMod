@@ -224,11 +224,22 @@
         .toLowerCase();
       obj[name] = {};
       const modelPath = pathModule.join(armorModels, `${name}.json`);
+      const itemTexture = armors[armor].itemTexture;
+      if (itemTexture) {
+        const itemTexturePath = pathModule.join(
+          armorTextures,
+          `${name}_item.png`
+        );
+        const itemTextureData = itemTexture.data.match(
+          /^data:([A-Za-z-+\/]+);base64,(.+)$/
+        )[2];
+        fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
+      }
       if (armors[armor].modelType == "default") {
         fs.writeJSONSync(modelPath, {
           parent: "minecraft:item/generated",
           textures: {
-            layer0: `${projectName.toLowerCase()}:item/${name}`,
+            layer0: `${projectName.toLowerCase()}:item/${name}_item`,
           },
         });
       } else if (armors[armor].modelType == "blockbench") {
@@ -248,18 +259,10 @@
           `${name}.animation.json`
         );
         const textures = armors[armor].texture;
-        const itemTexturePath = pathModule.join(
-          armorTextures,
-          `${name}_item.png`
-        );
-        const itemTextureData = textures[0].data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
         const texturePath = pathModule.join(armorTextures, `${name}.png`);
         const textureData = textures[1].data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
         )[2];
-        fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
         fs.writeFileSync(texturePath, textureData, "base64");
         fs.writeFileSync(geoPath, modelData, "base64");
         fs.writeJSONSync(animationPath, {
@@ -296,8 +299,8 @@
   async function chooseModel() {
     const response = await ipc.invoke("dialog", [
       "openFile",
-      "multiSelections",
-    ]);
+      "multiSelections"
+    ],["json", "png"]);
     if (response) {
       const paths = response.filePaths
         .sort((file) => (file.endsWith(".json") ? -1 : 1))
@@ -349,6 +352,32 @@
       file.name.endsWith(".json") ? -1 : 1
     );
     reader.readAsDataURL(files[0]);
+  }
+  async function chooseItemTexture() {
+    const response = await ipc.invoke("dialog", ["openFile"], ["png"]);
+    if (response) {
+      const file = response.filePaths[0];
+      armors[selectedArmor].itemTexture = {
+        name: file.split("\\")[file.split("\\").length - 1],
+        data: `data:${
+          file.endsWith(".json") ? `application/json` : `image/png`
+        };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
+      };
+      send_changes({ file: "armors.json", content: armors });
+    }
+  }
+  function setItemTexture(ev) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      armors[selectedArmor].itemTexture = {
+        name: files[i].name,
+        data: event.target.result,
+      };
+    };
+    reader.onloadend = function () {
+      return send_changes({ file: "armors.json", content: armors });
+    };
+    reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
@@ -562,12 +591,23 @@
               <option value="blockbench">Blockbench</option>
             </select>
           </div>
+          <div class="col-start-1">
+            <label class="text-lg">Item Texture</label>
+            <img
+              class="w-48 h-48 cursor-pointer rounded-lg"
+              src={armors[selectedArmor].itemTexture?.data ?? ""}
+              on:error={fallbackTexture}
+              on:click={chooseItemTexture}
+              on:drop={setItemTexture}
+              on:dragover|preventDefault
+            />
+          </div>
           {#if armors[selectedArmor].modelType == "blockbench"}
             <div class="col-start-1">
               <label class="text-lg">Textures & Model</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={armors[selectedArmor].texture[0]?.data ?? ""}
+                src={armors[selectedArmor].texture[1]?.data ?? ""}
                 on:error={fallbackTexture}
                 on:click={chooseModel}
                 on:drop={setModel}
