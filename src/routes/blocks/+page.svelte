@@ -721,9 +721,6 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "stairs"
       ) {
-        fs.writeJSONSync(itemModelPath, {
-          parent: `${projectName.toLowerCase()}:item/${name}`,
-        });
         const innerModelPath = pathModule.join(
           blockModels,
           `${name}_inner.json`
@@ -760,9 +757,6 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "slab"
       ) {
-         fs.writeJSONSync(itemModelPath, {
-          parent: `${projectName.toLowerCase()}:item/${name}`,
-        });
         const blockModelPath = pathModule.join(
           blockModels,
           `${name}_block.json`
@@ -796,9 +790,6 @@
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "door"
       ) {
-         fs.writeJSONSync(itemModelPath, {
-          parent: `${projectName.toLowerCase()}:item/${name}`,
-        });
         const bottomLeftOpenModelPath = pathModule.join(
           blockModels,
           `${name}_bottom_left_open.json`
@@ -847,7 +838,7 @@
         const bottomRightOpenModelData = bottomRightOpenModel.data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
         )[2];
-        const topLeftModelData = topLeftModelData.data.match(
+        const topLeftModelData = topLeftModel.data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
         )[2];
         const topLeftOpenModelData = topLeftOpenModel.data.match(
@@ -869,7 +860,7 @@
         });
         fs.writeFileSync(modelPath, modelData, "base64");
         fs.writeFileSync(
-          bottomLeftOpenModel,
+          bottomLeftOpenModelPath,
           bottomLeftOpenModelData,
           "base64"
         );
@@ -880,14 +871,11 @@
           "base64"
         );
         fs.writeFileSync(topLeftModelPath, topLeftModelData, "base64");
-        fs.writeFileSync(topLeftOpenModel, topLeftOpenModelData, "base64");
+        fs.writeFileSync(topLeftOpenModelPath, topLeftOpenModelData, "base64");
         fs.writeFileSync(topRightModelPath, topRightModelData, "base64");
-        fs.writeFileSync(topRightOpenModel, topRightOpenModelData, "base64");
+        fs.writeFileSync(topRightOpenModelPath, topRightOpenModelData, "base64");
         fs.writeFileSync(itemModelPath, modelData, "base64");
       } else if (blocks[block].modelType == "blockbench") {
-         fs.writeJSONSync(itemModelPath, {
-          parent: `${projectName.toLowerCase()}:item/${name}`,
-        });
         const model = blocks[block].model;
         const modelData = model.data.match(
           /^data:([A-Za-z-+\/]+);base64,(.+)$/
