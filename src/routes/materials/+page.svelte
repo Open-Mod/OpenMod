@@ -43,7 +43,7 @@
         : Object.keys(tools)[0] ??
           Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
-          materials[material].repairIngredient;
+          defaultItems[0];
     });
     selectedMaterial = Object.keys(materials)[0] ?? "";
     window.on_change = (data) => {
@@ -77,53 +77,16 @@
       texture: ["", ""],
     };
     selectedMaterial = name;
-    send_changes({ file: "materials.json", content: materials });
+    send_changes({ file: "materials.json", data: materials });
   }
   function save() {
     const obj = {};
-    const textureArmorModels = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "textures",
-      "models",
-      "armor"
-    );
-    fs.rmSync(textureArmorModels, { recursive: true, force: true });
-    fs.mkdirSync(textureArmorModels);
     Object.keys(materials).forEach((material) => {
       const name = materials[material].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const texture1 = materials[material].texture[0];
-      const texture2 = materials[material].texture[1];
-      if (texture1) {
-        const textureType = texture1.match(/[^:/]\w+(?=;|,)/)[0];
-        const texturePath = pathModule.join(
-          textureArmorModels,
-          `${name}.${textureType}`
-        );
-        const textureData = texture1.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(texturePath, textureData, "base64");
-      }
-      if (texture2) {
-        const textureType = texture2.match(/[^:/]\w+(?=;|,)/)[0];
-        const texturePath = pathModule.join(
-          textureArmorModels,
-          `${name}.${textureType}`
-        );
-        const textureData = texture2.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(texturePath, textureData, "base64");
-      }
       Object.keys(materials[material]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = materials[material][property];
@@ -134,7 +97,9 @@
     Object.keys(materials).forEach((material) => {
       materials[material].name = material;
     });
-    selectedMaterial = Object.keys(materials)[0];
+    selectedMaterial = materials[selectedMaterial]
+      ? selectedMaterial
+      : Object.keys(materials)[0];
     success("Materials saved successfully!");
   }
   function deleteMaterial() {
@@ -142,7 +107,7 @@
     delete materials[selectedMaterial];
     materials = materials;
     selectedMaterial = Object.keys(materials)[0];
-    send_changes({ file: "materials.json", content: materials });
+    send_changes({ file: "materials.json", data: materials });
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
@@ -157,14 +122,14 @@
       materials[selectedMaterial].texture = [
         `data:image/png;base64,${texture}`,
       ];
-      send_changes({ file: "tools.json", content: tools });
+      send_changes({ file: "tools.json", data: tools });
     }
   }
   function setTexture1(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       materials[selectedMaterial].texture[0] = event.target.result;
-      send_changes({ file: "tools.json", content: tools });
+      send_changes({ file: "tools.json", data: tools });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -178,14 +143,14 @@
       material[
         selectedMaterial
       ].texture[1] = `data:image/png;base64,${texture}`;
-      send_changes({ file: "tools.json", content: tools });
+      send_changes({ file: "tools.json", data: tools });
     }
   }
   function setTexture2(ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
       materials[selectedMaterial].texture = [event.target.result];
-      send_changes({ file: "tools.json", content: tools });
+      send_changes({ file: "tools.json", data: tools });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }

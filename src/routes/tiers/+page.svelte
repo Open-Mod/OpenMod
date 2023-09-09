@@ -33,12 +33,13 @@
         : Object.keys(tools)[0] ??
           Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
-          tiers[tier].repairIngredient;
+          defaultItems[0];
     });
     selectedTier = Object.keys(tiers)[0] ?? "";
     window.on_change = (data) => {
       if (data.file.file != "tiers.json") return;
       tiers = data.file.content;
+      updateEditor();
     };
   });
   let selectedTier = "";
@@ -50,7 +51,7 @@
       level: 0,
       uses: 1,
       enchantmentValue: 15,
-      attackSpeed: 100,
+      attackSpeed: 0.1,
       attackDamageBonus: 0,
       repairIngredient:
         Object.keys(tools)[0] ??
@@ -59,7 +60,7 @@
         defaultItems[0],
     };
     selectedTier = name;
-    send_changes({ file: "tiers.json", content: tiers });
+    send_changes({ file: "tiers.json", data: tiers });
   }
   function save() {
     const obj = {};
@@ -79,7 +80,7 @@
     Object.keys(tiers).forEach((tier) => {
       tiers[tier].name = tier;
     });
-    selectedTier = Object.keys(tiers)[0];
+    selectedTier = tiers[selectedTier] ? selectedTier : Object.keys(tiers)[0];
     success("Tiers saved successfully!");
   }
   function deleteTier() {
@@ -88,7 +89,7 @@
     tiers = tiers;
     selectedTier = Object.keys(tiers)[0];
     updateEditor();
-    send_changes({ file: "tiers.json", content: tiers });
+    send_changes({ file: "tiers.json", data: tiers });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -176,19 +177,21 @@
             />
           </div>
           <div>
-            <label class="text-lg">Attack Speed (%)</label>
+            <label class="text-lg">Attack Speed</label>
             <input
               type="number"
-              min="1"
+              min="0.1"
+              step="0.1"
               class="input w-full"
               bind:value={tiers[selectedTier].attackSpeed}
             />
           </div>
           <div>
-            <label class="text-lg">Attack Damage Bonus (%)</label>
+            <label class="text-lg">Attack Damage Bonus</label>
             <input
               type="number"
               min="0"
+              step="0.1"
               class="input w-full"
               bind:value={tiers[selectedTier].attackDamageBonus}
             />

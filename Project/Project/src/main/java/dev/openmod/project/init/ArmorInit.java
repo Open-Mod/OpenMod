@@ -34,58 +34,30 @@ public class ArmorInit {
             if(!setRepair) properties.setNoRepair();
             if(!tab.equals("none")) TabInit.tabItems.get(tab).put(name, ItemInit.ITEMS.register(name, () -> {
                 Item item = null;
-                if(modelType.equals("default"))
-                {
-                    if(type.equals("helmet")) item = fuel ? new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties) {
+                    if(type.equals("helmet")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties) {
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties);
-                    else if(type.equals("boots")) item = fuel ? new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties);
+                    else if(type.equals("boots")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties);
-                    else if(type.equals("chestplate")) item = fuel ? new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties);
+                    else if(type.equals("chestplate")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties);
-                    else if(type.equals("leggings")) item = fuel ? new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties);
+                    else if(type.equals("leggings")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
-                } else if(modelType.equals("blockbench")) {
-                    if(type.equals("helmet")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties) {
-                        @Override
-                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                            return ((Number) burnTime).intValue();
-                        }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties);
-                    else if(type.equals("boots")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties){
-                        @Override
-                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                            return ((Number) burnTime).intValue();
-                        }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties);
-                    else if(type.equals("chestplate")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties){
-                        @Override
-                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                            return ((Number) burnTime).intValue();
-                        }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties);
-                    else if(type.equals("leggings")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties){
-                        @Override
-                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                            return ((Number) burnTime).intValue();
-                        }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
-                }
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
                 return item;
             }));
             else ItemInit.ITEMS.register(name, () -> {
@@ -117,30 +89,30 @@ public class ArmorInit {
                         }
                     } : new ArmorItem(MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
                 } else if(modelType.equals("blockbench")) {
-                    if(type.equals("helmet")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties) {
+                    if(type.equals("helmet")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties) {
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties);
-                    else if(type.equals("boots")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.HELMET, properties);
+                    else if(type.equals("boots")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties);
-                    else if(type.equals("chestplate")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.BOOTS, properties);
+                    else if(type.equals("chestplate")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties);
-                    else if(type.equals("leggings")) item = fuel ? new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties){
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.CHESTPLATE, properties);
+                    else if(type.equals("leggings")) item = fuel ? new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties){
                         @Override
                         public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                             return ((Number) burnTime).intValue();
                         }
-                    } : new CustomArmor(name, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
+                    } : new CustomArmor(name, modelType, MaterialInit.materialItems.get(material), ArmorItem.Type.LEGGINGS, properties);
                 }
                 return item;
             });

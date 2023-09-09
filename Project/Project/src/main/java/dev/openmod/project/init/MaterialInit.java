@@ -12,7 +12,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class MaterialInit {
     public static final Map<String, ModArmorMaterial> materialItems = new HashMap<String, ModArmorMaterial>();

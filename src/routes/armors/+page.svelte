@@ -119,6 +119,7 @@
     window.on_change = (data) => {
       if (data.file.file != "armors.json") return;
       armors = data.file.content;
+      updateEditor();
     };
   });
   let selectedArmor = "";
@@ -137,8 +138,6 @@
       fireResistant: false,
       setRepair: true,
       modelType: "default",
-      model: "",
-      texture: [],
       burnTime: 1,
       node_data: {
         connected_nodes: [],
@@ -156,125 +155,16 @@
     };
     selectedArmor = name;
     updateEditor();
-    send_changes({ file: "armors.json", content: armors });
+    send_changes({ file: "armors.json", data: armors });
   }
   function save() {
     const obj = {};
-    const armorAnimations = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "animations"
-    );
-    const armorGeos = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "geo"
-    );
-    const armorModels = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "models",
-      "item"
-    );
-    const armorTextures = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase(),
-      "textures",
-      "item"
-    );
-    const old = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    Object.keys(old).forEach((armor) => {
-      const itemTexturePath = pathModule.join(
-        armorTextures,
-        `${armor}_item.png`
-      );
-      const texturePath = pathModule.join(armorTextures, `${armor}.png`);
-      const animationPath = pathModule.join(
-        armorAnimations,
-        `${armor}.animation.json`
-      );
-      const geoPath = pathModule.join(armorGeos, `${armor}.geo.json`);
-      if (fs.existsSync(itemTexturePath)) fs.rmSync(itemTexturePath);
-      if (fs.existsSync(texturePath)) fs.rmSync(texturePath);
-      if (fs.existsSync(animationPath)) fs.rmSync(animationPath);
-      if (fs.existsSync(geoPath)) fs.rmSync(geoPath);
-    });
     Object.keys(armors).forEach((armor) => {
-      const oldModel = pathModule.join(armorModels, `${armor}.json`);
-      if (fs.existsSync(oldModel)) fs.rmSync(oldModel);
       const name = armors[armor].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const modelPath = pathModule.join(armorModels, `${name}.json`);
-      const itemTexture = armors[armor].itemTexture;
-      if (itemTexture) {
-        const itemTexturePath = pathModule.join(
-          armorTextures,
-          `${name}_item.png`
-        );
-        const itemTextureData = itemTexture.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-      }
-      if (armors[armor].modelType == "default") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: {
-            layer0: `${projectName.toLowerCase()}:item/${name}_item`,
-          },
-        });
-      } else if (armors[armor].modelType == "blockbench") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: {
-            layer0: `${projectName.toLowerCase()}:item/${name}_item`,
-          },
-        });
-        const model = armors[armor].model[0];
-        const geoPath = pathModule.join(armorGeos, `${name}.geo.json`);
-        const modelData = model.data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        const animationPath = pathModule.join(
-          armorAnimations,
-          `${name}.animation.json`
-        );
-        const textures = armors[armor].texture;
-        const texturePath = pathModule.join(armorTextures, `${name}.png`);
-        const textureData = textures[0].data.match(
-          /^data:([A-Za-z-+\/]+);base64,(.+)$/
-        )[2];
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, modelData, "base64");
-        fs.writeJSONSync(animationPath, {
-          format_version: "1.8.0",
-          animations: {
-            idle: {
-              loop: true,
-            },
-          },
-          geckolib_format_version: 2,
-        });
-      }
       Object.keys(armors[armor]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = armors[armor][property];
@@ -285,7 +175,9 @@
     Object.keys(armors).forEach((armor) => {
       armors[armor].name = armor;
     });
-    selectedArmor = Object.keys(armors)[0];
+    selectedArmor = armors[selectedArmor]
+      ? selectedArmor
+      : Object.keys(armors)[0];
     success("Armors saved successfully!");
   }
   function deleteArmor() {
@@ -294,94 +186,35 @@
     armors = armors;
     selectedArmor = Object.keys(armors)[0];
     updateEditor();
-    send_changes({ file: "armors.json", content: armors });
-  }
-  async function chooseModel() {
-    const response = await ipc.invoke(
-      "dialog",
-      ["openFile", "multiSelections"],
-      ["json", "png"]
-    );
-    if (response) {
-      const paths = response.filePaths
-        .sort((file) => (file.endsWith(".json") ? -1 : 1))
-        .map((file) => ({
-          name: file.split("\\")[file.split("\\").length - 1],
-          data: `data:${
-            file.endsWith(".json") ? `application/json` : `image/png`
-          };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
-        }));
-      armors[selectedArmor].model = [
-        paths.find((path) => path.name.endsWith(".geo.json")),
-      ];
-      armors[selectedArmor].texture = paths.filter(
-        (path) => !path.name.endsWith(".json")
-      );
-      send_changes({ file: "armors.json", content: armors });
-    }
-  }
-  function setModel(ev) {
-    let i = 0;
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      if (i == 0) {
-        armors[selectedArmor].model = [
-          {
-            name: files[i].name,
-            data: event.target.result,
-          },
-        ];
-        armors[selectedArmor].texture = [];
-      } else if (i == 1 && files[i].name.endsWith(".json")) {
-        armors[selectedArmor].model.push({
-          name: files[i].name,
-          data: event.target.result,
-        });
-      } else
-        armors[selectedArmor].texture.push({
-          name: files[i].name,
-          data: event.target.result,
-        });
-    };
-    reader.onloadend = function () {
-      i++;
-      if (!files[i])
-        return send_changes({ file: "armors.json", content: armors });
-      reader.readAsDataURL(files[i]);
-    };
-    const files = [...ev.dataTransfer.files].sort((file) =>
-      file.name.endsWith(".json") ? -1 : 1
-    );
-    reader.readAsDataURL(files[0]);
-  }
-  async function chooseItemTexture() {
-    const response = await ipc.invoke("dialog", ["openFile"], ["png"]);
-    if (response) {
-      const file = response.filePaths[0];
-      armors[selectedArmor].itemTexture = {
-        name: file.split("\\")[file.split("\\").length - 1],
-        data: `data:${
-          file.endsWith(".json") ? `application/json` : `image/png`
-        };base64,${fs.readFileSync(file.split("\\").join("/"), "base64")}`,
-      };
-      send_changes({ file: "armors.json", content: armors });
-    }
-  }
-  function setItemTexture(ev) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      armors[selectedArmor].itemTexture = {
-        name: files[i].name,
-        data: event.target.result,
-      };
-    };
-    reader.onloadend = function () {
-      return send_changes({ file: "armors.json", content: armors });
-    };
-    reader.readAsDataURL(ev.dataTransfer.files[0]);
+    send_changes({ file: "armors.json", data: armors });
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
+  }
+  async function chooseTexture(property, filters) {
+    const response = await ipc.invoke("dialog", "openFile", filters);
+    if (response) {
+      const splitted = response.filePaths[0].split("\\");
+      const item = fs.readFileSync(splitted.join("/"), "base64");
+      armors[selectedArmor][property] = {
+        name: splitted[splitted.length - 1],
+        data: item,
+      };
+      send_changes({ file: "items.json", data: items });
+    }
+  }
+  function setTexture(property, ev) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      armors[selectedArmor][property] = {
+        name: ev.dataTransfer.files[0].name,
+        data: event.target.result
+          .replace("data:image/png;base64,", "")
+          .replace("data:application/json;base64,", ""),
+      };
+      send_changes({ file: "items.json", data: items });
+    };
+    reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
   let editor;
   function setEditor() {
@@ -394,7 +227,7 @@
       armors[selectedArmor].node_data.connected_nodes = [];
       armors[selectedArmor].node_data.graph = graph.serialize();
       graph.runStep(1);
-      send_changes({ file: "armors.json", content: armors });
+      send_changes({ file: "armors.json", data: armors });
     };
     updateEditor();
     window.onresize = () => {
@@ -596,24 +429,52 @@
             <label class="text-lg">Item Texture</label>
             <img
               class="w-48 h-48 cursor-pointer rounded-lg"
-              src={armors[selectedArmor].itemTexture?.data ?? ""}
+              src={`data:image/png;base64,${armors[selectedArmor].itemTexture?.data}`}
               on:error={fallbackTexture}
-              on:click={chooseItemTexture}
-              on:drop={setItemTexture}
+              on:click={chooseTexture.bind(this, "itemTexture", "png")}
+              on:drop={setTexture.bind(this, "itemTexture")}
               on:dragover|preventDefault
             />
           </div>
           {#if armors[selectedArmor].modelType == "blockbench"}
-            <div class="col-start-1">
-              <label class="text-lg">Textures & Model</label>
+            <div>
+              <label class="text-lg">Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={armors[selectedArmor].texture[1]?.data ?? ""}
+                src={`data:image/png;base64,${armors[selectedArmor].texture?.data}`}
                 on:error={fallbackTexture}
-                on:click={chooseModel}
-                on:drop={setModel}
+                on:click={chooseTexture.bind(this, "texture", "png")}
+                on:drop={setTexture.bind(this, "texture")}
                 on:dragover|preventDefault
               />
+            </div>
+            <div>
+              <label class="text-lg">Geo</label>
+              <div
+                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
+                style="{armors[selectedArmor].geo
+                  ? 'background-color: rgba(0,0,0,0.3)'
+                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+                on:click={chooseTexture.bind(this, "geo", "json")}
+                on:drop={setTexture.bind(this, "geo")}
+                on:dragover|preventDefault
+              >
+                {armors[selectedArmor].geo?.name ?? ""}
+              </div>
+            </div>
+            <div>
+              <label class="text-lg">Idle Animation</label>
+              <div
+                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
+                style="{armors[selectedArmor].animation
+                  ? 'background-color: rgba(0,0,0,0.3)'
+                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+                on:click={chooseTexture.bind(this, "animation", "json")}
+                on:drop={setTexture.bind(this, "animation")}
+                on:dragover|preventDefault
+              >
+                {armors[selectedArmor].animation?.name ?? ""}
+              </div>
             </div>
           {/if}
         </div>

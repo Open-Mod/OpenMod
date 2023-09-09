@@ -264,7 +264,7 @@
       "data",
       projectName.toLowerCase(),
       "worldgen",
-      "biomes"
+      "biome"
     );
     fs.writeFileSync(
       project,

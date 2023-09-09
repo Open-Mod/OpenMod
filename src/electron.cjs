@@ -122,8 +122,14 @@ ipcMain.handle("run", (ev) => {
     cwd: projectPath,
   });
   child.stdout.on("data", (data) => {
-    stdout += data.toString();
+    const msg = data.toString();
+    stdout += msg;
     mainwindow.webContents.send("log", stdout);
+    if (msg.includes("Caused by:")) {
+      const err = msg.match(/Caused by\:(.*)/g)[0];
+      stderr.push(`[${formatDateToHHMMSS(new Date())}]: ${err}`);
+      mainwindow.webContents.send("err", stderr);
+    }
   });
   child.stderr.on("data", (data) => {
     const err = data.toString();

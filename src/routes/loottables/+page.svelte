@@ -38,46 +38,22 @@
     loottables[name] = {
       name,
       for:
-        Object.keys(
-          Object.keys(blocks).filter((block) => blocks[block].dropItem)
-        )[0] ??
+        Object.keys(blocks).filter((block) => blocks[block].dropItem)[0] ??
         defaultItems[0] ??
         "",
       json: "{}",
     };
     selectedLoottable = name;
-    send_changes({ file: "loottables.json", content: loottables });
+    send_changes({ file: "loottables.json", data: loottables });
   }
   function save() {
     const obj = {};
-    const blockloottables = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "data",
-      projectName.toLowerCase(),
-      "loot_tables",
-      "blocks"
-    );
-    fs.rmSync(blockloottables, { recursive: true, force: true });
-    fs.mkdirSync(blockloottables);
     Object.keys(loottables).forEach((loottable) => {
       const name = loottables[loottable].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      if (
-        parse(loottables[loottable].json).type == "minecraft:block" &&
-        blocks[loottables[loottable].for].dropItem
-      ) {
-        const blockloottablePath = pathModule.join(
-          blockloottables,
-          `${loottables[loottable].for}.json`
-        );
-        fs.writeFileSync(blockloottablePath, loottables[loottable].json);
-      }
       Object.keys(loottables[loottable]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = loottables[loottable][property];
@@ -95,7 +71,9 @@
           defaultItems[0] ??
           loottables[loottable].for;
     });
-    selectedLoottable = Object.keys(loottables)[0];
+    selectedLoottable = loottables[selectedLoottable]
+      ? selectedLoottable
+      : Object.keys(loottables)[0];
     success("Loottables saved successfully!");
   }
   function deleteLoottable() {
@@ -104,7 +82,7 @@
     loottables = loottables;
     selectedLoottable = Object.keys(loottables)[0];
     updateEditor();
-    send_changes({ file: "loottables.json", content: loottables });
+    send_changes({ file: "loottables.json", data: loottables });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");

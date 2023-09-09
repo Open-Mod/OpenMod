@@ -10,6 +10,7 @@
   let success = "";
   const peers = {};
   const states = {};
+  let sel;
   onMount(async () => {
     PeerJS = (await import("peerjs")).default;
     window.error = err;
@@ -19,8 +20,10 @@
     window.disconnect = disconnect;
     window.send_changes = send_changes;
     window.getState = getState;
+    sel = selected;
     ipc.on("select", (ev, p) => {
       selected = p;
+      sel = selected;
     });
   });
   function err(err) {
@@ -50,11 +53,13 @@
           );
           if (current != selected) return;
           window.on_change?.(data);
+        } else if (data.type == "USERS") {
+          states[selected].users = data.data;
         }
       });
       peer.on("open", function (i) {
         resolve(i);
-        states[selected] = { id: i, connid: id, state: 2 };
+        states[selected] = { id: i, connid: id, state: 2, users: 0 };
       });
       peers[selected] = { peer, conns };
     });
@@ -88,12 +93,19 @@
               })),
             })
           );
+          conns.forEach((conn) =>
+            conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
+          );
+          states[selected].users = conns.length;
         });
+        conn.on("close", () =>
+          conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
+        );
         peers[selected] = { peer, conns };
       });
       peer.on("open", function (i) {
         resolve(i);
-        states[selected] = { id: i, connid: "", state: 1 };
+        states[selected] = { id: i, connid: "", state: 1, users: 0 };
       });
       peers[selected] = { peer, conns };
     });
@@ -101,7 +113,7 @@
   function disconnect() {
     if (!peers[selected]) return "";
     peers[selected].peer.destroy();
-    states[selected] = { id: "", connid: "", state: 0 };
+    states[selected] = { id: "", connid: "", state: 0, users: 0 };
     return "";
   }
   function send_changes(file) {
@@ -112,62 +124,76 @@
     });
   }
   function getState() {
-    return states[selected] ?? { id: "", connid: "", state: 0 };
+    return states[selected] ?? { id: "", connid: "", state: 0, users: 0 };
   }
 </script>
 
 <div class="flex w-screen h-screen" data-theme="dark">
   <Menu>
     <MenuItem tip="Home" page="/">
-      <i class="fa-solid fa-house text-center inline-block" />
+      <i class="fa-solid fa-house" />
     </MenuItem>
     <MenuItem tip="Items" page="/items">
-      <i class="fa-solid fa-apple-whole text-center inline-block" />
+      <i class="fa-solid fa-apple-whole" />
     </MenuItem>
     <MenuItem tip="Blocks" page="/blocks">
-      <i class="fa-solid fa-cube text-center inline-block" />
+      <i class="fa-solid fa-cube" />
     </MenuItem>
     <MenuItem tip="Armors" page="/armors">
-      <i class="fa-solid fa-shield-halved text-center inline-block" />
+      <i class="fa-solid fa-shield-halved" />
     </MenuItem>
     <MenuItem tip="Tools" page="/tools">
-      <i class="fa-solid fa-screwdriver-wrench text-center inline-block" />
+      <i class="fa-solid fa-screwdriver-wrench" />
     </MenuItem>
     <MenuItem tip="Armor Materials" page="/materials">
-      <i class="fa-solid fa-gem text-center inline-block" />
+      <i class="fa-solid fa-gem" />
     </MenuItem>
     <MenuItem tip="Tool Tiers" page="/tiers">
-      <i class="fa-solid fa-ranking-star text-center inline-block" />
+      <i class="fa-solid fa-ranking-star" />
     </MenuItem>
     <MenuItem tip="Potions" page="/potions">
-      <i class="fa-solid fa-flask text-center inline-block" />
+      <i class="fa-solid fa-flask" />
     </MenuItem>
     <MenuItem tip="Sounds" page="/sounds">
-      <i class="fa-solid fa-volume-high text-center inline-block" />
+      <i class="fa-solid fa-volume-high" />
     </MenuItem>
     <MenuItem tip="Creative Tabs" page="/tabs">
-      <i class="fa-solid fa-layer-group text-center inline-block" />
+      <i class="fa-solid fa-layer-group" />
     </MenuItem>
     <MenuItem tip="Loot Tables" page="/loottables">
-      <i class="fa-solid fa-gift text-center inline-block" />
+      <i class="fa-solid fa-gift" />
     </MenuItem>
     <MenuItem tip="Recpies" page="/recipes">
-      <i class="fa-solid fa-scroll text-center inline-block" />
+      <i class="fa-solid fa-scroll" />
     </MenuItem>
     <MenuItem tip="Biomes" page="/biomes">
-      <i class="fa-solid fa-mountain-sun text-center inline-block" />
+      <i class="fa-solid fa-mountain-sun" />
     </MenuItem>
     <MenuItem tip="Trees" page="/trees">
-      <i class="fa-solid fa-tree text-center inline-block" />
+      <i class="fa-solid fa-tree" />
     </MenuItem>
     <MenuItem tip="Collaboration" page="/collaboration">
-      <i class="fa-solid fa-user-plus text-center inline-block" />
+      <i class="fa-solid fa-user-plus" />
     </MenuItem>
     <MenuItem tip="Run" page="/run">
-      <i class="fa-solid fa-play text-center inline-block" />
+      <i class="fa-solid fa-play" />
     </MenuItem>
   </Menu>
   <slot />
+  {#if states[sel]?.state}
+    <div class="absolute bottom-3 right-3">
+      <a class="tooltip tooltip-top" data-tip="Users">
+        <button class="btn btn-neutral rounded-full relative w-12"
+          ><i class="fa-solid fa-user-group text-lg" />
+          <div
+            class="badge badge-info rounded-full w-3 absolute top-[-5px] right-[-5px]"
+          >
+            {states[sel].users + 1}
+          </div>
+        </button>
+      </a>
+    </div>
+  {/if}
 </div>
 <Error {error} />
 <Success {success} />

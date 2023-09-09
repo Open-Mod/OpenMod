@@ -14,9 +14,6 @@
   });
 </script>
 
-<li
-  id={tip.toLowerCase().replace(/\s/g, "")}
-  class="text-2xl rounded-lg hover:bg-[hsl(var(--bc)/0.1)]"
->
-  <a class="!bg-transparent" href={page}> <slot /></a>
+<li id={tip.toLowerCase().replace(/\s/g, "")} class="text-2xl">
+  <a class="justify-center" href={page}> <slot /></a>
 </li>

@@ -57,251 +57,16 @@
       ninethItem: "none",
     };
     selectedRecipe = name;
-    send_changes({ file: "recipes.json", content: recipes });
+    send_changes({ file: "recipes.json", data: recipes });
   }
   function save() {
     const obj = {};
-    const recipesPath = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "data",
-      projectName.toLowerCase(),
-      "recipes"
-    );
-    fs.rmSync(recipesPath, { recursive: true, force: true });
-    fs.mkdirSync(recipesPath);
     Object.keys(recipes).forEach((recipe) => {
       const name = recipes[recipe].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const recipePath = pathModule.join(recipesPath, `${name}.json`);
-      const firstItem = recipes[recipe].firstItem == "none" ? " " : "1";
-      const secondItem = recipes[recipe].secondItem == "none" ? " " : "2";
-      const thirdItem = recipes[recipe].thirdItem == "none" ? " " : "3";
-      const fourthItem = recipes[recipe].fourthItem == "none" ? " " : "4";
-      const fifthItem = recipes[recipe].fifthItem == "none" ? " " : "5";
-      const sixthItem = recipes[recipe].sixthItem == "none" ? " " : "6";
-      const seventhItem = recipes[recipe].seventhItem == "none" ? " " : "7";
-      const eighthItem = recipes[recipe].eighthItem == "none" ? " " : "8";
-      const ninethItem = recipes[recipe].ninethItem == "none" ? " " : "9";
-      if (recipes[recipe].type == "shaped") {
-        const key = {};
-        if (firstItem.trim()) {
-          key["1"] = {
-            item: `${
-              recipes[recipe].firstItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].firstItem}`,
-          };
-        }
-        if (secondItem.trim()) {
-          key["2"] = {
-            item: `${
-              recipes[recipe].secondItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].secondItem}`,
-          };
-        }
-        if (thirdItem.trim()) {
-          key["3"] = {
-            item: `${
-              recipes[recipe].thirdItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].thirdItem}`,
-          };
-        }
-        if (fourthItem.trim()) {
-          key["4"] = {
-            item: `${
-              recipes[recipe].fourthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].fourthItem}`,
-          };
-        }
-        if (fifthItem.trim()) {
-          key["5"] = {
-            item: `${
-              recipes[recipe].fifthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].fifthItem}`,
-          };
-        }
-        if (sixthItem.trim()) {
-          key["6"] = {
-            item: `${
-              recipes[recipe].sixthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].sixthItem}`,
-          };
-        }
-        if (seventhItem.trim()) {
-          key["7"] = {
-            item: `${
-              recipes[recipe].seventhItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].seventhItem}`,
-          };
-        }
-        if (eighthItem.trim()) {
-          key["8"] = {
-            item: `${
-              recipes[recipe].eighthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].eighthItem}`,
-          };
-        }
-        if (ninethItem.trim()) {
-          key["9"] = {
-            item: `${
-              recipes[recipe].ninethItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].ninethItem}`,
-          };
-        }
-        fs.writeJSONSync(recipePath, {
-          type: "minecraft:crafting_shaped",
-          pattern: [
-            `${firstItem}${secondItem}${thirdItem}`,
-            `${fourthItem}${fifthItem}${sixthItem}`,
-            `${seventhItem}${eighthItem}${ninethItem}`,
-          ],
-          key,
-          result: {
-            item: `${
-              recipes[recipe].resultItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].resultItem}`,
-            count: recipes[recipe].resultCount,
-          },
-        });
-      } else if (recipes[recipe].type == "shapeless") {
-        const ingredients = [];
-        if (firstItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].firstItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].firstItem}`,
-          });
-        }
-        if (secondItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].secondItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].secondItem}`,
-          });
-        }
-        if (thirdItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].thirdItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].thirdItem}`,
-          });
-        }
-        if (fourthItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].fourthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].fourthItem}`,
-          });
-        }
-        if (fifthItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].fifthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].fifthItem}`,
-          });
-        }
-        if (sixthItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].sixthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].sixthItem}`,
-          });
-        }
-        if (seventhItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].seventhItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].seventhItem}`,
-          });
-        }
-        if (eighthItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].eighthItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].eighthItem}`,
-          });
-        }
-        if (ninethItem.trim()) {
-          ingredients.push({
-            item: `${
-              recipes[recipe].ninethItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].ninethItem}`,
-          });
-        }
-        fs.writeJSONSync(recipePath, {
-          type: "minecraft:crafting_shapeless",
-          ingredients,
-          result: {
-            item: `${
-              recipes[recipe].resultItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].resultItem}`,
-            count: recipes[recipe].resultCount,
-          },
-        });
-      } else if (recipes[recipe].type == "smelting") {
-        fs.writeJSONSync(recipePath, {
-          type: "minecraft:smelting",
-          ingredient: {
-            item: `${
-              recipes[recipe].firstItem.startsWith("minecraft:")
-                ? ""
-                : projectName.toLowerCase() + ":"
-            }${recipes[recipe].firstItem}`,
-          },
-          result: `${
-            recipes[recipe].resultItem.startsWith("minecraft:")
-              ? ""
-              : projectName.toLowerCase() + ":"
-          }${recipes[recipe].resultItem}`,
-          experience: recipes[recipe].experience,
-          cookingtime: recipes[recipe].cookingTime * 20,
-        });
-      }
       Object.keys(recipes[recipe]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = recipes[recipe][property];
@@ -312,7 +77,9 @@
     Object.keys(recipes).forEach((recipe) => {
       recipes[recipe].name = recipe;
     });
-    selectedRecipe = Object.keys(recipes)[0];
+    selectedRecipe = recipes[selectedRecipe]
+      ? selectedRecipe
+      : Object.keys(recipes)[0];
     success("Recipes saved successfully!");
   }
   function deleteRecipe() {
@@ -321,7 +88,7 @@
     recipes = recipes;
     selectedRecipe = Object.keys(recipes)[0];
     updateEditor();
-    send_changes({ file: "recipes.json", content: recipes });
+    send_changes({ file: "recipes.json", data: recipes });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");

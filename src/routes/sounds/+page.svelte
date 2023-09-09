@@ -34,39 +34,21 @@
       sound: "",
     };
     selectedSound = name;
-    send_changes({ file: "sounds.json", content: sounds });
+    send_changes({ file: "sounds.json", data: sounds });
   }
   function save() {
     const obj = {};
-    const soundsObj = {};
-    const assetsPath = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "assets",
-      projectName.toLowerCase()
-    );
-    const soundsPath = pathModule.join(assetsPath, "sounds");
     Object.keys(sounds).forEach((sound) => {
       const name = sounds[sound].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      soundsObj[name] = {
-        sounds: [`${projectName.toLowerCase()}:${name}`],
-      };
-      const Sound = sounds[sound].sound.data;
-      const soundPath = pathModule.join(soundsPath, `${name}.ogg`);
-      const soundData = Sound.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
-      fs.writeFileSync(soundPath, soundData, "base64");
       Object.keys(sounds[sound]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = sounds[sound][property];
       });
     });
-    fs.writeJSONSync(pathModule.join(assetsPath, "sounds.json"), soundsObj);
     fs.writeJSONSync(path, obj);
     sounds = obj;
     Object.keys(sounds).forEach((sound) => {
@@ -79,9 +61,11 @@
     if (!selectedSound) return;
     delete sounds[selectedSound];
     sounds = sounds;
-    selectedSound = Object.keys(sounds)[0];
+    selectedSound = sounds[selectedSound]
+      ? selectedSound
+      : Object.keys(sounds)[0];
     updateEditor();
-    send_changes({ file: "sounds.json", content: sounds });
+    send_changes({ file: "sounds.json", data: sounds });
   }
   async function chooseSound() {
     const response = await ipc.invoke("dialog", "openFile", "ogg");
@@ -92,7 +76,7 @@
         name: splitted[splitted.length - 1],
         data: `data:audio/ogg;base64,${sound}`,
       };
-      send_changes({ file: "sounds.json", content: sounds });
+      send_changes({ file: "sounds.json", data: sounds });
     }
   }
   function setSound(ev) {
@@ -102,7 +86,7 @@
         name: ev.dataTransfer.files[0].name,
         data: event.target.result,
       };
-      send_changes({ file: "sounds.json", content: sounds });
+      send_changes({ file: "sounds.json", data: sounds });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -159,9 +143,9 @@
             <label class="text-lg">Sound</label>
             <div
               class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-              style="background:{sounds[selectedSound].sound
-                ? 'rgba(0,0,0,0.3)'
-                : "url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+              style="{sounds[selectedSound].sound
+                ? 'background-color: rgba(0,0,0,0.3)'
+                : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
               on:click={chooseSound}
               on:drop={setSound}
               on:dragover|preventDefault

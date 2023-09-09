@@ -1,9 +1,6 @@
 package dev.openmod.project.init;
 
-import dev.openmod.project.Project;
-import dev.openmod.project.util.Util;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
+import dev.openmod.project.util.*;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -25,7 +22,8 @@ public class ToolInit {
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
             int attackDamage = ((Number) data.get("attackDamage")).intValue();
             float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
-            float attackSpeed = ((Number) data.get("attackSpeed")).floatValue() / 100f * 1.6f;
+            float attackSpeed = ((Number) data.get("attackSpeed")).floatValue();
+            String modelType = (String) data.get("modelType");
             String tab = (String) data.get("tab");
             String type = (String) data.get("type");
             String tier = (String) data.get("tier");
@@ -100,70 +98,70 @@ public class ToolInit {
             }
             if(!tab.equals("none")) TabInit.tabItems.get(tab).put(name, ItemInit.ITEMS.register(name, () -> {
                 Item item = null;
-                if(type.equals("sword")) item = fuel ? new SwordItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                if(type.equals("sword")) item = fuel ? new CustomSword(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new SwordItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("pickaxe")) item = fuel ? new PickaxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomSword(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("pickaxe")) item = fuel ? new CustomPickaxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new PickaxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("axe")) item = fuel ? new AxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomPickaxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("axe")) item = fuel ?  new CustomAxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new AxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("shovel")) item = fuel ? new ShovelItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomAxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("shovel")) item = fuel ?  new CustomShovel(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new ShovelItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("hoe")) item = fuel ? new HoeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomShovel(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("hoe")) item = fuel ?  new CustomHoe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new HoeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                } :  new CustomHoe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
                 return item;
             }));
             else ItemInit.ITEMS.register(name, () -> {
                 Item item = null;
-                if(type.equals("sword")) item = fuel ? new SwordItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                if(type.equals("sword")) item = fuel ?  new CustomSword(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new SwordItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("pickaxe")) item = fuel ? new PickaxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomSword(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("pickaxe")) item = fuel ?  new CustomPickaxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new PickaxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("axe")) item = fuel ? new AxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomPickaxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("axe")) item = fuel ?  new CustomAxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new AxeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("shovel")) item = fuel ? new ShovelItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomAxe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("shovel")) item = fuel ?  new CustomShovel(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new ShovelItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
-                else if(type.equals("hoe")) item = fuel ? new HoeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
+                } :  new CustomShovel(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                else if(type.equals("hoe")) item = fuel ?  new CustomHoe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties){
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
-                } : new HoeItem(TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
+                } :  new CustomHoe(name, modelType, TierInit.tierItems.get(tier), attackDamage, attackSpeed, properties);
                 return item;
             });
         }

@@ -3,7 +3,7 @@
   import Accordion from "../../components/Accordion.svelte";
   let biomes = {};
   let blocks = {};
-  let defaultItems = [];
+  let defaultBlocks = [];
   let projectPath = "";
   let path = "";
   let blocksPath = "";
@@ -21,9 +21,19 @@
     ].name;
     biomes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
-    defaultItems = fs.readJSONSync("./src/data/items.json");
+    defaultBlocks = fs.readJSONSync("./src/data/blocks.json");
     Object.keys(biomes).forEach((biome) => {
       biomes[biome].name = biome;
+      biomes[biome].blockAbove = biomes[biome].blockAbove.trim()
+        ? biomes[biome].blockAbove
+        : Object.keys(blocks)[0] ??
+          defaultBlocks[0] ??
+          biomes[biome].blockAbove;
+      biomes[biome].blockUnder = biomes[biome].blockUnder.trim()
+        ? biomes[biome].blockUnder
+        : Object.keys(blocks)[0] ??
+          defaultBlocks[0] ??
+          biomes[biome].blockUnder;
     });
     selectedBiome = Object.keys(biomes)[0] ?? "";
     window.on_change = (data) => {
@@ -37,39 +47,31 @@
     name = `new_biome_${Object.keys(biomes).length + 1}`;
     biomes[name] = {
       name,
-      for:
-        Object.keys(
-          Object.keys(blocks).filter((block) => blocks[block].dropItem)
-        )[0] ??
-        defaultItems[0] ??
-        "",
+      weight: 1,
+      type: "overworld",
+      blockAbove: Object.keys(blocks)[0] ?? defaultBlocks[0] ?? "",
+      blockUnder: Object.keys(blocks)[0] ?? defaultBlocks[0] ?? "",
+      minTemp: "icy",
+      maxTemp: "icy",
+      minHumidity: "arid",
+      maxHumidity: "arid",
+      continentalness: ["mushroom_fields"],
+      erosion: ["erosion_0"],
+      depth: ["surface"],
+      weirdness: ["low_slice_normal_descending"],
       json: "{}",
     };
     selectedBiome = name;
-    send_changes({ file: "biomes.json", content: biomes });
+    send_changes({ file: "biomes.json", data: biomes });
   }
   function save() {
     const obj = {};
-    const biomesPath = pathModule.join(
-      projectPath,
-      "src",
-      "main",
-      "resources",
-      "data",
-      projectName.toLowerCase(),
-      "worldgen",
-      "biome"
-    );
-    fs.rmSync(biomesPath, { recursive: true, force: true });
-    fs.mkdirSync(biomesPath);
     Object.keys(biomes).forEach((biome) => {
       const name = biomes[biome].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      const biomePath = pathModule.join(biomesPath, `${name}.json`);
-      fs.writeFileSync(biomePath, biomes[biome].json);
       Object.keys(biomes[biome]).forEach((property) => {
         if (property == "name") return;
         obj[name][property] = biomes[biome][property];
@@ -80,7 +82,9 @@
     Object.keys(biomes).forEach((biome) => {
       biomes[biome].name = biome;
     });
-    selectedBiome = Object.keys(biomes)[0];
+    selectedBiome = biomes[selectedBiome]
+      ? selectedBiome
+      : Object.keys(biomes)[0];
     success("Biomes saved successfully!");
   }
   function deleteBiome() {
@@ -89,7 +93,16 @@
     biomes = biomes;
     selectedBiome = Object.keys(biomes)[0];
     updateEditor();
-    send_changes({ file: "biomes.json", content: biomes });
+    send_changes({ file: "biomes.json", data: biomes });
+  }
+  function convertToCamelCase(inputString) {
+    const words = inputString.split("_");
+    const convertedString = words
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+    return convertedString;
   }
 </script>
 
@@ -139,6 +152,212 @@
               class="input w-full"
               bind:value={biomes[selectedBiome].name}
             />
+          </div>
+          <div>
+            <label class="text-lg">Weight</label>
+            <input
+              type="number"
+              min="1"
+              class="input w-full"
+              bind:value={biomes[selectedBiome].weight}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].type}
+            >
+              <option value="overworld">Overworld</option>
+              <option value="nether">Nether</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Block Above</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].blockAbove}
+            >
+              {#each Object.keys(blocks) as block}
+                <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultBlocks as block}
+                <option value={block}>{block}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Block Under</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].blockUnder}
+            >
+              {#each Object.keys(blocks) as block}
+                <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultBlocks as block}
+                <option value={block}>{block}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Minimum Temperature</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].minTemp}
+            >
+              <option value="icy">Icy</option>
+              <option value="cool">Cool</option>
+              <option value="neutral">Neutral</option>
+              <option value="warm">Warm</option>
+              <option value="hot">Hot</option>
+              <option value="frozen">Frozen</option>
+              <option value="unfrozen">Unfrozen</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Maximum Temperature</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].maxTemp}
+            >
+              <option value="icy">Icy</option>
+              <option value="cool">Cool</option>
+              <option value="neutral">Neutral</option>
+              <option value="warm">Warm</option>
+              <option value="hot">Hot</option>
+              <option value="frozen">Frozen</option>
+              <option value="unfrozen">Unfrozen</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Minimum Humidity</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].minHumidity}
+            >
+              <option value="arid">Arid</option>
+              <option value="dry">Dry</option>
+              <option value="neutral">Neutral</option>
+              <option value="wet">Wet</option>
+              <option value="humid">Humid</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Maximum Humidity</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].maxHumidity}
+            >
+              <option value="arid">Arid</option>
+              <option value="dry">Dry</option>
+              <option value="neutral">Neutral</option>
+              <option value="wet">Wet</option>
+              <option value="humid">Humid</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div class="col-start-1">
+            <label class="text-lg"
+              >Continentalness (hold <a class="text-warning">ctrl</a> to select multiple)</label
+            >
+            <select
+              multiple
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].continentalness}
+            >
+              <option value="mushroom_fields">Mushroom Fields</option>
+              <option value="deep_ocean">Deep Ocean</option>
+              <option value="ocean">Ocean</option>
+              <option value="coast">Coast</option>
+              <option value="near_inland">Near Inland</option>
+              <option value="mid_inland">Mid Inland</option>
+              <option value="far_inland">Far Inland</option>
+              <option value="inland">Inland</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg"
+              >Erosion (hold <a class="text-warning">ctrl</a> to select multiple)</label
+            >
+            <select
+              multiple
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].erosion}
+            >
+              <option value="erosion_0">Erosion 0</option>
+              <option value="erosion_1">Erosion 1</option>
+              <option value="erosion_2">Erosion 2</option>
+              <option value="erosion_3">Erosion 3</option>
+              <option value="erosion_4">Erosion 4</option>
+              <option value="erosion_5">Erosion 5</option>
+              <option value="erosion_6">Erosion 6</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg"
+              >Depth (hold <a class="text-warning">ctrl</a> to select multiple)</label
+            >
+            <select
+              multiple
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].depth}
+            >
+              <option value="surface">Surface</option>
+              <option value="underground">Underground</option>
+              <option value="floor">Floor</option>
+              <option value="full_range">Full Range</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-lg"
+              >Weirdness (hold <a class="text-warning">ctrl</a> to select multiple)</label
+            >
+            <select
+              multiple
+              class="select font-normal text-base w-full"
+              bind:value={biomes[selectedBiome].weirdness}
+            >
+              <option value="low_slice_normal_descending"
+                >Low Slice Normal Descending</option
+              >
+              <option value="low_slice_variant_ascending"
+                >Low Slice Variant Ascending</option
+              >
+              <option value="mid_slice_normal_ascending"
+                >Mid Slice Normal Ascending</option
+              >
+              <option value="mid_slice_normal_descending"
+                >Mid Slice Normal Descending</option
+              >
+              <option value="mid_slice_variant_ascending"
+                >Mid Slice Variant Ascending</option
+              >
+              <option value="mid_slice_variant_descending"
+                >Mid Slice Variant Descending</option
+              >
+              <option value="high_slice_normal_ascending"
+                >High Slice Normal Ascending</option
+              >
+              <option value="high_slice_normal_descending"
+                >High Slice Normal Descending</option
+              >
+              <option value="high_slice_variant_ascending"
+                >High Slice Variant Ascending</option
+              >
+              <option value="high_slice_variant_descending"
+                >High Slice Variant Descending</option
+              >
+              <option value="peak_normal">Peak Normal</option>
+              <option value="peak_variant">Peak Variant</option>
+              <option value="valley">Valley</option>
+              <option value="full_range">Full Range</option>
+            </select>
           </div>
           <div class="col-start-1 col-span-3">
             <label class="text-lg"

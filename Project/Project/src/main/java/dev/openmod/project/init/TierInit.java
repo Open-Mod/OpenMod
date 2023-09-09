@@ -23,8 +23,8 @@ public class TierInit {
             int level = ((Number) data.get("level")).intValue();
             int uses = ((Number) data.get("uses")).intValue();
             int enchantmentValue = ((Number) data.get("enchantmentValue")).intValue();
-            float attackSpeed = ((Number) data.get("attackSpeed")).floatValue() / 100f;
-            float attackDamageBonus = ((Number) data.get("attackDamageBonus")).floatValue() / 100f;
+            float attackSpeed = ((Number) data.get("attackSpeed")).floatValue();
+            float attackDamageBonus = ((Number) data.get("attackDamageBonus")).floatValue();
             String repairIngredient = (String) data.get("repairIngredient");
             tierItems.put(name, new ForgeTier(level, uses, attackSpeed, attackDamageBonus, enchantmentValue, BlockTags.create(new ResourceLocation(Project.MODID, "needs_" + name + "_tool")), () -> {
                 Item item = null;

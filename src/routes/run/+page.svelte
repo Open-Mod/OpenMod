@@ -4,8 +4,10 @@
   let errors = [];
   let output = "";
   let tab = 0;
+  let defaultBiomes = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   onMount(() => {
     if (!selected) {
       error("Please select a project!");
@@ -13,9 +15,13 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "gradlew.bat");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     running = ipc.sendSync("isRunning");
     errors = ipc.sendSync("lastError");
     output = ipc.sendSync("lastLog");
+    defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
     ipc.on("err", (ev, data) => {
       errors = data;
     });
@@ -28,6 +34,13 @@
   });
   function setTab(t) {
     tab = t;
+  }
+  function parse(json) {
+    let data = {};
+    try {
+      data = JSON.parse(json);
+    } catch {}
+    return data;
   }
   function run(t) {
     if (running == t) return;
@@ -80,7 +93,7 @@
       projectPath,
       "src",
       "data",
-      "recipes.json"
+      "biomes.json"
     );
     const biomes = fs.existsSync(biomesFile) ? fs.readJSONSync(biomesFile) : {};
     const loottablesFile = pathModule.join(
@@ -92,6 +105,13 @@
     const loottables = fs.existsSync(loottablesFile)
       ? fs.readJSONSync(loottablesFile)
       : {};
+    const soundsFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "sounds.json"
+    );
+    const sounds = fs.existsSync(soundsFile) ? fs.readJSONSync(soundsFile) : {};
     Object.keys(items).forEach((item) => {
       Object.keys(items[item]).forEach((property) => {
         if (
@@ -279,11 +299,11 @@
                 new Date()
               )}]: Field "Discard On Air Exposure" of block "${block}" must not be empty!`
             );
-          else if (property == "worlds" && blocks[block].isOre)
+          else if (property == "biomes" && blocks[block].isOre)
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
-              )}]: Field "Worlds to generate in" of block "${block}" must not be empty!`
+              )}]: Field "Biomes" of block "${block}" must not be empty!`
             );
           else if (property == "minChunkSize" && blocks[block].isOre)
             addError(
@@ -633,6 +653,12 @@
                 new Date()
               )}]: Field "Biome JSON" of biome "${biome}" must not be empty!`
             );
+          else if (property == "weight")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Weight" of biome "${biome}" must not be empty!`
+            );
         }
       });
     });
@@ -652,6 +678,1604 @@
       });
     });
     if (errors.length) return (running = false);
+    const animationsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "animations"
+    );
+    const geosPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "geo"
+    );
+    const itemModelsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "models",
+      "item"
+    );
+    const blockModelsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "models",
+      "block"
+    );
+    const itemTexturesPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "textures",
+      "item"
+    );
+    const blockTexturesPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "textures",
+      "block"
+    );
+    const blockstates = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "blockstates"
+    );
+    const projectMinecraftData = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "tags",
+      "blocks"
+    );
+    const minecraftData = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      "minecraft",
+      "tags",
+      "blocks"
+    );
+    const minecraftMineable = pathModule.join(minecraftData, "mineable");
+    const forgeData = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      "forge",
+      "tags",
+      "blocks"
+    );
+    const biomeModifier = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "forge",
+      "biome_modifier"
+    );
+    const worldgenConfigured = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "configured_feature"
+    );
+    const worldgenPlaced = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "placed_feature"
+    );
+    const textureArmorModelsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "textures",
+      "models",
+      "armor"
+    );
+    const recipesPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "recipes"
+    );
+    const assetsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase()
+    );
+    const soundsPath = pathModule.join(assetsPath, "sounds");
+    const biomesPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "biome"
+    );
+    fs.rmdirSync(animationsPath, { force: true, recursive: true });
+    fs.rmdirSync(geosPath, { force: true, recursive: true });
+    fs.rmdirSync(itemModelsPath, { force: true, recursive: true });
+    fs.rmdirSync(blockModelsPath, { force: true, recursive: true });
+    fs.rmdirSync(itemTexturesPath, { force: true, recursive: true });
+    fs.rmdirSync(blockTexturesPath, { force: true, recursive: true });
+    fs.rmdirSync(blockstates, { force: true, recursive: true });
+    fs.rmdirSync(projectMinecraftData, { force: true, recursive: true });
+    fs.rmdirSync(minecraftData, { force: true, recursive: true });
+    fs.rmdirSync(minecraftMineable, { force: true, recursive: true });
+    fs.rmdirSync(forgeData, { force: true, recursive: true });
+    fs.rmdirSync(biomeModifier, { force: true, recursive: true });
+    fs.rmdirSync(worldgenConfigured, { force: true, recursive: true });
+    fs.rmdirSync(worldgenPlaced, { force: true, recursive: true });
+    fs.rmdirSync(recipesPath, { force: true, recursive: true });
+    fs.rmdirSync(assetsPath, { force: true, recursive: true });
+    fs.rmdirSync(soundsPath, { force: true, recursive: true });
+    fs.rmdirSync(biomesPath, { force: true, recursive: true });
+    fs.ensureDirSync(animationsPath);
+    fs.ensureDirSync(geosPath);
+    fs.ensureDirSync(itemModelsPath);
+    fs.ensureDirSync(blockModelsPath);
+    fs.ensureDirSync(itemTexturesPath);
+    fs.ensureDirSync(blockTexturesPath);
+    fs.ensureDirSync(blockstates);
+    fs.ensureDirSync(projectMinecraftData);
+    fs.ensureDirSync(minecraftData);
+    fs.ensureDirSync(minecraftMineable);
+    fs.ensureDirSync(forgeData);
+    fs.ensureDirSync(biomeModifier);
+    fs.ensureDirSync(worldgenConfigured);
+    fs.ensureDirSync(worldgenPlaced);
+    fs.ensureDirSync(textureArmorModelsPath);
+    fs.ensureDirSync(recipesPath);
+    fs.ensureDirSync(assetsPath);
+    fs.ensureDirSync(soundsPath);
+    fs.ensureDirSync(biomesPath);
+    Object.keys(items).forEach((item) => {
+      const modelPath = pathModule.join(itemModelsPath, `${item}.json`);
+      if (items[item].modelType == "default") {
+        const texture = items[item].texture?.data;
+        if (texture) {
+          const texturePath = pathModule.join(itemTexturesPath, `${item}.png`);
+          const textureData = texture.replace("data:image/png;base64,", "");
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: {
+              layer0: `${projectName.toLowerCase()}:item/${item}`,
+            },
+          });
+        }
+      } else if (items[item].modelType == "blockbench") {
+        const model = items[item].model;
+        const modelData = model.data;
+        const geo = items[item].geo;
+        const geoPath = pathModule.join(geosPath, `${item}.geo.json`);
+        const geoData = geo.data;
+        const animation = items[item].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${item}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = items[item].texture;
+        const texturePath = pathModule.join(itemTexturesPath, `${item}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      }
+    });
+    Object.keys(armors).forEach((armor) => {
+      const modelPath = pathModule.join(itemModelsPath, `${armor}.json`);
+      const itemTexture = armors[armor].itemTexture;
+      if (itemTexture) {
+        const itemTexturePath = pathModule.join(
+          itemTexturesPath,
+          `${armor}_item.png`
+        );
+        const itemTextureData = itemTexture.data;
+        fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
+      }
+      if (armors[armor].modelType == "default") {
+        fs.writeJSONSync(modelPath, {
+          parent: "minecraft:item/generated",
+          textures: {
+            layer0: `${projectName.toLowerCase()}:item/${armor}_item`,
+          },
+        });
+      } else if (armors[armor].modelType == "blockbench") {
+        fs.writeJSONSync(modelPath, {
+          parent: "minecraft:item/generated",
+          textures: {
+            layer0: `${projectName.toLowerCase()}:item/${armor}_item`,
+          },
+        });
+        const geo = armors[armor].geo;
+        const geoPath = pathModule.join(geosPath, `${armor}.geo.json`);
+        const geoData = geo.data;
+        const animation = armors[armor].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${armor}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = armors[armor].texture;
+        const texturePath = pathModule.join(itemTexturesPath, `${armor}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      }
+    });
+    Object.keys(blocks).forEach((block) => {
+      const itemModelPath = pathModule.join(itemModelsPath, `${block}.json`);
+      const modelPath = pathModule.join(blockModelsPath, `${block}.json`);
+      if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "normal"
+      ) {
+        const particleTexture = blocks[block].particleTexture;
+        const upTexture = blocks[block].upTexture;
+        const downTexture = blocks[block].downTexture;
+        const frontTexture = blocks[block].frontTexture;
+        const backTexture = blocks[block].backTexture;
+        const rightTexture = blocks[block].rightTexture;
+        const leftTexture = blocks[block].leftTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/cube",
+          textures: {},
+        };
+        if (particleTexture) {
+          const particleTexturePath = pathModule.join(
+            blockTexturesPath,
+            `particle_${block}.png`
+          );
+          const particleTextureData = particleTexture.data;
+          fs.writeFileSync(particleTexturePath, particleTextureData, "base64");
+          modelObj.textures.particle = `${projectName.toLowerCase()}:block/particle_${block}`;
+        }
+        if (upTexture) {
+          const upTexturePath = pathModule.join(
+            blockTexturesPath,
+            `up_${block}.png`
+          );
+          const upTextureData = upTexture.data;
+          fs.writeFileSync(upTexturePath, upTextureData, "base64");
+          modelObj.textures.up = `${projectName.toLowerCase()}:block/up_${block}`;
+        }
+        if (downTexture) {
+          const downTexturePath = pathModule.join(
+            blockTexturesPath,
+            `down_${block}.png`
+          );
+          const downTextureData = downTexture.data;
+          fs.writeFileSync(downTexturePath, downTextureData, "base64");
+          modelObj.textures.down = `${projectName.toLowerCase()}:block/down_${block}`;
+        }
+        if (frontTexture) {
+          const frontTexturePath = pathModule.join(
+            blockTexturesPath,
+            `front_${block}.png`
+          );
+          const frontTextureData = frontTexture.data;
+          fs.writeFileSync(frontTexturePath, frontTextureData, "base64");
+          modelObj.textures.north = `${projectName.toLowerCase()}:block/front_${block}`;
+        }
+        if (backTexture) {
+          const backTexturePath = pathModule.join(
+            blockTexturesPath,
+            `back_${block}.png`
+          );
+          const backTextureData = backTexture.data;
+          fs.writeFileSync(backTexturePath, backTextureData, "base64");
+          modelObj.textures.south = `${projectName.toLowerCase()}:block/back_${block}`;
+        }
+        if (rightTexture) {
+          const rightTexturePath = pathModule.join(
+            blockTexturesPath,
+            `right_${block}.png`
+          );
+          const rightTextureData = rightTexture.data;
+          fs.writeFileSync(rightTexturePath, rightTextureData, "base64");
+          modelObj.textures.east = `${projectName.toLowerCase()}:block/right_${block}`;
+        }
+        if (leftTexture) {
+          const leftTexturePath = pathModule.join(
+            blockTexturesPath,
+            `left_${block}.png`
+          );
+          const leftTextureData = leftTexture.data;
+          fs.writeFileSync(leftTexturePath, leftTextureData, "base64");
+          modelObj.textures.west = `${projectName.toLowerCase()}:block/left_${block}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "stairs"
+      ) {
+        const innerModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_inner.json`
+        );
+        const outerModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_outer.json`
+        );
+        const topTexture = blocks[block].upTexture;
+        const bottomTexture = blocks[block].downTexture;
+        const sideTexture = blocks[block].rightTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/stairs",
+          textures: {},
+        };
+        if (topTexture) {
+          const topTexturePath = pathModule.join(
+            blockTexturesPath,
+            `top_${block}.png`
+          );
+          const topTextureData = topTexture.data;
+          fs.writeFileSync(topTexturePath, topTextureData, "base64");
+          modelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+        }
+        if (bottomTexture) {
+          const bottomTexturePath = pathModule.join(
+            blockTexturesPath,
+            `bottom_${block}.png`
+          );
+          const bottomTextureData = bottomTexture.data;
+          fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
+          modelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+        }
+        if (sideTexture) {
+          const sideTexturePath = pathModule.join(
+            blockTexturesPath,
+            `side_${block}.png`
+          );
+          const sideTextureData = sideTexture.data;
+          fs.writeFileSync(sideTexturePath, sideTextureData, "base64");
+          modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${block}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(innerModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/inner_stairs",
+        });
+        fs.writeJSONSync(outerModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/outer_stairs",
+        });
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "slab"
+      ) {
+        const blockModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_block.json`
+        );
+        const topModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top.json`
+        );
+        const topTexture = blocks[block].upTexture;
+        const bottomTexture = blocks[block].downTexture;
+        const sideTexture = blocks[block].rightTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/slab",
+          textures: {},
+        };
+        const blockModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/cube",
+          textures: {},
+        };
+        if (topTexture) {
+          const topTexturePath = pathModule.join(
+            blockTexturesPath,
+            `top_${block}.png`
+          );
+          const topTextureData = topTexture.data;
+          fs.writeFileSync(topTexturePath, topTextureData, "base64");
+          modelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          blockModelObj.textures.up = `${projectName.toLowerCase()}:block/top_${block}`;
+        }
+        if (bottomTexture) {
+          const bottomTexturePath = pathModule.join(
+            blockTexturesPath,
+            `bottom_${block}.${bottomTextureType}`
+          );
+          const bottomTextureData = bottomTexture.data;
+          fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
+          modelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          blockModelObj.textures.down = `${projectName.toLowerCase()}:block/bottom_${block}`;
+        }
+        if (sideTexture) {
+          const sideTexturePath = pathModule.join(
+            blockTexturesPath,
+            `side_${block}.png`
+          );
+          const sideTextureData = sideTexture.data;
+          fs.writeFileSync(sideTexturePath, sideTextureData, "base64");
+          modelObj.textures.side = `${projectName.toLowerCase()}:block/side_${block}`;
+          blockModelObj.textures.particle = `${projectName.toLowerCase()}:block/side_${block}`;
+          blockModelObj.textures.north = `${projectName.toLowerCase()}:block/side_${block}`;
+          blockModelObj.textures.south = `${projectName.toLowerCase()}:block/side_${block}`;
+          blockModelObj.textures.east = `${projectName.toLowerCase()}:block/side_${block}`;
+          blockModelObj.textures.west = `${projectName.toLowerCase()}:block/side_${block}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(blockModelPath, blockModelObj);
+        fs.writeJSONSync(topModelPath, {
+          ...modelObj,
+          parent: "minecraft:block/slab_top",
+        });
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (
+        blocks[block].modelType == "default" &&
+        blocks[block].type == "door"
+      ) {
+        const bottomLeftOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_left_open.json`
+        );
+        const bottomRightModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_right.json`
+        );
+        const bottomRightOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_right_open.json`
+        );
+        const topLeftModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_left.json`
+        );
+        const topLeftOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_left_open.json`
+        );
+        const topRightModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_right.json`
+        );
+        const topRightOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_right_open.json`
+        );
+        const topTexture = blocks[block].upTexture;
+        const bottomTexture = blocks[block].downTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_bottom_left",
+          textures: {},
+        };
+        const bottomLeftOpenModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_bottom_left_open",
+          textures: {},
+        };
+        const bottomRightModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_bottom_right",
+          textures: {},
+        };
+        const bottomRightOpenModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_bottom_right_open",
+          textures: {},
+        };
+        const topLeftModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_top_left",
+          textures: {},
+        };
+        const topLeftOpenModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_top_left_open",
+          textures: {},
+        };
+        const topRightModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_top_right",
+          textures: {},
+        };
+        const topRightOpenModelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/door_top_right_open",
+          textures: {},
+        };
+        if (topTexture) {
+          const topTexturePath = pathModule.join(
+            blockTexturesPath,
+            `top_${block}.png`
+          );
+          const topTextureData = topTexture.data;
+          fs.writeFileSync(topTexturePath, topTextureData, "base64");
+          topLeftModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          topLeftOpenModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          topRightModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          topRightOpenModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          modelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          bottomLeftOpenModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          bottomRightModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+          bottomRightOpenModelObj.textures.top = `${projectName.toLowerCase()}:block/top_${block}`;
+        }
+        if (bottomTexture) {
+          const bottomTexturePath = pathModule.join(
+            blockTexturesPath,
+            `bottom_${block}.png`
+          );
+          const bottomTextureData = bottomTexture.data;
+          fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
+          modelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          bottomLeftOpenModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          bottomRightModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          bottomRightOpenModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          topLeftModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          topLeftOpenModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          topRightModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+          topRightOpenModelObj.textures.bottom = `${projectName.toLowerCase()}:block/bottom_${block}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(bottomLeftOpenModelPath, bottomLeftOpenModelObj);
+        fs.writeJSONSync(bottomRightModelPath, bottomRightModelObj);
+        fs.writeJSONSync(bottomRightOpenModelPath, bottomRightOpenModelObj);
+        fs.writeJSONSync(topLeftModelPath, topLeftModelObj);
+        fs.writeJSONSync(topLeftOpenModelPath, topLeftOpenModelObj);
+        fs.writeJSONSync(topRightModelPath, topRightModelObj);
+        fs.writeJSONSync(topRightOpenModelPath, topRightOpenModelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${block}`,
+        });
+      } else if (
+        blocks[block].modelType == "blockbench" &&
+        blocks[block].type == "stairs"
+      ) {
+        const innerModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_inner.json`
+        );
+        const outerModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_outer.json`
+        );
+        const model = blocks[block].model;
+        const innerModel = blocks[block].innerModel;
+        const outerModel = blocks[block].outerModel;
+        const modelData = model.data;
+        const innerModelData = innerModel.data;
+        const outerModelData = outerModel.data;
+        const geo = blocks[block].geo;
+        const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
+        const geoData = geo.data;
+        const animation = blocks[block].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${block}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = blocks[block].texture;
+        const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(innerModelPath, innerModelData, "base64");
+        fs.writeFileSync(outerModelPath, outerModelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      } else if (
+        blocks[block].modelType == "blockbench" &&
+        blocks[block].type == "slab"
+      ) {
+        const blockModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_block.json`
+        );
+        const topModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top.json`
+        );
+        const model = blocks[block].model;
+        const blockModel = blocks[block].fullModel;
+        const topModel = blocks[block].topModel;
+        const modelData = model.data;
+        const blockModelData = blockModel.data;
+        const topModelData = topModel.data;
+        const geo = blocks[block].geo;
+        const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
+        const geoData = geo.data;
+        const animation = blocks[block].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${block}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = blocks[block].texture;
+        const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(blockModelPath, blockModelData, "base64");
+        fs.writeFileSync(topModelPath, topModelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      } else if (
+        blocks[block].modelType == "blockbench" &&
+        blocks[block].type == "door"
+      ) {
+        const bottomLeftOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_left_open.json`
+        );
+        const bottomRightModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_right.json`
+        );
+        const bottomRightOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_bottom_right_open.json`
+        );
+        const topLeftModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_left.json`
+        );
+        const topLeftOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_left_open.json`
+        );
+        const topRightModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_right.json`
+        );
+        const topRightOpenModelPath = pathModule.join(
+          blockModelsPath,
+          `${block}_top_right_open.json`
+        );
+        const model = blocks[block].model;
+        const bottomLeftOpenModel = blocks[block].bottomLeftOpenModel;
+        const bottomRightModel = blocks[block].bottomRightModel;
+        const bottomRightOpenModel = blocks[block].bottomRightOpenModel;
+        const topLeftModel = blocks[block].topLeftModel;
+        const topLeftOpenModel = blocks[block].topLeftOpenModel;
+        const topRightModel = blocks[block].topRightModel;
+        const topRightOpenModel = blocks[block].topRightOpenModel;
+        const modelData = model.data;
+        const bottomLeftOpenModelData = bottomLeftOpenModel.data;
+        const bottomRightModelData = bottomRightModel.data;
+        const bottomRightOpenModelData = bottomRightOpenModel.data;
+        const topLeftModelData = topLeftModel.data;
+        const topLeftOpenModelData = topLeftOpenModel.data;
+        const topRightModelData = topRightModel.data;
+        const topRightOpenModelData = topRightOpenModel.data;
+        const geo = blocks[block].geo;
+        const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
+        const geoData = geo.data;
+        const animation = blocks[block].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${block}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = blocks[block].texture;
+        const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(
+          bottomLeftOpenModelPath,
+          bottomLeftOpenModelData,
+          "base64"
+        );
+        fs.writeFileSync(bottomRightModelPath, bottomRightModelData, "base64");
+        fs.writeFileSync(
+          bottomRightOpenModel,
+          bottomRightOpenModelData,
+          "base64"
+        );
+        fs.writeFileSync(topLeftModelPath, topLeftModelData, "base64");
+        fs.writeFileSync(topLeftOpenModelPath, topLeftOpenModelData, "base64");
+        fs.writeFileSync(topRightModelPath, topRightModelData, "base64");
+        fs.writeFileSync(
+          topRightOpenModelPath,
+          topRightOpenModelData,
+          "base64"
+        );
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      } else if (blocks[block].modelType == "blockbench") {
+        const model = blocks[block].model;
+        const modelData = model.data;
+        const geo = blocks[block].geo;
+        const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
+        const geoData = geo.data;
+        const animation = blocks[block].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${block}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = blocks[block].texture;
+        const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      }
+      const statePath = pathModule.join(blockstates, `${block}.json`);
+      const mineablePath = pathModule.join(
+        minecraftMineable,
+        `${blocks[block].minedBy}.json`
+      );
+      let tierPath;
+      if (["netherite", "gold"].includes(blocks[block].minedByTier))
+        tierPath = pathModule.join(
+          forgeData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      else if (
+        ["wood", "stone", "iron", "diamond"].includes(blocks[block].minedByTier)
+      )
+        tierPath = pathModule.join(
+          minecraftData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      else
+        tierPath = pathModule.join(
+          projectMinecraftData,
+          `needs_${blocks[block].minedByTier}_tool.json`
+        );
+      if (blocks[block].type == "normal") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+            },
+          },
+        });
+      } else if (blocks[block].type == "stairs") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "facing=east,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=east,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+            },
+            "facing=east,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=east,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+            },
+            "facing=east,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+            },
+            "facing=east,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=east,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=east,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=east,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=east,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=north,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=north,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              y: 270,
+            },
+            "facing=north,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=north,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=north,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+            },
+            "facing=north,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=south,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+            },
+            "facing=south,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+            },
+            "facing=south,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=south,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=south,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=south,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=south,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=south,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              x: 180,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=bottom,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 90,
+            },
+            "facing=west,half=bottom,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=bottom,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              y: 180,
+            },
+            "facing=west,half=top,shape=inner_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=west,half=top,shape=inner_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_inner`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=west,half=top,shape=outer_left": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+            "facing=west,half=top,shape=outer_right": {
+              model: `${projectName.toLowerCase()}:block/${block}_outer`,
+              uvlock: true,
+              x: 180,
+              y: 270,
+            },
+            "facing=west,half=top,shape=straight": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              uvlock: true,
+              x: 180,
+              y: 180,
+            },
+          },
+        });
+      } else if (blocks[block].type == "slab") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "type=bottom": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+            },
+            "type=double": {
+              model: `${projectName.toLowerCase()}:block/${block}_block`,
+            },
+            "type=top": {
+              model: `${projectName.toLowerCase()}:block/${block}_top`,
+            },
+          },
+        });
+      } else if (blocks[block].type == "door") {
+        fs.writeJSONSync(statePath, {
+          variants: {
+            "facing=east,half=lower,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+            },
+            "facing=east,half=lower,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_left_open`,
+              y: 90,
+            },
+            "facing=east,half=lower,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right`,
+            },
+            "facing=east,half=lower,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right_open`,
+              y: 270,
+            },
+            "facing=east,half=upper,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left`,
+            },
+            "facing=east,half=upper,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left_open`,
+              y: 90,
+            },
+            "facing=east,half=upper,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right`,
+            },
+            "facing=east,half=upper,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right_open`,
+              y: 270,
+            },
+            "facing=north,half=lower,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              y: 270,
+            },
+            "facing=north,half=lower,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_left_open`,
+            },
+            "facing=north,half=lower,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right`,
+              y: 270,
+            },
+            "facing=north,half=lower,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right_open`,
+              y: 180,
+            },
+            "facing=north,half=upper,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left`,
+              y: 270,
+            },
+            "facing=north,half=upper,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left_open`,
+            },
+            "facing=north,half=upper,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right`,
+              y: 270,
+            },
+            "facing=north,half=upper,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right_open`,
+              y: 180,
+            },
+            "facing=south,half=lower,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              y: 90,
+            },
+            "facing=south,half=lower,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_left_open`,
+              y: 180,
+            },
+            "facing=south,half=lower,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right`,
+              y: 90,
+            },
+            "facing=south,half=lower,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right_open`,
+            },
+            "facing=south,half=upper,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left`,
+              y: 90,
+            },
+            "facing=south,half=upper,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left_open`,
+              y: 180,
+            },
+            "facing=south,half=upper,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right`,
+              y: 90,
+            },
+            "facing=south,half=upper,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right_open`,
+            },
+            "facing=west,half=lower,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}`,
+              y: 180,
+            },
+            "facing=west,half=lower,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_left_open`,
+              y: 270,
+            },
+            "facing=west,half=lower,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right`,
+              y: 180,
+            },
+            "facing=west,half=lower,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_bottom_right_open`,
+              y: 90,
+            },
+            "facing=west,half=upper,hinge=left,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left`,
+              y: 180,
+            },
+            "facing=west,half=upper,hinge=left,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_left_open`,
+              y: 270,
+            },
+            "facing=west,half=upper,hinge=right,open=false": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right`,
+              y: 180,
+            },
+            "facing=west,half=upper,hinge=right,open=true": {
+              model: `${projectName.toLowerCase()}:block/${block}_top_right_open`,
+              y: 90,
+            },
+          },
+        });
+      }
+      if (blocks[block].dropItem) {
+        if (
+          fs.existsSync(mineablePath) &&
+          blocks[block].minedBy != "anything"
+        ) {
+          const mineable = fs.readJSONSync(mineablePath);
+          const tier = fs.readJSONSync(tierPath);
+          mineable.values.push(`${projectName.toLowerCase()}:${block}`);
+          tier.values.push(`${projectName.toLowerCase()}:${block}`);
+          fs.writeJSONSync(mineablePath, mineable);
+          fs.writeJSONSync(tierPath, tier);
+        } else if (blocks[block].minedBy != "anything") {
+          fs.writeJSONSync(mineablePath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${block}`],
+          });
+          fs.writeJSONSync(tierPath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${block}`],
+          });
+        }
+      }
+      if (blocks[block].isOre && blocks[block].biomes.length) {
+        const configurePath = pathModule.join(
+          worldgenConfigured,
+          `${block}.json`
+        );
+        const placedPath = pathModule.join(worldgenPlaced, `${block}.json`);
+        const biomePath = pathModule.join(biomeModifier, `${block}.json`);
+        const targets = [];
+        const selectedBiomes = blocks[block].biomes.map((b) => {
+          if (biomes[b])
+            return {
+              name: `${projectName.toLowerCase()}:${b}`,
+              dimension: biomes[b].type,
+            };
+          else return defaultBiomes.find((biome) => biome.name == b);
+        });
+        if (selectedBiomes.find((b) => b.dimension == "overworld"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:tag_match`,
+              tag: `minecraft:stone_ore_replaceables`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${block}`,
+            },
+          });
+        if (selectedBiomes.find((b) => b.dimension == "nether"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:block_match`,
+              block: `minecraft:netherrack`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${block}`,
+            },
+          });
+        if (selectedBiomes.find((b) => b.dimension == "end"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:block_match`,
+              block: `minecraft:end_stone`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${block}`,
+            },
+          });
+        fs.writeJSONSync(configurePath, {
+          type: "minecraft:ore",
+          config: {
+            size: blocks[block].oreSize,
+            discard_chance_on_air_exposure: blocks[block].discardChance / 100,
+            targets,
+          },
+        });
+        fs.writeJSONSync(placedPath, {
+          feature: `${projectName.toLowerCase()}:${block}`,
+          placement: [
+            {
+              type: "minecraft:count",
+              count: {
+                type: "minecraft:uniform",
+                value: {
+                  min_inclusive: blocks[block].minChunkSize,
+                  max_inclusive: blocks[block].maxChunkSize,
+                },
+              },
+            },
+            {
+              type: "minecraft:in_square",
+            },
+            {
+              type: "minecraft:height_range",
+              height: {
+                type: blocks[block].genShape,
+                min_inclusive: {
+                  absolute: blocks[block].minHeight,
+                },
+                max_inclusive: {
+                  absolute: blocks[block].maxHeight,
+                },
+              },
+            },
+            {
+              type: "minecraft:biome",
+            },
+          ],
+        });
+        fs.writeJSONSync(biomePath, {
+          type: "forge:add_features",
+          features: `${projectName.toLowerCase()}:${block}`,
+          step: "underground_ores",
+          biomes: selectedBiomes.map((biome) => biome.name),
+        });
+      }
+    });
+    Object.keys(tools).forEach((tool) => {
+      const modelPath = pathModule.join(itemModelsPath, `${tool}.json`);
+      if (tools[tool].modelType == "default") {
+        const texture = tools[tool].texture;
+        if (texture) {
+          const texturePath = pathModule.join(itemTexturesPath, `${tool}.png`);
+          const textureData = texture.data;
+          fs.writeFileSync(texturePath, textureData, "base64");
+          fs.writeJSONSync(modelPath, {
+            parent: "minecraft:item/generated",
+            textures: {
+              layer0: `${projectName.toLowerCase()}:item/${tool}`,
+            },
+          });
+        }
+      } else if (tools[tool].modelType == "blockbench") {
+        const model = tools[tool].model;
+        const modelData = model.data;
+        const geo = tools[tool].geo;
+        const geoPath = pathModule.join(geosPath, `${tool}.geo.json`);
+        const geoData = geo.data;
+        const animation = tools[tool].animation;
+        const animationPath = pathModule.join(
+          toolAnimations,
+          `${tool}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = tools[tool].texture;
+        const texturePath = pathModule.join(itemTexturesPath, `${tool}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      }
+    });
+    Object.keys(materials).forEach((material) => {
+      const texture1 = materials[material].texture[0];
+      const texture2 = materials[material].texture[1];
+      if (texture1) {
+        const texturePath = pathModule.join(
+          textureArmorModelsPath,
+          `layer_${material}_1.png`
+        );
+        const textureData = texture1.replace("data:image/png;base64,", "");
+        fs.writeFileSync(texturePath, textureData, "base64");
+      }
+      if (texture2) {
+        const texturePath = pathModule.join(
+          textureArmorModelsPath,
+          `layer_${material}_2.png`
+        );
+        const textureData = texture2.replace("data:image/png;base64,", "");
+        fs.writeFileSync(texturePath, textureData, "base64");
+      }
+    });
+    Object.keys(recipes).forEach((recipe) => {
+      const recipePath = pathModule.join(recipesPath, `${recipe}.json`);
+      const firstItem = recipes[recipe].firstItem == "none" ? " " : "1";
+      const secondItem = recipes[recipe].secondItem == "none" ? " " : "2";
+      const thirdItem = recipes[recipe].thirdItem == "none" ? " " : "3";
+      const fourthItem = recipes[recipe].fourthItem == "none" ? " " : "4";
+      const fifthItem = recipes[recipe].fifthItem == "none" ? " " : "5";
+      const sixthItem = recipes[recipe].sixthItem == "none" ? " " : "6";
+      const seventhItem = recipes[recipe].seventhItem == "none" ? " " : "7";
+      const eighthItem = recipes[recipe].eighthItem == "none" ? " " : "8";
+      const ninethItem = recipes[recipe].ninethItem == "none" ? " " : "9";
+      if (recipes[recipe].type == "shaped") {
+        const key = {};
+        if (firstItem.trim()) {
+          key["1"] = {
+            item: `${
+              recipes[recipe].firstItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].firstItem}`,
+          };
+        }
+        if (secondItem.trim()) {
+          key["2"] = {
+            item: `${
+              recipes[recipe].secondItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].secondItem}`,
+          };
+        }
+        if (thirdItem.trim()) {
+          key["3"] = {
+            item: `${
+              recipes[recipe].thirdItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].thirdItem}`,
+          };
+        }
+        if (fourthItem.trim()) {
+          key["4"] = {
+            item: `${
+              recipes[recipe].fourthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fourthItem}`,
+          };
+        }
+        if (fifthItem.trim()) {
+          key["5"] = {
+            item: `${
+              recipes[recipe].fifthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fifthItem}`,
+          };
+        }
+        if (sixthItem.trim()) {
+          key["6"] = {
+            item: `${
+              recipes[recipe].sixthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].sixthItem}`,
+          };
+        }
+        if (seventhItem.trim()) {
+          key["7"] = {
+            item: `${
+              recipes[recipe].seventhItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].seventhItem}`,
+          };
+        }
+        if (eighthItem.trim()) {
+          key["8"] = {
+            item: `${
+              recipes[recipe].eighthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].eighthItem}`,
+          };
+        }
+        if (ninethItem.trim()) {
+          key["9"] = {
+            item: `${
+              recipes[recipe].ninethItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].ninethItem}`,
+          };
+        }
+        fs.writeJSONSync(recipePath, {
+          type: "minecraft:crafting_shaped",
+          pattern: [
+            `${firstItem}${secondItem}${thirdItem}`,
+            `${fourthItem}${fifthItem}${sixthItem}`,
+            `${seventhItem}${eighthItem}${ninethItem}`,
+          ],
+          key,
+          result: {
+            item: `${
+              recipes[recipe].resultItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].resultItem}`,
+            count: recipes[recipe].resultCount,
+          },
+        });
+      } else if (recipes[recipe].type == "shapeless") {
+        const ingredients = [];
+        if (firstItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].firstItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].firstItem}`,
+          });
+        }
+        if (secondItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].secondItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].secondItem}`,
+          });
+        }
+        if (thirdItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].thirdItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].thirdItem}`,
+          });
+        }
+        if (fourthItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].fourthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fourthItem}`,
+          });
+        }
+        if (fifthItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].fifthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].fifthItem}`,
+          });
+        }
+        if (sixthItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].sixthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].sixthItem}`,
+          });
+        }
+        if (seventhItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].seventhItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].seventhItem}`,
+          });
+        }
+        if (eighthItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].eighthItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].eighthItem}`,
+          });
+        }
+        if (ninethItem.trim()) {
+          ingredients.push({
+            item: `${
+              recipes[recipe].ninethItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].ninethItem}`,
+          });
+        }
+        fs.writeJSONSync(recipePath, {
+          type: "minecraft:crafting_shapeless",
+          ingredients,
+          result: {
+            item: `${
+              recipes[recipe].resultItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].resultItem}`,
+            count: recipes[recipe].resultCount,
+          },
+        });
+      } else if (recipes[recipe].type == "smelting") {
+        fs.writeJSONSync(recipePath, {
+          type: "minecraft:smelting",
+          ingredient: {
+            item: `${
+              recipes[recipe].firstItem.startsWith("minecraft:")
+                ? ""
+                : projectName.toLowerCase() + ":"
+            }${recipes[recipe].firstItem}`,
+          },
+          result: `${
+            recipes[recipe].resultItem.startsWith("minecraft:")
+              ? ""
+              : projectName.toLowerCase() + ":"
+          }${recipes[recipe].resultItem}`,
+          experience: recipes[recipe].experience,
+          cookingtime: recipes[recipe].cookingTime * 20,
+        });
+      }
+    });
+    const soundsObj = {};
+    Object.keys(sounds).forEach((sound) => {
+      soundsObj[sound] = {
+        sounds: [`${projectName.toLowerCase()}:${sound}`],
+      };
+      const Sound = sounds[sound].sound.data;
+      const soundPath = pathModule.join(soundsPath, `${sound}.ogg`);
+      const soundData = Sound.replace("data:audio/ogg;base64,", "");
+      fs.writeFileSync(soundPath, soundData, "base64");
+    });
+    fs.writeJSONSync(pathModule.join(assetsPath, "sounds.json"), soundsObj);
+    Object.keys(loottables).forEach((loottable) => {
+      if (
+        parse(loottables[loottable].json).type == "minecraft:block" &&
+        blocks[loottables[loottable].for].dropItem
+      ) {
+        const blockloottablePath = pathModule.join(
+          blockloottables,
+          `${loottables[loottable].for}.json`
+        );
+        fs.writeFileSync(blockloottablePath, loottables[loottable].json);
+      }
+    });
+    Object.keys(biomes).forEach((biome) => {
+      const biomePath = pathModule.join(biomesPath, `${biome}.json`);
+      fs.writeFileSync(biomePath, biomes[biome].json);
+    });
     const basePath = isDev
       ? pathModule.join(
           __dirname,

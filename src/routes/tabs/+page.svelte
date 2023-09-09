@@ -34,7 +34,7 @@
         : Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
           Object.keys(tools)[0] ??
-          tabs[tab].icon;
+          defaultItems[0];
     });
     selectedTab = Object.keys(tabs)[0] ?? "";
     window.on_change = (data) => {
@@ -50,19 +50,18 @@
       name,
       title: convertToCamelCase(name),
       titleColor: "#000000",
-      slotColor: "#000000",
       icon:
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
         Object.keys(tools)[0] ??
-        "",
+        defaultItems[0],
       withSearchbar: true,
       hideTitle: false,
       noScrollbar: false,
       alignedRight: false,
     };
     selectedTab = name;
-    send_changes({ file: "tabs.json", content: tabs });
+    send_changes({ file: "tabs.json", data: tabs });
   }
   function save() {
     const obj = {};
@@ -82,7 +81,7 @@
     Object.keys(tabs).forEach((tab) => {
       tabs[tab].name = tab;
     });
-    selectedTab = Object.keys(tabs)[0];
+    selectedTab = tabs[selectedTab] ? selectedTab : Object.keys(tabs)[0];
     success("Tabs saved successfully!");
   }
   function deleteTab() {
@@ -91,7 +90,7 @@
     tabs = tabs;
     selectedTab = Object.keys(tabs)[0];
     updateEditor();
-    send_changes({ file: "tabs.json", content: tabs });
+    send_changes({ file: "tabs.json", data: tabs });
   }
   function convertToCamelCase(inputString) {
     const words = inputString.split("_");
@@ -169,15 +168,7 @@
             </div>
           {/if}
           <div>
-            <label class="text-lg">Slot Color</label>
-            <input
-              type="color"
-              class="w-full"
-              bind:value={tabs[selectedTab].slotColor}
-            />
-          </div>
-          <div>
-            <label class="text-lg">Use item for icon</label>
+            <label class="text-lg">Use Item For Icon</label>
             <select
               class="select font-normal text-base w-full"
               bind:value={tabs[selectedTab].icon}

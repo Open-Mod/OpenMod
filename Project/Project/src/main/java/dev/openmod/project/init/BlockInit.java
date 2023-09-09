@@ -1,6 +1,8 @@
 package dev.openmod.project.init;
 
 import dev.openmod.project.Project;
+import dev.openmod.project.util.CustomBaseBlock;
+import dev.openmod.project.util.CustomBlockItem;
 import dev.openmod.project.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,8 +45,8 @@ public class BlockInit {
             BlockBehaviour.Properties properties = BlockBehaviour.Properties.of();
             Item.Properties itemProperties = new Item.Properties();
             FoodProperties.Builder foodProperties = new FoodProperties.Builder();
-            float resistance = ((Number) data.get("resistance")).floatValue() / 100f;
-            float explosion_resistance = ((Number) data.get("explosion_resistance")).floatValue() / 100f;
+            float resistance = ((Number) data.get("resistance")).floatValue();
+            float explosion_resistance = ((Number) data.get("explosion_resistance")).floatValue();
             int fire_resistance = 300 - ((Number) data.get("fire_resistance")).intValue() * 3;
             int lightLevel = ((Number) data.get("lightLevel")).intValue();
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
@@ -52,8 +54,9 @@ public class BlockInit {
             int minXp = ((Number) data.get("minXp")).intValue();
             int maxXp = ((Number) data.get("maxXp")).intValue();
             float friction = ((Number) data.get("friction")).floatValue() / 100f;
-            float jumpFactor = ((Number) data.get("jumpFactor")).floatValue() / 100f;
-            float speedFactor = ((Number) data.get("speedFactor")).floatValue() / 100f;
+            float jumpFactor = ((Number) data.get("jumpFactor")).floatValue();
+            float speedFactor = ((Number) data.get("speedFactor")).floatValue();
+            String modelType = (String) data.get("modelType");
             String type = (String) data.get("type");
             String tab = (String) data.get("tab");
             String mapColor = (String) data.get("mapColor");
@@ -256,7 +259,22 @@ public class BlockInit {
                 TabInit.tabItems.get(tab).put(name, BLOCKS.register(name, () ->  {
                     if(dropXp) {
                         if(type.equals("normal")) {
-                            Block block = new Block(properties) {
+                            Block block = modelType.equals("default") ? new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            } : new CustomBaseBlock(name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -272,12 +290,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("stairs")) {
                             Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
@@ -296,12 +314,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
@@ -320,12 +338,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("door")) {
                             SoundEvent aOpenSound = null;
@@ -355,18 +373,25 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         }
                         return null;
                     } else {
                         if(type.equals("normal")) {
-                            Block block = new Block(properties) {
+                            Block block = modelType.equals("default") ? new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            } : new CustomBaseBlock(name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -374,12 +399,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("stairs")) {
                             Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
@@ -390,12 +415,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
@@ -406,12 +431,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("door")) {
                             SoundEvent aOpenSound = null;
@@ -433,12 +458,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         }
                     }
@@ -448,7 +473,22 @@ public class BlockInit {
                 BLOCKS.register(name, () ->  {
                     if(dropXp) {
                         if(type.equals("normal")) {
-                            Block block = new Block(properties) {
+                            Block block = modelType.equals("default") ? new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                                public void spawnAfterBreak(BlockState p_221086_, ServerLevel p_221087_, BlockPos p_221088_, ItemStack p_221089_, boolean p_221090_) {
+                                    super.spawnAfterBreak(p_221086_, p_221087_, p_221088_, p_221089_, p_221090_);
+
+                                }
+                                @Override
+                                public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+                                    return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
+                                }
+                            } : new CustomBaseBlock(name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -464,12 +504,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("stairs")) {
                             Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
@@ -488,12 +528,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
@@ -512,12 +552,12 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("door")) {
                             SoundEvent aOpenSound = null;
@@ -547,18 +587,25 @@ public class BlockInit {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         }
                         return null;
                     } else {
                         if(type.equals("normal")) {
-                            Block block = new Block(properties) {
+                            Block block = modelType.equals("default") ? new Block(properties) {
+                                @Override
+                                public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+                                    if (!ignitedByLava && fire_resistance == 0) {
+                                        return super.getFlammability(state, level, pos, direction);
+                                    } else return fire_resistance;
+                                }
+                            } : new CustomBaseBlock(name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -566,12 +613,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("stairs")) {
                             Block block = new StairBlock(() -> Blocks.AIR.defaultBlockState(), properties) {
@@ -582,12 +629,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("slab")) {
                             Block block = new SlabBlock(properties) {
@@ -598,12 +645,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         } else if(type.equals("door")) {
                             SoundEvent aOpenSound = null;
@@ -625,12 +672,12 @@ public class BlockInit {
                                     } else return fire_resistance;
                                 }
                             };
-                            ItemInit.ITEMS.register(name, () -> fuel ? new BlockItem(block, itemProperties){
+                            ItemInit.ITEMS.register(name, () -> fuel ? new CustomBlockItem(name, modelType, block, itemProperties){
                                 @Override
                                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                                     return ((Number) burnTime).intValue();
                                 }
-                            } : new BlockItem(block, itemProperties));
+                            } : new CustomBlockItem(name, modelType, block, itemProperties));
                             return block;
                         }
                     }

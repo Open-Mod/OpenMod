@@ -1,6 +1,7 @@
 package dev.openmod.project.init;
 
 import dev.openmod.project.Project;
+import dev.openmod.project.util.CustomItem;
 import dev.openmod.project.util.Util;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,6 +28,7 @@ public class ItemInit {
             FoodProperties.Builder foodProperties = new FoodProperties.Builder();
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
             float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
+            String modelType = (String) data.get("modelType");
             String tab = (String) data.get("tab");
             String rarity = (String) data.get("rarity");
             boolean fuel = (boolean) data.get("fuel");
@@ -95,21 +97,22 @@ public class ItemInit {
                 foodProperties.saturationMod(saturationMod);
                 properties.food(foodProperties.build());
             }
-            if(!tab.equals("none")) TabInit.tabItems.get(tab).put(name, ITEMS.register(name, () ->
-                    fuel ?
-                new Item(properties) {
-                    @Override
-                    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                        return ((Number) burnTime).intValue();
-                    }
-                } :  new Item(properties)
-            ));
-            else ITEMS.register(name, () -> fuel ? new Item(properties)  {
-                @Override
-                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                    return ((Number) burnTime).intValue();
-                }
-            } :  new Item(properties));
+            if(!tab.equals("none")) TabInit.tabItems.get(tab).put(name, ITEMS.register(name, () ->{
+                    return fuel ? new CustomItem(name, modelType, properties) {
+                        @Override
+                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                            return ((Number) burnTime).intValue();
+                        }
+                    } : new CustomItem(name, modelType, properties);
+            }));
+            else ITEMS.register(name, () -> {
+                    return fuel ? new CustomItem(name, modelType, properties) {
+                        @Override
+                        public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                            return ((Number) burnTime).intValue();
+                        }
+                    } : new CustomItem(name, modelType, properties);
+            });
         }
     }
 }
