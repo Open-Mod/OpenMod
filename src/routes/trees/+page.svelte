@@ -1,18 +1,21 @@
 <script>
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
-  let blocks = {};
+  let trees = {};
   let tabs = {};
   let tiers = {};
   let sounds = {};
   let biomes = {};
+  let blocks = {};
   let defaultBiomes = [];
+  let defaultBlocks = [];
   let projectPath = "";
   let path = "";
   let tabsPath = "";
   let tiersPath = "";
   let soundsPath = "";
   let biomesPath = "";
+  let blocksPath = "";
   let nodesPath = "";
   onMount(() => {
     if (!selected) {
@@ -20,11 +23,12 @@
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
-    path = pathModule.join(projectPath, "src", "data", "blocks.json");
+    path = pathModule.join(projectPath, "src", "data", "trees.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     tiersPath = pathModule.join(projectPath, "src", "data", "tiers.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     biomesPath = pathModule.join(projectPath, "src", "data", "biomes.json");
+    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     nodesPath = pathModule.join(
       projectPath,
       "src",
@@ -35,15 +39,17 @@
       "plugins",
       "ui"
     );
-    blocks = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    trees = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     biomes = fs.existsSync(biomesPath) ? fs.readJSONSync(biomesPath) : {};
+    blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    defaultBlocks = fs.readJSONSync("./src/data/blocks.json");
     nodes = fs
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
-      .filter((n) => (n.for == "block" && !n.showInContext) || n.showInContext);
+      .filter((n) => (n.for == "tree" && !n.showInContext) || n.showInContext);
     defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
     nodes.forEach((n) => {
       function node() {
@@ -88,12 +94,12 @@
       node.plugin = n.plugin;
       node.prototype.onExecute = function () {
         if (
-          blocks[selectedBlock].node_data.connected_nodes.find(
+          trees[selectedTree].node_data.connected_nodes.find(
             (n) => n.id == this.id
           )
         )
           return;
-        blocks[selectedBlock].node_data.connected_nodes.push({
+        trees[selectedTree].node_data.connected_nodes.push({
           id: this.id,
           title: this.title,
           properties: this.properties,
@@ -108,43 +114,43 @@
       };
       LiteGraph.registerNodeType(`${n.category}/${n.name}`, node);
     });
-    Object.keys(blocks).forEach((block) => {
-      blocks[block].name = block;
-      blocks[block].breakSound = blocks[block].breakSound.trim()
-        ? blocks[block].breakSound
-        : Object.keys(sounds)[0] ?? blocks[block].breakSound;
-      blocks[block].walkSound = blocks[block].walkSound.trim()
-        ? blocks[block].walkSound
-        : Object.keys(sounds)[0] ?? blocks[block].walkSound;
-      blocks[block].placeSound = blocks[block].placeSound.trim()
-        ? blocks[block].placeSound
-        : Object.keys(sounds)[0] ?? blocks[block].placeSound;
-      blocks[block].hitSound = blocks[block].hitSound.trim()
-        ? blocks[block].hitSound
-        : Object.keys(sounds)[0] ?? blocks[block].hitSound;
-      blocks[block].openSound = blocks[block].openSound.trim()
-        ? blocks[block].openSound
-        : Object.keys(sounds)[0] ?? blocks[block].openSound;
-      blocks[block].closeSound = blocks[block].closeSound.trim()
-        ? blocks[block].closeSound
-        : Object.keys(sounds)[0] ?? blocks[block].closeSound;
-      blocks[block].biomes = blocks[block].biomes.length
-        ? blocks[block].biomes
+    Object.keys(trees).forEach((tree) => {
+      trees[tree].name = tree;
+      trees[tree].leavesBlock = trees[tree].leavesBlock.trim()
+        ? trees[tree].leavesBlock
+        : Object.keys(blocks)[0] ?? defaultBlocks[0] ?? trees[tree].leavesBlock;
+      trees[tree].bodyBlock = trees[tree].bodyBlock.trim()
+        ? trees[tree].bodyBlock
+        : Object.keys(blocks)[0] ?? defaultBlocks[0] ?? trees[tree].bodyBlock;
+      trees[tree].breakSound = trees[tree].breakSound.trim()
+        ? trees[tree].breakSound
+        : Object.keys(sounds)[0] ?? trees[tree].breakSound;
+      trees[tree].walkSound = trees[tree].walkSound.trim()
+        ? trees[tree].walkSound
+        : Object.keys(sounds)[0] ?? trees[tree].walkSound;
+      trees[tree].placeSound = trees[tree].placeSound.trim()
+        ? trees[tree].placeSound
+        : Object.keys(sounds)[0] ?? trees[tree].placeSound;
+      trees[tree].hitSound = trees[tree].hitSound.trim()
+        ? trees[tree].hitSound
+        : Object.keys(sounds)[0] ?? trees[tree].hitSound;
+      trees[tree].biomes = trees[tree].biomes.length
+        ? trees[tree].biomes
         : [Object.keys(biomes)[0] ?? defaultBiomes[0]];
     });
-    selectedBlock = Object.keys(blocks)[0] ?? "";
+    selectedTree = Object.keys(trees)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "blocks.json") return;
-      blocks = data.file.content;
+      if (data.file.file != "trees.json") return;
+      trees = data.file.content;
       updateEditor();
     };
   });
-  let selectedBlock = "";
+  let selectedTree = "";
   let name = "";
   let nodes = [];
   function add() {
-    name = `new_block_${Object.keys(blocks).length + 1}`;
-    blocks[name] = {
+    name = `new_tree_${Object.keys(trees).length + 1}`;
+    trees[name] = {
       name,
       resistance: 0.1,
       explosion_resistance: 0.1,
@@ -153,19 +159,24 @@
       friction: 40,
       jumpFactor: 1,
       speedFactor: 1,
-      type: "normal",
+      amount: 1,
+      bodyHeight: 7,
+      bodyRandA: 0,
+      bodyRandB: 0,
+      leavesHeight: 4,
+      radius: 2,
+      offset: 0,
       tab: "none",
+      leavesBlock: Object.keys(blocks)[0] ?? defaultBlocks[0],
+      bodyBlock: Object.keys(blocks)[0] ?? defaultBlocks[0],
       mapColor: "none",
       instrument: "none",
       breakSound: Object.keys(sounds)[0] ?? "",
       walkSound: Object.keys(sounds)[0] ?? "",
       placeSound: Object.keys(sounds)[0] ?? "",
       hitSound: Object.keys(sounds)[0] ?? "",
-      openSound: Object.keys(sounds)[0] ?? "",
-      closeSound: Object.keys(sounds)[0] ?? "",
       biomes: [Object.keys(biomes)[0] ?? defaultBiomes[0]],
       pushReaction: "ignore",
-      openedByHand: false,
       dropXp: false,
       minXp: 0,
       maxXp: 0,
@@ -173,15 +184,6 @@
       minedBy: "anything",
       minedByTier: "wood",
       ignitedByLava: true,
-      isCollidable: true,
-      isOre: false,
-      oreSize: 1,
-      minChunkSize: 1,
-      maxChunkSize: 1,
-      minHeight: 1,
-      maxHeight: 1,
-      discardChance: 0,
-      genShape: "minecraft:trapezoid",
       modelType: "default",
       stacksTo: 1,
       rarity: "common",
@@ -209,40 +211,38 @@
         },
       },
     };
-    selectedBlock = name;
+    selectedTree = name;
     updateEditor();
-    send_changes({ file: "blocks.json", data: blocks });
+    send_changes({ file: "trees.json", data: trees });
   }
   function save() {
     const obj = {};
-    Object.keys(blocks).forEach((block) => {
-      const name = blocks[block].name
+    Object.keys(trees).forEach((tree) => {
+      const name = trees[tree].name
         .replace(/\s/g, "-")
         .replace(/./g, (char) => (/^[a-zA-Z0-9._-]+$/i.test(char) ? char : ""))
         .toLowerCase();
       obj[name] = {};
-      Object.keys(blocks[block]).forEach((property) => {
+      Object.keys(trees[tree]).forEach((property) => {
         if (property == "name") return;
-        obj[name][property] = blocks[block][property];
+        obj[name][property] = trees[tree][property];
       });
     });
     fs.writeJSONSync(path, obj);
-    blocks = obj;
-    Object.keys(blocks).forEach((block) => {
-      blocks[block].name = block;
+    trees = obj;
+    Object.keys(trees).forEach((tree) => {
+      trees[tree].name = tree;
     });
-    selectedBlock = blocks[selectedBlock]
-      ? selectedBlock
-      : Object.keys(blocks)[0];
-    success("Blocks saved successfully!");
+    selectedTree = trees[selectedTree] ? selectedTree : Object.keys(trees)[0];
+    success("Trees saved successfully!");
   }
-  function deleteBlock() {
-    if (!selectedBlock) return;
-    delete blocks[selectedBlock];
-    blocks = blocks;
-    selectedBlock = Object.keys(blocks)[0];
+  function deleteTree() {
+    if (!selectedTree) return;
+    delete trees[selectedTree];
+    trees = trees;
+    selectedTree = Object.keys(trees)[0];
     updateEditor();
-    send_changes({ file: "blocks.json", data: blocks });
+    send_changes({ file: "trees.json", data: trees });
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
@@ -251,29 +251,29 @@
     const response = await ipc.invoke("dialog", "openFile", filters);
     if (response) {
       const splitted = response.filePaths[0].split("\\");
-      const block = fs.readFileSync(splitted.join("/"), "base64");
-      blocks[selectedBlock][property] = {
+      const tree = fs.readFileSync(splitted.join("/"), "base64");
+      trees[selectedTree][property] = {
         name: splitted[splitted.length - 1],
-        data: block,
+        data: tree,
       };
-      send_changes({ file: "blocks.json", data: blocks });
+      send_changes({ file: "trees.json", data: trees });
     }
   }
   function setTexture(property, ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      blocks[selectedBlock][property] = {
+      trees[selectedTree][property] = {
         name: ev.dataTransfer.files[0].name,
         data: event.target.result
           .replace("data:image/png;base64,", "")
           .replace("data:application/json;base64,", ""),
       };
-      send_changes({ file: "blocks.json", data: blocks });
+      send_changes({ file: "trees.json", data: trees });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
   function addEffect() {
-    blocks[selectedBlock].effects.push({
+    trees[selectedTree].effects.push({
       name: "absorption",
       probability: 0,
       duration: 0,
@@ -282,26 +282,26 @@
       visible: true,
       showIcon: true,
     });
-    blocks[selectedBlock].effects = blocks[selectedBlock].effects;
-    send_changes({ file: "blocks.json", data: blocks });
+    trees[selectedTree].effects = trees[selectedTree].effects;
+    send_changes({ file: "trees.json", data: trees });
   }
   function deleteEffect(i) {
-    blocks[selectedBlock].effects.splice(i, 1);
-    blocks[selectedBlock].effects = blocks[selectedBlock].effects;
-    send_changes({ file: "blocks.json", data: blocks });
+    trees[selectedTree].effects.splice(i, 1);
+    trees[selectedTree].effects = trees[selectedTree].effects;
+    send_changes({ file: "trees.json", data: trees });
   }
   let editor;
   function setEditor() {
-    if (!blocks[selectedBlock]) return;
+    if (!trees[selectedTree]) return;
     editor = new LiteGraph.Editor("editor", {
       miniwindow: false,
     });
     const graph = editor.graph;
     graph.on_change = () => {
-      blocks[selectedBlock].node_data.connected_nodes = [];
-      blocks[selectedBlock].node_data.graph = graph.serialize();
+      trees[selectedTree].node_data.connected_nodes = [];
+      trees[selectedTree].node_data.graph = graph.serialize();
       graph.runStep(1);
-      send_changes({ file: "blocks.json", data: blocks });
+      send_changes({ file: "trees.json", data: trees });
     };
     updateEditor();
     window.onresize = () => {
@@ -309,8 +309,8 @@
     };
   }
   function updateEditor() {
-    if (!selectedBlock || !editor) return;
-    editor.graph.configure(blocks[selectedBlock].node_data.graph);
+    if (!selectedTree || !editor) return;
+    editor.graph.configure(trees[selectedTree].node_data.graph);
     nodes
       .filter((n) => !n.showInContext)
       .forEach((n, i) => {
@@ -341,21 +341,21 @@
 </script>
 
 <svelte:head>
-  <title>OpenMod - Blocks</title>
+  <title>OpenMod - Trees</title>
 </svelte:head>
 <div class="flex flex-col w-full p-12">
-  <h1 class="text-2xl font-bold mb-1">Selected Block:</h1>
+  <h1 class="text-2xl font-bold mb-1">Selected Tree:</h1>
   <div class="flex flex-row w-full gap-3">
     <select
       class="select select-bordered font-normal text-base w-full"
-      bind:value={selectedBlock}
+      bind:value={selectedTree}
       on:change={updateEditor}
     >
-      {#if !Object.keys(blocks).length}
-        <option disabled value={selectedBlock}>No blocks</option>
+      {#if !Object.keys(trees).length}
+        <option disabled value={selectedTree}>No trees</option>
       {/if}
-      {#each Object.keys(blocks) as block}
-        <option value={block}>{block}</option>
+      {#each Object.keys(trees) as tree}
+        <option value={tree}>{tree}</option>
       {/each}
     </select>
     <div class="flex gap-1">
@@ -370,14 +370,14 @@
         >
       </a>
       <a class="tooltip tooltip-top" data-tip="Delete">
-        <button class="btn btn-error" on:click={deleteBlock}
+        <button class="btn btn-error" on:click={deleteTree}
           ><i class="fa-solid fa-trash text-lg" /></button
         >
       </a>
     </div>
   </div>
   <div class="w-full h-full overflow-y-auto mt-3">
-    {#if blocks[selectedBlock]}
+    {#if trees[selectedTree]}
       <Accordion title="General">
         <div class="grid grid-cols-3 gap-3">
           <div>
@@ -385,7 +385,7 @@
             <input
               type="text"
               class="input w-full"
-              bind:value={blocks[selectedBlock].name}
+              bind:value={trees[selectedTree].name}
             />
           </div>
           <div>
@@ -395,7 +395,7 @@
               min="0.1"
               step="0.1"
               class="input w-full"
-              bind:value={blocks[selectedBlock].resistance}
+              bind:value={trees[selectedTree].resistance}
             />
           </div>
           <div>
@@ -405,7 +405,7 @@
               min="0.1"
               step="0.1"
               class="input w-full"
-              bind:value={blocks[selectedBlock].explosion_resistance}
+              bind:value={trees[selectedTree].explosion_resistance}
             />
           </div>
           <div>
@@ -415,7 +415,7 @@
               min="0"
               max="100"
               class="input w-full"
-              bind:value={blocks[selectedBlock].fire_resistance}
+              bind:value={trees[selectedTree].fire_resistance}
             />
           </div>
           <div>
@@ -425,7 +425,7 @@
               min="0"
               max="15"
               class="input w-full"
-              bind:value={blocks[selectedBlock].lightLevel}
+              bind:value={trees[selectedTree].lightLevel}
             />
           </div>
           <div>
@@ -435,7 +435,7 @@
               min="0"
               max="100"
               class="input w-full"
-              bind:value={blocks[selectedBlock].friction}
+              bind:value={trees[selectedTree].friction}
             />
           </div>
           <div>
@@ -445,7 +445,7 @@
               min="0"
               step="0.1"
               class="input w-full"
-              bind:value={blocks[selectedBlock].jumpFactor}
+              bind:value={trees[selectedTree].jumpFactor}
             />
           </div>
           <div>
@@ -455,25 +455,77 @@
               min="0"
               step="0.1"
               class="input w-full"
-              bind:value={blocks[selectedBlock].speedFactor}
+              bind:value={trees[selectedTree].speedFactor}
             />
           </div>
           <div>
-            <label class="text-lg">Type</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].type}
-              ><option value="normal">Normal</option>
-              <option value="stairs">Stairs</option>
-              <option value="slab">Slab</option>
-              <option value="door">Door</option>
-            </select>
+            <label class="text-lg">Amount Per Biome</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].amount}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Body Height</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].bodyHeight}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Body Height Random A</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].bodyRandA}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Body Height Random B</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].bodyRandB}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Leaves Height</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].leavesHeight}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Leaves Radius</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].radius}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Leaves Offset</label>
+            <input
+              type="number"
+              min="0"
+              class="input w-full"
+              bind:value={trees[selectedTree].offset}
+            />
           </div>
           <div>
             <label class="text-lg">Creative Tab</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].tab}
+              bind:value={trees[selectedTree].tab}
             >
               <option value="none">None</option>
               {#each Object.keys(tabs) as tab}
@@ -482,10 +534,38 @@
             </select>
           </div>
           <div>
+            <label class="text-lg">Leaves Block</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={trees[selectedTree].leavesBlock}
+            >
+              {#each Object.keys(blocks) as block}
+                <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultBlocks as block}
+                <option value={block}>{block}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Body Block</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={trees[selectedTree].bodyBlock}
+            >
+              {#each Object.keys(blocks) as block}
+                <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each defaultBlocks as block}
+                <option value={block}>{block}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
             <label class="text-lg">Map Color</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].mapColor}
+              bind:value={trees[selectedTree].mapColor}
             >
               <option value="none">None</option>
               <option value="grass">Grass</option>
@@ -548,7 +628,7 @@
               <option value="warped_nylium">Warped Nylium</option>
               <option value="warped_stem">Warped Stem</option>
               <option value="warped_hyphae">Warped Hyphae</option>
-              <option value="warped_wart_block">Warped Wart Block</option>
+              <option value="warped_wart_tree">Warped Wart Tree</option>
               <option value="deepslate">Deepslate</option>
               <option value="raw_iron">Raw Iron</option>
               <option value="glow_lichen">Glow Lichen</option>
@@ -558,7 +638,7 @@
             <label class="text-lg">Play Instrument</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].instrument}
+              bind:value={trees[selectedTree].instrument}
             >
               <option value="none">None</option>
               <option value="harp">Harp</option>
@@ -582,10 +662,10 @@
             <label class="text-lg">Break Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].breakSound}
+              bind:value={trees[selectedTree].breakSound}
             >
               {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].breakSound}
+                <option disabled value={trees[selectedTree].breakSound}
                   >No sounds</option
                 >
               {/if}
@@ -598,10 +678,10 @@
             <label class="text-lg">Walk Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].walkSound}
+              bind:value={trees[selectedTree].walkSound}
             >
               {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].walkSound}
+                <option disabled value={trees[selectedTree].walkSound}
                   >No sounds</option
                 >
               {/if}
@@ -614,10 +694,10 @@
             <label class="text-lg">Place Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].placeSound}
+              bind:value={trees[selectedTree].placeSound}
             >
               {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].placeSound}
+                <option disabled value={trees[selectedTree].placeSound}
                   >No sounds</option
                 >
               {/if}
@@ -630,10 +710,10 @@
             <label class="text-lg">Hit Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].hitSound}
+              bind:value={trees[selectedTree].hitSound}
             >
               {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].hitSound}
+                <option disabled value={trees[selectedTree].hitSound}
                   >No sounds</option
                 >
               {/if}
@@ -642,82 +722,36 @@
               {/each}
             </select>
           </div>
-          {#if blocks[selectedBlock].type == "door"}
-            <div>
-              <label class="text-lg">Open Sound</label>
-              <select
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].openSound}
-              >
-                {#if !Object.keys(sounds).length}
-                  <option disabled value={blocks[selectedBlock].openSound}
-                    >No sounds</option
-                  >
-                {/if}
-                {#each Object.keys(sounds) as sound}
-                  <option value={sound}>{convertToCamelCase(sound)}</option>
-                {/each}
-              </select>
-            </div>
-            <div>
-              <label class="text-lg">Close Sound</label>
-              <select
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].closeSound}
-              >
-                {#if !Object.keys(sounds).length}
-                  <option disabled value={blocks[selectedBlock].closeSound}
-                    >No sounds</option
-                  >
-                {/if}
-                {#each Object.keys(sounds) as sound}
-                  <option value={sound}>{convertToCamelCase(sound)}</option>
-                {/each}
-              </select>
-            </div>
-          {/if}
           <div>
             <label class="text-lg">When Pushed By Piston</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].pushReaction}
-              ><option value="ignore">Do Nothing</option><option value="block"
-                >Block</option
+              bind:value={trees[selectedTree].pushReaction}
+              ><option value="ignore">Do Nothing</option><option value="tree"
+                >Tree</option
               ><option value="push_only">Push Only</option><option
                 value="destroy">Destroy</option
               ><option value="normal">Normal</option></select
             >
           </div>
-          {#if blocks[selectedBlock].type == "door"}
-            <div>
-              <label class="text-lg">Can Be Opened By Hand?</label>
-              <select
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].openedByHand}
-                ><option value={true}>True</option><option value={false}
-                  >False</option
-                ></select
-              >
-            </div>
-          {/if}
           <div>
             <label class="text-lg">Can Drop Experience?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].dropXp}
+              bind:value={trees[selectedTree].dropXp}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
             >
           </div>
-          {#if blocks[selectedBlock].dropXp}
+          {#if trees[selectedTree].dropXp}
             <div>
               <label class="text-lg">Minimum Experience</label>
               <input
                 type="number"
                 min="1"
                 class="input w-full"
-                bind:value={blocks[selectedBlock].minXp}
+                bind:value={trees[selectedTree].minXp}
               />
             </div>
             <div>
@@ -726,7 +760,7 @@
                 type="number"
                 min="1"
                 class="input w-full"
-                bind:value={blocks[selectedBlock].maxXp}
+                bind:value={trees[selectedTree].maxXp}
               />
             </div>
           {/if}
@@ -734,18 +768,18 @@
             <label class="text-lg">Can Drop Item?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].dropItem}
+              bind:value={trees[selectedTree].dropItem}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
             >
           </div>
-          {#if blocks[selectedBlock].dropItem}
+          {#if trees[selectedTree].dropItem}
             <div>
               <label class="text-lg">Drops Item If Mined With</label>
               <select
                 class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].minedBy}
+                bind:value={trees[selectedTree].minedBy}
                 ><option value="anything">Anything</option>
                 <option value="pickaxe">Pickaxe</option>
                 <option value="axe">Axe</option>
@@ -753,12 +787,12 @@
                 <option value="hoe">Hoe</option>
               </select>
             </div>
-            {#if blocks[selectedBlock].minedBy != "anything"}
+            {#if trees[selectedTree].minedBy != "anything"}
               <div>
                 <label class="text-lg">Required Tool Tier</label>
                 <select
                   class="select font-normal text-base w-full"
-                  bind:value={blocks[selectedBlock].minedByTier}
+                  bind:value={trees[selectedTree].minedByTier}
                 >
                   <option value="wood">Wood</option>
                   <option value="stone">Stone</option>
@@ -777,27 +811,7 @@
             <label class="text-lg">Can Be Ignited By Lava?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].ignitedByLava}
-              ><option value={true}>True</option><option value={false}
-                >False</option
-              ></select
-            >
-          </div>
-          <div>
-            <label class="text-lg">Is Collidable?</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].isCollidable}
-              ><option value={true}>True</option><option value={false}
-                >False</option
-              ></select
-            >
-          </div>
-          <div>
-            <label class="text-lg">Can Be Generated As Ore?</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].isOre}
+              bind:value={trees[selectedTree].ignitedByLava}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
@@ -807,420 +821,79 @@
             <label class="text-lg">Model Type</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].modelType}
+              bind:value={trees[selectedTree].modelType}
             >
               <option value="default">Default</option>
-              <option value="blockbench">Blockbench</option>
+              <option value="blockbench">Treebench</option>
             </select>
           </div>
-          {#if blocks[selectedBlock].modelType == "blockbench"}
+          <div class="col-span-3">
+            <label class="text-lg"
+              >Biomes (hold <a class="text-warning">ctrl</a> to select multiple)</label
+            >
+            <select
+              multiple
+              class="select font-normal text-base w-full"
+              bind:value={trees[selectedTree].biomes}
+            >
+              {#each Object.keys(biomes) as biome}
+                <option value={biome}>{convertToCamelCase(biome)}</option>
+              {/each}
+              {#each defaultBiomes as biome}
+                <option value={biome.name}>{biome.name}</option>
+              {/each}</select
+            >
+          </div>
+          {#if trees[selectedTree].modelType == "blockbench"}
             <div class="col-start-1">
               <label class="text-lg">Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].texture?.data}`}
+                src={`data:image/png;base64,${trees[selectedTree].texture?.data}`}
                 on:error={fallbackTexture}
                 on:click={chooseTexture.bind(this, "texture", "png")}
                 on:drop={setTexture.bind(this, "texture")}
                 on:dragover|preventDefault
               />
             </div>
-            {#if blocks[selectedBlock].type == "normal"}
-              <div>
-                <label class="text-lg">Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].model
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "model", "json")}
-                  on:drop={setTexture.bind(this, "model")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].model?.name ?? ""}
-                </div>
-              </div>
-            {:else if blocks[selectedBlock].type == "slab"}
-              <div>
-                <label class="text-lg">Bottom Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].model
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "model", "json")}
-                  on:drop={setTexture.bind(this, "model")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].model?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Top Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].topModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "topModel", "json")}
-                  on:drop={setTexture.bind(this, "topModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].topModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Full Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].fullModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "fullModel", "json")}
-                  on:drop={setTexture.bind(this, "fullModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].fullModel?.name ?? ""}
-                </div>
-              </div>
-            {:else if blocks[selectedBlock].type == "stairs"}
-              <div>
-                <label class="text-lg">Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].model
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "model", "json")}
-                  on:drop={setTexture.bind(this, "model")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].model?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Inner Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].innerModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "innerModel", "json")}
-                  on:drop={setTexture.bind(this, "innerModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].innerModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Outer Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].outerModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "outerModel", "json")}
-                  on:drop={setTexture.bind(this, "outerModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].outerModel?.name ?? ""}
-                </div>
-              </div>
-            {:else if blocks[selectedBlock].type == "door"}
-              <div>
-                <label class="text-lg">Bottom Left Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].model
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "model", "json")}
-                  on:drop={setTexture.bind(this, "model")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].model?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Bottom Left Open Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].bottomLeftOpenModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(
-                    this,
-                    "bottomLeftOpenModel",
-                    "json"
-                  )}
-                  on:drop={setTexture.bind(this, "bottomLeftOpenModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].innerModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Bottom Right Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].bottomRightModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(
-                    this,
-                    "bottomRightModel",
-                    "json"
-                  )}
-                  on:drop={setTexture.bind(this, "bottomRightModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].bottomRightModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Bottom Right Open Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].bottomRightOpenModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(
-                    this,
-                    "bottomRightOpenModel",
-                    "json"
-                  )}
-                  on:drop={setTexture.bind(this, "bottomRightOpenModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].bottomRightOpenModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Top Left Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].topLeftModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "topLeftModel", "json")}
-                  on:drop={setTexture.bind(this, "topLeftModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].topLeftModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Top Left Open Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].topLeftOpenModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(
-                    this,
-                    "topLeftOpenModel",
-                    "json"
-                  )}
-                  on:drop={setTexture.bind(this, "topLeftOpenModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].topLeftOpenModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Top Right Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].topRightModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(this, "topRightModel", "json")}
-                  on:drop={setTexture.bind(this, "topRightModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].topRightModel?.name ?? ""}
-                </div>
-              </div>
-              <div>
-                <label class="text-lg">Top Right Open Model</label>
-                <div
-                  class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                  style="{blocks[selectedBlock].topRightOpenModel
-                    ? 'background-color: rgba(0,0,0,0.3)'
-                    : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                  on:click={chooseTexture.bind(
-                    this,
-                    "topRightOpenModel",
-                    "json"
-                  )}
-                  on:drop={setTexture.bind(this, "topRightOpenModel")}
-                  on:dragover|preventDefault
-                >
-                  {blocks[selectedBlock].topRightOpenModel?.name ?? ""}
-                </div>
-              </div>
-            {/if}
             <div>
               <label class="text-lg">Geo</label>
               <div
                 class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                style="{blocks[selectedBlock].geo
+                style="{trees[selectedTree].geo
                   ? 'background-color: rgba(0,0,0,0.3)'
                   : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
                 on:click={chooseTexture.bind(this, "geo", "json")}
                 on:drop={setTexture.bind(this, "geo")}
                 on:dragover|preventDefault
               >
-                {blocks[selectedBlock].geo?.name ?? ""}
+                {trees[selectedTree].geo?.name ?? ""}
               </div>
             </div>
             <div>
               <label class="text-lg">Animations</label>
               <div
                 class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                style="{blocks[selectedBlock].animation
+                style="{trees[selectedTree].animation
                   ? 'background-color: rgba(0,0,0,0.3)'
                   : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
                 on:click={chooseTexture.bind(this, "animation", "json")}
                 on:drop={setTexture.bind(this, "animation")}
                 on:dragover|preventDefault
               >
-                {blocks[selectedBlock].animation?.name ?? ""}
+                {trees[selectedTree].animation?.name ?? ""}
               </div>
             </div>
           {/if}
-          {#if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "normal"}
-            <div class="col-start-1">
-              <label class="text-lg">Particle Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].particleTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "particleTexture", "png")}
-                on:drop={setTexture.bind(this, "particleTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
+          {#if trees[selectedTree].modelType == "default"}
             <div>
-              <label class="text-lg">Up Texture</label>
+              <label class="text-lg">Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].upTexture?.data}`}
+                src={`data:image/png;base64,${trees[selectedTree].crossTexture?.data}`}
                 on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "upTexture", "png")}
-                on:drop={setTexture.bind(this, "upTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Down Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].downTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "downTexture", "png")}
-                on:drop={setTexture.bind(this, "downTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Front Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].frontTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "frontTexture", "png")}
-                on:drop={setTexture.bind(this, "frontTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Back Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].backTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "backTexture", "png")}
-                on:drop={setTexture.bind(this, "backTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Right Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].rightTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "rightTexture", "png")}
-                on:drop={setTexture.bind(this, "rightTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Left Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].leftTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "leftTexture", "png")}
-                on:drop={setTexture.bind(this, "leftTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-          {:else if blocks[selectedBlock].modelType == "default" && (blocks[selectedBlock].type == "stairs" || blocks[selectedBlock].type == "slab")}
-            <div>
-              <label class="text-lg">Top Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].upTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "upTexture", "png")}
-                on:drop={setTexture.bind(this, "upTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Bottom Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].downTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "downTexture", "png")}
-                on:drop={setTexture.bind(this, "downTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Side Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].rightTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "rightTexture", "png")}
-                on:drop={setTexture.bind(this, "rightTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-          {:else if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "door"}
-            <div>
-              <label class="text-lg">Top Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].upTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "upTexture", "png")}
-                on:drop={setTexture.bind(this, "upTexture")}
-                on:dragover|preventDefault
-              />
-            </div>
-            <div>
-              <label class="text-lg">Bottom Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${blocks[selectedBlock].downTexture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "downTexture", "png")}
-                on:drop={setTexture.bind(this, "downTexture")}
+                on:click={chooseTexture.bind(this, "crossTexture", "png")}
+                on:drop={setTexture.bind(this, "crossTexture")}
                 on:dragover|preventDefault
               />
             </div>
@@ -1235,14 +908,14 @@
               type="number"
               min="1"
               class="input w-full"
-              bind:value={blocks[selectedBlock].stacksTo}
+              bind:value={trees[selectedTree].stacksTo}
             />
           </div>
           <div>
             <label class="text-lg">Rarity</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].rarity}
+              bind:value={trees[selectedTree].rarity}
               ><option value="common">Common Rarity</option><option
                 value="uncommon">Uncommon Rarity</option
               ><option value="rare">Rare Rarity</option><option value="epic"
@@ -1254,20 +927,20 @@
             <label class="text-lg">Is Fuel?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].fuel}
+              bind:value={trees[selectedTree].fuel}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
             >
           </div>
-          {#if blocks[selectedBlock].fuel}
+          {#if trees[selectedTree].fuel}
             <div>
               <label class="text-lg">Burn Time (In Seconds)</label>
               <input
                 type="number"
                 min="0"
                 class="input w-full"
-                bind:value={blocks[selectedBlock].burnTime}
+                bind:value={trees[selectedTree].burnTime}
               />
             </div>
           {/if}
@@ -1275,7 +948,7 @@
             <label class="text-lg">Is Food?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].food}
+              bind:value={trees[selectedTree].food}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
@@ -1285,7 +958,7 @@
             <label class="text-lg">Is Fire Resistant?</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={blocks[selectedBlock].fireResistant}
+              bind:value={trees[selectedTree].fireResistant}
               ><option value={true}>True</option><option value={false}
                 >False</option
               ></select
@@ -1293,14 +966,14 @@
           </div>
         </div>
       </Accordion>
-      {#if blocks[selectedBlock].food}
+      {#if trees[selectedTree].food}
         <Accordion title="Food">
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="text-lg">Is Always Eatable?</label>
               <select
                 class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].food_alwaysEat}
+                bind:value={trees[selectedTree].food_alwaysEat}
                 ><option value={true}>True</option><option value={false}
                   >False</option
                 ></select
@@ -1310,7 +983,7 @@
               <label class="text-lg">Can Be Eaten Fast?</label>
               <select
                 class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].food_fast}
+                bind:value={trees[selectedTree].food_fast}
                 ><option value={true}>True</option><option value={false}
                   >False</option
                 ></select
@@ -1320,7 +993,7 @@
               <label class="text-lg">Is Meat?</label>
               <select
                 class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].food_meat}
+                bind:value={trees[selectedTree].food_meat}
                 ><option value={true}>True</option><option value={false}
                   >False</option
                 ></select
@@ -1334,7 +1007,7 @@
                 max="10"
                 step="0.5"
                 class="input w-full"
-                bind:value={blocks[selectedBlock].food_nutrition}
+                bind:value={trees[selectedTree].food_nutrition}
               />
             </div>
             <div>
@@ -1344,14 +1017,14 @@
                 min="0"
                 max="100"
                 class="input w-full"
-                bind:value={blocks[selectedBlock].food_saturationMod}
+                bind:value={trees[selectedTree].food_saturationMod}
               />
             </div>
           </div>
         </Accordion>
         <Accordion title="Effects">
           <div class="flex flex-col gap-3">
-            {#each blocks[selectedBlock].effects as effect, index}
+            {#each trees[selectedTree].effects as effect, index}
               <div class="grid grid-cols-3 gap-3">
                 <div>
                   <label class="text-lg">Effect</label>
@@ -1475,99 +1148,6 @@
                 <i class="fa-solid fa-plus" />
               </button>
             </a>
-          </div>
-        </Accordion>
-      {/if}
-      {#if blocks[selectedBlock].isOre}
-        <Accordion title="Ore">
-          <div class="grid grid-cols-3 gap-3">
-            <div>
-              <label class="text-lg">Vein Size</label>
-              <input
-                type="number"
-                min="1"
-                max="64"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].oreSize}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Minimum Amount Per Chunk</label>
-              <input
-                type="number"
-                min="1"
-                max="256"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].minChunkSize}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Maximum Amount Per Chunk</label>
-              <input
-                type="number"
-                min="1"
-                max="256"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].maxChunkSize}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Minimum Height</label>
-              <input
-                type="number"
-                min="-2048"
-                max="2047"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].minHeight}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Maximum Height</label>
-              <input
-                type="number"
-                min="-2048"
-                max="2047"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].maxHeight}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Discard On Air Exposure (%)</label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                class="input w-full"
-                bind:value={blocks[selectedBlock].discardChance}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Generation Shape</label>
-              <select
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].genShape}
-                ><option value="minecraft:uniform">Uniform</option><option
-                  value="minecraft:trapezoid">Trapezoid</option
-                ></select
-              >
-            </div>
-            <div class="col-span-3">
-              <label class="text-lg"
-                >Biomes (hold <a class="text-warning">ctrl</a> to select multiple)</label
-              >
-              <select
-                multiple
-                class="select font-normal text-base w-full"
-                bind:value={blocks[selectedBlock].biomes}
-              >
-                {#each Object.keys(biomes) as biome}
-                  <option value={biome}>{convertToCamelCase(biome)}</option>
-                {/each}
-                {#each defaultBiomes as biome}
-                  <option value={biome.name}>{biome.name}</option>
-                {/each}</select
-              >
-            </div>
           </div>
         </Accordion>
       {/if}

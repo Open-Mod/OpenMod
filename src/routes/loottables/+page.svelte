@@ -3,10 +3,12 @@
   import Accordion from "../../components/Accordion.svelte";
   let loottables = {};
   let blocks = {};
+  let trees = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
   let blocksPath = "";
+  let treesPath = "";
   let projectName = "";
   onMount(() => {
     if (!selected) {
@@ -16,11 +18,13 @@
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "loottables.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
       selected
     ].name;
     loottables = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(loottables).forEach((loottable) => {
       loottables[loottable].name = loottable;
@@ -169,6 +173,9 @@
                 {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
                 {/each}
+                {#each Object.keys(trees).filter((tree) => trees[tree].dropItem) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
                 {/each}
@@ -179,9 +186,8 @@
             <label class="text-lg"
               >Loot Table JSON (use <a
                 class="text-warning"
-                href="https://misode.github.io/loot-table/?version=1.20.1/"
-                target="_blank"
-                >https://misode.github.io/loot-table/?version=1.20.1/</a
+                href="https://misode.github.io/loot-table/"
+                target="_blank">https://misode.github.io/loot-table/</a
               >)</label
             >
             <textarea

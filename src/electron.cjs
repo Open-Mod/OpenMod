@@ -77,6 +77,9 @@ ipcMain.on("appPath", (ev) => {
 ipcMain.on("isDev", (ev) => {
   ev.returnValue = isdev;
 });
+ipcMain.on("version", (ev) => {
+  ev.returnValue = app.getVersion();
+});
 ipcMain.on("selected", (ev) => {
   ev.returnValue = selected;
 });
@@ -101,17 +104,49 @@ ipcMain.handle("dialog", async (ev, property, ...filters) => {
   });
   return response.canceled ? undefined : response;
 });
-ipcMain.handle("createProject", async (ev, path) => {
+ipcMain.handle("createProject", async (ev, path, update) => {
   mainwindow.webContents.send("updateStart", "");
-  const projectPath = isdev
-    ? pathModule.join(__dirname, "..", "Project", "**")
-    : pathModule.join(__dirname, "..", "..", "..", "Project", "**");
-  await cpy(projectPath, path).on("progress", (progress) => {
-    mainwindow.webContents.send(
-      "updateProgress",
-      (progress.percent * 100).toFixed(0)
+  const basePath = isdev
+    ? pathModule.join(__dirname, "..", "Project")
+    : pathModule.join(__dirname, "..", "..", "..", "Project");
+  const projectPath = pathModule.join(basePath, "**");
+  const renamePath = pathModule.join(path, "Project");
+  if (update) {
+    const pluginsPath = pathModule.join(
+      basePath,
+      "src",
+      "main",
+      "java",
+      "dev",
+      "openmod",
+      "plugins",
+      "**"
     );
-  });
+    const dataPath = pathModule.join(renamePath, "src", "data", "**");
+    const updatePath = pathModule.join(path, update);
+    const updateDataPath = pathModule.join(updatePath, "src", "data", ".");
+    await cpy(projectPath, updatePath).on("progress", (progress) => {
+      mainwindow.webContents.send(
+        "updateProgress",
+        ((progress.percent * 100) / 3).toFixed(0)
+      );
+    });
+    await cpy(dataPath, updateDataPath).on("progress", (progress) => {
+      mainwindow.webContents.send(
+        "updateProgress",
+        ((200 + progress.percent * 100) / 3).toFixed(0)
+      );
+    });
+    fs.rmSync(renamePath, { force: true, recursive: true });
+    fs.renameSync(updatePath, renamePath);
+  } else {
+    await cpy(projectPath, renamePath).on("progress", (progress) => {
+      mainwindow.webContents.send(
+        "updateProgress",
+        (progress.percent * 100).toFixed(0)
+      );
+    });
+  }
   mainwindow.webContents.send("updateStop", "");
 });
 ipcMain.handle("run", (ev) => {
@@ -142,6 +177,7 @@ ipcMain.handle("run", (ev) => {
     mainwindow.webContents.send("err", stderr);
   });
   child.on("exit", () => {
+    if (!child) return;
     child = undefined;
     mainwindow.webContents.send("exit");
   });

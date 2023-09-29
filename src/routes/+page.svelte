@@ -24,38 +24,45 @@
       location.href = "#";
     });
   });
-  async function add() {
-    if (!projectName.trim()) {
+  async function add(ev, update, path) {
+    if (!projectName.trim() && !update) {
       error = "Project name must not be empty!";
       return setTimeout(() => {
         error = "";
       }, 2000);
     }
-    const name = projectName
+    let name = projectName
       .trim()
       .replace(/\s/g, "_")
       .replace(/./g, (char) => (/[^a-zA-Z\d_]/g.test(char) ? "" : char));
-    if (!projectPath) {
+    if (!projectPath && !update) {
       error = "Project folder must not be empty!";
       return setTimeout(() => {
         error = "";
       }, 2000);
     }
-    if (projects[projectPath]) {
+    if (projects[projectPath] && !update) {
       error = "Project already exists!";
       return setTimeout(() => {
         error = "";
       }, 2000);
     }
     window["Add Project"].close();
-    await ipc.invoke("createProject", projectPath);
+    if (update) {
+      projectPath = path;
+      name = projects[projectPath].name;
+      const updatePath = pathModule.join(projectPath, update);
+      fs.mkdirSync(updatePath);
+    }
     projects[projectPath] = {
       name,
       createdAt: new Date(),
+      version,
     };
+    await ipc.invoke("createProject", projectPath, update);
+    projectPath = pathModule.join(projectPath, "Project");
     const project = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "java",
@@ -65,15 +72,30 @@
       "Project.java"
     );
     const projectData = fs.readFileSync(project).toString();
-    const properties = pathModule.join(
-      projectPath,
-      "Project",
-      "gradle.properties"
-    );
+    const properties = pathModule.join(projectPath, "gradle.properties");
     const propertiesData = fs.readFileSync(properties).toString();
+    const mod = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "java",
+      "dev",
+      "openmod",
+      "plugins",
+      "mod"
+    );
+    const ui = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "java",
+      "dev",
+      "openmod",
+      "plugins",
+      "ui"
+    );
     const animations = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -83,7 +105,6 @@
     );
     const geo = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -93,7 +114,6 @@
     );
     const sounds = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -103,7 +123,6 @@
     );
     const itemModels = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -114,7 +133,6 @@
     );
     const itemTextures = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -125,7 +143,6 @@
     );
     const armorModels = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -137,7 +154,6 @@
     );
     const blockModels = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -148,7 +164,6 @@
     );
     const blockTextures = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -159,7 +174,6 @@
     );
     const blockstates = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -169,7 +183,6 @@
     );
     const blockloottables = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -180,7 +193,6 @@
     );
     const recipes = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -190,7 +202,6 @@
     );
     const projectMinecraftData = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -201,7 +212,6 @@
     );
     const minecraftData = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -213,7 +223,6 @@
     );
     const forgeData = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -224,7 +233,6 @@
     );
     const biomeModifier = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -235,7 +243,6 @@
     );
     const worldgenConfigured = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -246,7 +253,6 @@
     );
     const worldgenPlaced = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -257,7 +263,6 @@
     );
     const worldgenBiomes = pathModule.join(
       projectPath,
-      "Project",
       "src",
       "main",
       "resources",
@@ -268,7 +273,7 @@
     );
     fs.writeFileSync(
       project,
-      projectData.replace("${project}", projectName.trim().toLowerCase())
+      projectData.replace("${project}", name.toLowerCase())
     );
     fs.writeFileSync(
       properties,
@@ -276,6 +281,8 @@
         .replace("${project}", name.toLowerCase())
         .replace("${Project}", name.replace(/_/g, " "))
     );
+    fs.ensureDirSync(mod);
+    fs.ensureDirSync(ui);
     fs.ensureDirSync(animations);
     fs.ensureDirSync(geo);
     fs.ensureDirSync(sounds);
@@ -295,7 +302,7 @@
     fs.ensureDirSync(worldgenPlaced);
     fs.ensureDirSync(worldgenBiomes);
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
-    success = "Project created successfully!";
+    success = `Project ${update ? "updated" : "created"} successfully!`;
     setTimeout(() => {
       success = "";
     }, 2000);
@@ -366,6 +373,23 @@
                 .split(",")[0]}</td
             >
             <td class="text-right">
+              <a
+                class="tooltip tooltip-top {projects[project].version == version
+                  ? 'hidden'
+                  : ''}"
+                data-tip="Update from v{projects[project]
+                  .version} to v{version}"
+              >
+                <button
+                  class="btn btn-info btn-sm"
+                  on:click={() =>
+                    add(
+                      null,
+                      `OpenMod_Project_${version}-${Date.now()}`,
+                      project
+                    )}><i class="fa-solid fa-rotate-right" /></button
+                >
+              </a>
               <a class="tooltip tooltip-top" data-tip="Select">
                 <button
                   class="btn {current == project

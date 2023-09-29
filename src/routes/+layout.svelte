@@ -172,6 +172,9 @@
     <MenuItem tip="Trees" page="/trees">
       <i class="fa-solid fa-tree" />
     </MenuItem>
+    <MenuItem tip="Player" page="/player">
+      <i class="fa-solid fa-user-pen" />
+    </MenuItem>
     <MenuItem tip="Collaboration" page="/collaboration">
       <i class="fa-solid fa-user-plus" />
     </MenuItem>

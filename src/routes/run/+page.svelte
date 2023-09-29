@@ -58,6 +58,8 @@
       "blocks.json"
     );
     const blocks = fs.existsSync(blocksFile) ? fs.readJSONSync(blocksFile) : {};
+    const treesFile = pathModule.join(projectPath, "src", "data", "trees.json");
+    const trees = fs.existsSync(treesFile) ? fs.readJSONSync(treesFile) : {};
     const armorsFile = pathModule.join(
       projectPath,
       "src",
@@ -361,6 +363,193 @@
                 )}]: Field "Level" of effect "${
                   effect.name
                 }" from block "${block}" must not be empty!`
+              );
+          }
+        });
+      });
+    });
+    Object.keys(trees).forEach((tree) => {
+      Object.keys(trees[tree]).forEach((property) => {
+        if (
+          trees[tree][property] == null ||
+          String(trees[tree][property]).trim() == ""
+        ) {
+          if (property == "resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Resistance" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "explosion_resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Explosion Resistance" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "fire_resistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Fire Resistance" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "lightLevel")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Light Level" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "friction")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Friction" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "jumpFactor")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Jump Power" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "speedFactor")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Movement Speed" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "amount")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Amount Per Biome" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "bodyHeight")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Body Height" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "bodyRandA")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Body Height Random A" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "bodyRandB")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Body Height Random B" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "leavesHeight")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Leaves Height" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "radius")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Leaves Radius" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "offset")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Leaves Offset" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "breakSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Break Sound" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "walkSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Walk Sound" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "placeSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Place Sound" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "hitSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Hit Sound" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "stacksTo")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Stack Size" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "burnTime" && trees[tree].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "food_nutrition" && trees[tree].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Nutrition" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "food_saturationMod" && trees[tree].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Saturation" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "minXp" && trees[tree].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Minimum Experience" of tree "${tree}" must not be empty!`
+            );
+          else if (property == "maxXp" && trees[tree].dropXp)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Maximum Experience" of tree "${tree}" must not be empty!`
+            );
+        }
+      });
+      if (!trees[tree].food) return;
+      trees[tree].effects.forEach((effect) => {
+        Object.keys(effect).forEach((property) => {
+          if (
+            effect[property] == null ||
+            String(effect[property]).trim() == ""
+          ) {
+            if (property == "probability")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Probability" of effect "${
+                  effect.name
+                }" from tree "${tree}" must not be empty!`
+              );
+            else if (property == "duration")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Duration" of effect "${
+                  effect.name
+                }" from tree "${tree}" must not be empty!`
+              );
+            else if (property == "amplifier")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Level" of effect "${
+                  effect.name
+                }" from tree "${tree}" must not be empty!`
               );
           }
         });
@@ -928,36 +1117,12 @@
         );
         const itemTextureData = itemTexture.data;
         fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
-      }
-      if (armors[armor].modelType == "default") {
         fs.writeJSONSync(modelPath, {
           parent: "minecraft:item/generated",
           textures: {
             layer0: `${projectName.toLowerCase()}:item/${armor}_item`,
           },
         });
-      } else if (armors[armor].modelType == "blockbench") {
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/generated",
-          textures: {
-            layer0: `${projectName.toLowerCase()}:item/${armor}_item`,
-          },
-        });
-        const geo = armors[armor].geo;
-        const geoPath = pathModule.join(geosPath, `${armor}.geo.json`);
-        const geoData = geo.data;
-        const animation = armors[armor].animation;
-        const animationPath = pathModule.join(
-          animationsPath,
-          `${armor}.animation.json`
-        );
-        const animationData = animation.data;
-        const texture = armors[armor].texture;
-        const texturePath = pathModule.join(itemTexturesPath, `${armor}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
       }
     });
     Object.keys(blocks).forEach((block) => {
@@ -1967,6 +2132,228 @@
         });
       }
     });
+    Object.keys(trees).forEach((tree) => {
+      const itemModelPath = pathModule.join(itemModelsPath, `${tree}.json`);
+      const modelPath = pathModule.join(blockModelsPath, `${tree}.json`);
+      if (trees[tree].modelType == "default") {
+        const crossTexture = trees[tree].crossTexture;
+        const modelObj = {
+          render_type: "minecraft:cutout",
+          parent: "minecraft:block/cross",
+          textures: {},
+        };
+        if (crossTexture) {
+          const crossTexturePath = pathModule.join(
+            blockTexturesPath,
+            `${tree}.png`
+          );
+          const crossTextureData = crossTexture.data;
+          fs.writeFileSync(crossTexturePath, crossTextureData, "base64");
+          modelObj.textures.cross = `${projectName.toLowerCase()}:block/${tree}`;
+        }
+        fs.writeJSONSync(modelPath, modelObj);
+        fs.writeJSONSync(itemModelPath, {
+          parent: `${projectName.toLowerCase()}:block/${tree}`,
+        });
+      } else if (trees[tree].modelType == "blockbench") {
+        const model = trees[tree].model;
+        const modelData = model.data;
+        const geo = trees[tree].geo;
+        const geoPath = pathModule.join(geosPath, `${tree}.geo.json`);
+        const geoData = geo.data;
+        const animation = trees[tree].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${tree}.animation.json`
+        );
+        const animationData = animation.data;
+        const texture = trees[tree].texture;
+        const texturePath = pathModule.join(blockTexturesPath, `${tree}.png`);
+        const textureData = texture.data;
+        fs.writeFileSync(modelPath, modelData, "base64");
+        fs.writeFileSync(itemModelPath, modelData, "base64");
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
+      }
+      const statePath = pathModule.join(blockstates, `${tree}.json`);
+      const mineablePath = pathModule.join(
+        minecraftMineable,
+        `${trees[tree].minedBy}.json`
+      );
+      let tierPath;
+      if (["netherite", "gold"].includes(trees[tree].minedByTier))
+        tierPath = pathModule.join(
+          forgeData,
+          `needs_${trees[tree].minedByTier}_tool.json`
+        );
+      else if (
+        ["wood", "stone", "iron", "diamond"].includes(trees[tree].minedByTier)
+      )
+        tierPath = pathModule.join(
+          minecraftData,
+          `needs_${trees[tree].minedByTier}_tool.json`
+        );
+      else
+        tierPath = pathModule.join(
+          projectMinecraftData,
+          `needs_${trees[tree].minedByTier}_tool.json`
+        );
+      fs.writeJSONSync(statePath, {
+        variants: {
+          "": {
+            model: `${projectName.toLowerCase()}:block/${tree}`,
+          },
+        },
+      });
+      const configurePath = pathModule.join(worldgenConfigured, `${tree}.json`);
+      fs.writeJSONSync(configurePath, {
+        type: "minecraft:tree",
+        config: {
+          minimum_size: {
+            type: "minecraft:two_layers_feature_size",
+          },
+          dirt_provider: {
+            type: "minecraft:simple_state_provider",
+            state: {
+              Name: "minecraft:dirt",
+            },
+          },
+          trunk_provider: {
+            type: "minecraft:simple_state_provider",
+            state: {
+              Name: trees[tree].bodyBlock.startsWith("minecraft:")
+                ? trees[tree].bodyBlock
+                : `${projectName.toLowerCase()}:${trees[tree].bodyBlock}`,
+            },
+          },
+          foliage_provider: {
+            type: "minecraft:simple_state_provider",
+            state: {
+              Name: trees[tree].leavesBlock.startsWith("minecraft:")
+                ? trees[tree].leavesBlock
+                : `${projectName.toLowerCase()}:${trees[tree].leavesBlock}`,
+            },
+          },
+          trunk_placer: {
+            type: "minecraft:straight_trunk_placer",
+            base_height: trees[tree].bodyHeight,
+            height_rand_a: trees[tree].bodyRandA,
+            height_rand_b: trees[tree].bodyRandB,
+          },
+          foliage_placer: {
+            type: "minecraft:blob_foliage_placer",
+            radius: trees[tree].radius,
+            offset: trees[tree].offset,
+            height: trees[tree].leavesHeight,
+          },
+          decorators: [],
+        },
+      });
+      if (trees[tree].dropItem) {
+        if (fs.existsSync(mineablePath) && trees[tree].minedBy != "anything") {
+          const mineable = fs.readJSONSync(mineablePath);
+          const tier = fs.readJSONSync(tierPath);
+          mineable.values.push(`${projectName.toLowerCase()}:${tree}`);
+          tier.values.push(`${projectName.toLowerCase()}:${tree}`);
+          fs.writeJSONSync(mineablePath, mineable);
+          fs.writeJSONSync(tierPath, tier);
+        } else if (trees[tree].minedBy != "anything") {
+          fs.writeJSONSync(mineablePath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${tree}`],
+          });
+          fs.writeJSONSync(tierPath, {
+            replace: false,
+            values: [`${projectName.toLowerCase()}:${tree}`],
+          });
+        }
+      }
+      if (trees[tree].biomes.length) {
+        const placedPath = pathModule.join(worldgenPlaced, `${tree}.json`);
+        const biomePath = pathModule.join(biomeModifier, `${tree}.json`);
+        const targets = [];
+        const selectedBiomes = trees[tree].biomes.map((b) => {
+          if (biomes[b])
+            return {
+              name: `${projectName.toLowerCase()}:${b}`,
+              dimension: biomes[b].type,
+            };
+          else return defaultBiomes.find((biome) => biome.name == b);
+        });
+        if (selectedBiomes.find((b) => b.dimension == "overworld"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:tag_match`,
+              tag: `minecraft:stone_ore_replaceables`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${tree}`,
+            },
+          });
+        if (selectedBiomes.find((b) => b.dimension == "nether"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:block_match`,
+              tree: `minecraft:netherrack`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${tree}`,
+            },
+          });
+        if (selectedBiomes.find((b) => b.dimension == "end"))
+          targets.push({
+            target: {
+              predicate_type: `minecraft:block_match`,
+              tree: `minecraft:end_stone`,
+            },
+            state: {
+              Name: `${projectName.toLowerCase()}:${tree}`,
+            },
+          });
+        fs.writeJSONSync(placedPath, {
+          feature: `${projectName.toLowerCase()}:${tree}`,
+          placement: [
+            {
+              type: "minecraft:count",
+              count: trees[tree].amount,
+            },
+            {
+              type: "minecraft:in_square",
+            },
+            {
+              type: "minecraft:surface_water_depth_filter",
+              max_water_depth: 0,
+            },
+            {
+              type: "minecraft:heightmap",
+              heightmap: "OCEAN_FLOOR",
+            },
+            {
+              type: "minecraft:biome",
+            },
+            {
+              type: "minecraft:block_predicate_filter",
+              predicate: {
+                type: "minecraft:would_survive",
+                state: {
+                  Name: `${projectName.toLowerCase()}:${tree}`,
+                  Properties: {
+                    stage: "0",
+                  },
+                },
+              },
+            },
+          ],
+        });
+        fs.writeJSONSync(biomePath, {
+          type: "forge:add_features",
+          features: `${projectName.toLowerCase()}:${tree}`,
+          step: "vegetal_decoration",
+          biomes: selectedBiomes.map((biome) => biome.name),
+        });
+      }
+    });
     Object.keys(tools).forEach((tool) => {
       const modelPath = pathModule.join(itemModelsPath, `${tool}.json`);
       if (tools[tool].modelType == "default") {
@@ -2004,23 +2391,44 @@
       }
     });
     Object.keys(materials).forEach((material) => {
-      const texture1 = materials[material].texture[0];
-      const texture2 = materials[material].texture[1];
-      if (texture1) {
-        const texturePath = pathModule.join(
-          textureArmorModelsPath,
-          `layer_${material}_1.png`
+      const texture1 = materials[material].texture1;
+      const texture2 = materials[material].texture2;
+      if (materials[material].modelType == "default") {
+        if (texture1) {
+          const texturePath = pathModule.join(
+            textureArmorModelsPath,
+            `layer_${material}_1.png`
+          );
+          const textureData = texture1.replace("data:image/png;base64,", "");
+          fs.writeFileSync(texturePath, textureData, "base64");
+        }
+        if (texture2) {
+          const texturePath = pathModule.join(
+            textureArmorModelsPath,
+            `layer_${material}_2.png`
+          );
+          const textureData = texture2.replace("data:image/png;base64,", "");
+          fs.writeFileSync(texturePath, textureData, "base64");
+        }
+      } else if (materials[material].modelType == "blockbench") {
+        const geo = materials[material].geo;
+        const geoPath = pathModule.join(geosPath, `${material}.geo.json`);
+        const geoData = geo.data;
+        const animation = materials[material].animation;
+        const animationPath = pathModule.join(
+          animationsPath,
+          `${material}.animation.json`
         );
-        const textureData = texture1.replace("data:image/png;base64,", "");
-        fs.writeFileSync(texturePath, textureData, "base64");
-      }
-      if (texture2) {
+        const animationData = animation.data;
+        const texture = materials[material].texture;
         const texturePath = pathModule.join(
-          textureArmorModelsPath,
-          `layer_${material}_2.png`
+          itemTexturesPath,
+          `${material}.png`
         );
-        const textureData = texture2.replace("data:image/png;base64,", "");
+        const textureData = texture.data;
         fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeFileSync(geoPath, geoData, "base64");
+        fs.writeFileSync(animationPath, animationData, "base64");
       }
     });
     Object.keys(recipes).forEach((recipe) => {
@@ -2285,7 +2693,6 @@
           "..",
           "..",
           "..",
-          "Project",
           "Project"
         )
       : pathModule.join(
@@ -2298,7 +2705,6 @@
           "..",
           "..",
           "..",
-          "Project",
           "Project"
         );
     const pluginPath = pathModule.join(

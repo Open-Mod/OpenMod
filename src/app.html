@@ -21,6 +21,7 @@
       const PeerJS = require("peerjs");
       const appPath = ipc.sendSync("appPath");
       const isDev = ipc.sendSync("isDev");
+      const version = ipc.sendSync("version");
       let selected = ipc.sendSync("selected");
     </script>
     %sveltekit.head%

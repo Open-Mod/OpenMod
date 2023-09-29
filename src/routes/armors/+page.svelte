@@ -200,7 +200,7 @@
         name: splitted[splitted.length - 1],
         data: item,
       };
-      send_changes({ file: "items.json", data: items });
+      send_changes({ file: "armors.json", data: armors });
     }
   }
   function setTexture(property, ev) {
@@ -212,7 +212,7 @@
           .replace("data:image/png;base64,", "")
           .replace("data:application/json;base64,", ""),
       };
-      send_changes({ file: "items.json", data: items });
+      send_changes({ file: "armors.json", data: armors });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -463,7 +463,7 @@
               </div>
             </div>
             <div>
-              <label class="text-lg">Idle Animation</label>
+              <label class="text-lg">Animations</label>
               <div
                 class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
                 style="{armors[selectedArmor].animation

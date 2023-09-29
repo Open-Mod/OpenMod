@@ -74,7 +74,6 @@
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
         defaultItems[0],
-      texture: ["", ""],
     };
     selectedMaterial = name;
     send_changes({ file: "materials.json", data: materials });
@@ -112,45 +111,28 @@
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";
   }
-  async function chooseTexture1() {
-    const response = await ipc.invoke("dialog", "openFile", "png");
+  async function chooseTexture(property, filters) {
+    const response = await ipc.invoke("dialog", "openFile", filters);
     if (response) {
-      const texture = fs.readFileSync(
-        response.filePaths[0].split("\\").join("/"),
-        "base64"
-      );
-      materials[selectedMaterial].texture = [
-        `data:image/png;base64,${texture}`,
-      ];
-      send_changes({ file: "tools.json", data: tools });
+      const splitted = response.filePaths[0].split("\\");
+      const item = fs.readFileSync(splitted.join("/"), "base64");
+      materials[selectedMaterial][property] = {
+        name: splitted[splitted.length - 1],
+        data: item,
+      };
+      send_changes({ file: "materials.json", data: materials });
     }
   }
-  function setTexture1(ev) {
+  function setTexture(property, ev) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      materials[selectedMaterial].texture[0] = event.target.result;
-      send_changes({ file: "tools.json", data: tools });
-    };
-    reader.readAsDataURL(ev.dataTransfer.files[0]);
-  }
-  async function chooseTexture2() {
-    const response = await ipc.invoke("dialog", "openFile", "png");
-    if (response) {
-      const texture = fs.readFileSync(
-        response.filePaths[0].split("\\").join("/"),
-        "base64"
-      );
-      material[
-        selectedMaterial
-      ].texture[1] = `data:image/png;base64,${texture}`;
-      send_changes({ file: "tools.json", data: tools });
-    }
-  }
-  function setTexture2(ev) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      materials[selectedMaterial].texture = [event.target.result];
-      send_changes({ file: "tools.json", data: tools });
+      materials[selectedMaterial][property] = {
+        name: ev.dataTransfer.files[0].name,
+        data: event.target.result
+          .replace("data:image/png;base64,", "")
+          .replace("data:application/json;base64,", ""),
+      };
+      send_changes({ file: "materials.json", data: materials });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
   }
@@ -343,28 +325,80 @@
               {/each}
             </select>
           </div>
-          <div class="col-start-1">
-            <label class="text-lg">Texture #1</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={materials[selectedMaterial].texture[0]}
-              on:error={fallbackTexture}
-              on:click={chooseTexture1}
-              on:drop={setTexture1}
-              on:dragover|preventDefault
-            />
+          <div>
+            <label class="text-lg">Model Type</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={materials[selectedMaterial].modelType}
+            >
+              <option value="default">Default</option>
+              <option value="blockbench">Blockbench</option>
+            </select>
           </div>
-          <div class="col-start-1">
-            <label class="text-lg">Texture #2</label>
-            <img
-              class="w-48 h-48 cursor-pointer rounded-lg"
-              src={materials[selectedMaterial].texture[1]}
-              on:error={fallbackTexture}
-              on:click={chooseTexture2}
-              on:drop={setTexture2}
-              on:dragover|preventDefault
-            />
-          </div>
+          {#if materials[selectedMaterial].modelType == "blockbench"}
+            <div>
+              <label class="text-lg">Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={`data:image/png;base64,${materials[selectedMaterial].texture?.data}`}
+                on:error={fallbackTexture}
+                on:click={chooseTexture.bind(this, "texture", "png")}
+                on:drop={setTexture.bind(this, "texture")}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div>
+              <label class="text-lg">Geo</label>
+              <div
+                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
+                style="{materials[selectedMaterial].geo
+                  ? 'background-color: rgba(0,0,0,0.3)'
+                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+                on:click={chooseTexture.bind(this, "geo", "json")}
+                on:drop={setTexture.bind(this, "geo")}
+                on:dragover|preventDefault
+              >
+                {materials[selectedMaterial].geo?.name ?? ""}
+              </div>
+            </div>
+            <div>
+              <label class="text-lg">Idle Animation</label>
+              <div
+                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
+                style="{materials[selectedMaterial].animation
+                  ? 'background-color: rgba(0,0,0,0.3)'
+                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+                on:click={chooseTexture.bind(this, "animation", "json")}
+                on:drop={setTexture.bind(this, "animation")}
+                on:dragover|preventDefault
+              >
+                {materials[selectedMaterial].animation?.name ?? ""}
+              </div>
+            </div>
+          {:else}
+            <div class="col-start-1">
+              <label class="text-lg">Texture #1</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={materials[selectedMaterial].texture1}
+                on:error={fallbackTexture}
+                on:click={chooseTexture.bind(this, "texture1", "png")}
+                on:drop={setTexture.bind(this, "texture1")}
+                on:dragover|preventDefault
+              />
+            </div>
+            <div class="col-start-1">
+              <label class="text-lg">Texture #2</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={materials[selectedMaterial].texture2}
+                on:error={fallbackTexture}
+                on:click={chooseTexture.bind(this, "texture2", "png")}
+                on:drop={setTexture.bind(this, "texture2")}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
         </div></Accordion
       >
     {/if}
