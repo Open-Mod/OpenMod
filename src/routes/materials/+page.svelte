@@ -2,36 +2,44 @@
   import { onMount } from "svelte";
   import Accordion from "../../components/Accordion.svelte";
   let materials = {};
+  let armors = {};
   let tools = {};
   let items = {};
   let blocks = {};
+  let trees = {};
   let sounds = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
+  let armorsPath = "";
   let toolsPath = "";
   let itemsPath = "";
   let blocksPath = "";
+  let treesPath = "";
   let soundsPath = "";
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "materials.json");
+    armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
       selected
     ].name;
     materials = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(materials).forEach((material) => {
@@ -40,9 +48,11 @@
         material
       ].repairIngredient.trim()
         ? materials[material].repairIngredient
-        : Object.keys(tools)[0] ??
+        : Object.keys(armors)[0] ??
+          Object.keys(tools)[0] ??
           Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
+          Object.keys(trees)[0] ??
           defaultItems[0];
     });
     selectedMaterial = Object.keys(materials)[0] ?? "";
@@ -70,9 +80,11 @@
       knockbackResistance: 0,
       equipSound: "default",
       repairIngredient:
+        Object.keys(armors)[0] ??
         Object.keys(tools)[0] ??
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
+        Object.keys(trees)[0] ??
         defaultItems[0],
     };
     selectedMaterial = name;
@@ -311,6 +323,9 @@
               class="select font-normal text-base w-full"
               bind:value={materials[selectedMaterial].repairIngredient}
             >
+              {#each Object.keys(armors) as armor}
+                <option value={armor}>{convertToCamelCase(armor)}</option>
+              {/each}
               {#each Object.keys(tools) as tool}
                 <option value={tool}>{convertToCamelCase(tool)}</option>
               {/each}
@@ -319,6 +334,9 @@
               {/each}
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each Object.keys(trees) as tree}
+                <option value={tree}>{convertToCamelCase(tree)}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>

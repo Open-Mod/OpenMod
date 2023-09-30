@@ -7,7 +7,7 @@ const pathModule = require("path");
 const fs = require("fs-extra");
 let cpy;
 import("cpy").then((p) => (cpy = p.default));
-const loadURL = serve({ directory: __dirname });
+const loadURL = serve({ directory: pathModule.join(__dirname, "../") });
 const port = 3000;
 const isdev = !app.isPackaged || process.env.NODE_ENV == "development";
 const projectsPath = pathModule.join(app.getPath("userData"), "projects.json");
@@ -112,8 +112,11 @@ ipcMain.handle("createProject", async (ev, path, update) => {
   const projectPath = pathModule.join(basePath, "**");
   const renamePath = pathModule.join(path, "Project");
   if (update) {
+    const dataPath = pathModule.join(renamePath, "src", "data", "**");
+    const updatePath = pathModule.join(path, update);
+    const updateDataPath = pathModule.join(updatePath, "src", "data", ".");
     const pluginsPath = pathModule.join(
-      basePath,
+      renamePath,
       "src",
       "main",
       "java",
@@ -122,9 +125,16 @@ ipcMain.handle("createProject", async (ev, path, update) => {
       "plugins",
       "**"
     );
-    const dataPath = pathModule.join(renamePath, "src", "data", "**");
-    const updatePath = pathModule.join(path, update);
-    const updateDataPath = pathModule.join(updatePath, "src", "data", ".");
+    const updatePluginsPath = pathModule.join(
+      updatePath,
+      "src",
+      "main",
+      "java",
+      "dev",
+      "openmod",
+      "plugins",
+      "."
+    );
     await cpy(projectPath, updatePath).on("progress", (progress) => {
       mainwindow.webContents.send(
         "updateProgress",
@@ -132,6 +142,12 @@ ipcMain.handle("createProject", async (ev, path, update) => {
       );
     });
     await cpy(dataPath, updateDataPath).on("progress", (progress) => {
+      mainwindow.webContents.send(
+        "updateProgress",
+        ((100 + progress.percent * 100) / 3).toFixed(0)
+      );
+    });
+    await cpy(pluginsPath, updatePluginsPath).on("progress", (progress) => {
       mainwindow.webContents.send(
         "updateProgress",
         ((200 + progress.percent * 100) / 3).toFixed(0)

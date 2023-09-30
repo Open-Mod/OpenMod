@@ -5,6 +5,7 @@
   let tools = {};
   let items = {};
   let blocks = {};
+  let trees = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
@@ -13,7 +14,7 @@
   let blocksPath = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -21,10 +22,11 @@
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     tiers = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
-    blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     defaultItems = fs.readJSONSync("./src/data/items.json");
     Object.keys(tiers).forEach((tier) => {
       tiers[tier].name = tier;
@@ -33,6 +35,7 @@
         : Object.keys(tools)[0] ??
           Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
+          Object.keys(trees)[0] ??
           defaultItems[0];
     });
     selectedTier = Object.keys(tiers)[0] ?? "";
@@ -57,6 +60,7 @@
         Object.keys(tools)[0] ??
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
+        Object.keys(trees)[0] ??
         defaultItems[0],
     };
     selectedTier = name;
@@ -209,6 +213,9 @@
                 <option value={item}>{convertToCamelCase(item)}</option>
               {/each}
               {#each Object.keys(blocks) as block}
+                <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each Object.keys(trees) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
               {#each defaultItems as item}

@@ -5,6 +5,7 @@ import dev.openmod.project.util.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.ForgeTier;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -35,7 +36,7 @@ public class TierInit {
                     }
                 }
                 if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
-                return Ingredient.of(item);
+                return Ingredient.of( item);
             }));
         }
     }

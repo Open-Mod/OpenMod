@@ -10,7 +10,7 @@
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -69,6 +69,15 @@
     const armors = fs.existsSync(armorsFile) ? fs.readJSONSync(armorsFile) : {};
     const toolsFile = pathModule.join(projectPath, "src", "data", "tools.json");
     const tools = fs.existsSync(toolsFile) ? fs.readJSONSync(toolsFile) : {};
+    const potionsFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "potions.json"
+    );
+    const potions = fs.existsSync(potionsFile)
+      ? fs.readJSONSync(potionsFile)
+      : {};
     const materialsFile = pathModule.join(
       projectPath,
       "src",
@@ -665,6 +674,37 @@
               );
           }
         });
+      });
+    });
+    Object.keys(potions).forEach((potion) => {
+      Object.keys(potions[potion]).forEach((property) => {
+        if (
+          potions[potion][property] == null ||
+          String(potions[potion][property]).trim() == ""
+        ) {
+          if (property == "probability")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Probability" of potion "${
+                potions[potion].name
+              }" of must not be empty!`
+            );
+          else if (property == "duration")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Duration" of potion "${
+                potions[potion].name
+              }" of must not be empty!`
+            );
+          else if (property == "amplifier")
+            addError(
+              `[${formatDateToHHMMSS(new Date())}]: Field "Level" of potion "${
+                potions[potion].name
+              }" of must not be empty!`
+            );
+        }
       });
     });
     Object.keys(materials).forEach((material) => {
@@ -2216,7 +2256,7 @@
           dirt_provider: {
             type: "minecraft:simple_state_provider",
             state: {
-              Name: "minecraft:dirt",
+              Name: `minecraft:dirt`,
             },
           },
           trunk_provider: {

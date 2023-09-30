@@ -3,29 +3,47 @@
   import Accordion from "../../components/Accordion.svelte";
   let recipes = {};
   let items = {};
+  let armors = {};
+  let tools = {};
   let blocks = {};
+  let trees = {};
+  let potions = {};
   let defaultItems = [];
+  let defaultPotions = [];
   let projectPath = "";
   let path = "";
   let itemsPath = "";
+  let armorsPath = "";
+  let toolsPath = "";
   let blocksPath = "";
+  let treesPath = "";
+  let potionsPath = "";
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "recipes.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
+    armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
+    toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
+    potionsPath = pathModule.join(projectPath, "src", "data", "potions.json");
     projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
       selected
     ].name;
     recipes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
+    armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
+    tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
+    potions = fs.existsSync(potionsPath) ? fs.readJSONSync(potionsPath) : {};
     defaultItems = fs.readJSONSync("./src/data/items.json");
+    defaultPotions = fs.readJSONSync("./src/data/potions.json");
     Object.keys(recipes).forEach((recipe) => {
       recipes[recipe].name = recipe;
     });
@@ -45,7 +63,7 @@
       experience: 0,
       cookingTime: 0,
       type: "shaped",
-      resultItem: "",
+      resultItem: "none",
       firstItem: "none",
       secondItem: "none",
       thirdItem: "none",
@@ -166,6 +184,7 @@
                 ><option value="shaped">Shaped</option>
                 <option value="shapeless">Shapeless</option>
                 <option value="smelting">Smelting</option>
+                <option value="brewing">Brewing</option>
               </select>
             </div>
             <div>
@@ -177,8 +196,20 @@
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+                {#each Object.keys(potions) as potion}
+                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                {/each}
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -190,12 +221,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].firstItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -207,12 +248,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].secondItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -225,12 +276,21 @@
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].thirdItem}
               >
-                <option value="none">None</option>
-                {#each Object.keys(items) as item}
+                <option value="">None</option>{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -242,12 +302,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].fourthItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -259,12 +329,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].fifthItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -276,12 +356,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].sixthItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -293,12 +383,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].seventhItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -310,12 +410,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].eighthItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -327,12 +437,22 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].ninethItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -366,6 +486,7 @@
                 ><option value="shaped">Shaped</option>
                 <option value="shapeless">Shapeless</option>
                 <option value="smelting">Smelting</option>
+                <option value="brewing">Brewing</option>
               </select>
             </div>
             <div>
@@ -377,8 +498,17 @@
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
                 {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -390,15 +520,91 @@
               <select
                 class="select font-normal text-base w-full"
                 bind:value={recipes[selectedRecipe].firstItem}
-                ><option value="none">None</option
+                ><option value="">None</option
                 >{#each Object.keys(items) as item}
                   <option value={item}>{convertToCamelCase(item)}</option>
+                {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                {/each}
+
+                {#each Object.keys(blocks) as block}
+                  <option value={block}>{convertToCamelCase(block)}</option>
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                {/each}
+                {#each defaultItems as item}
+                  <option value={item}>{item}</option>
+                {/each}
+              </select>
+            </div>
+          {:else if recipes[selectedRecipe].type == "brewing"}
+            <div>
+              <label class="text-lg">Type</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].type}
+                ><option value="shaped">Shaped</option>
+                <option value="shapeless">Shapeless</option>
+                <option value="smelting">Smelting</option>
+                <option value="brewing">Brewing</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-lg">Result Potion</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].resultItem}
+                ><option value="">None</option>
+                {#each Object.keys(potions) as potion}
+                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                {/each}
+                {#each defaultPotions as potion}
+                  <option value={potion}>{potion}</option>
+                {/each}
+              </select>
+            </div>
+            <div>
+              <label class="text-lg">Ingredient Item</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].secondItem}
+                ><option value="">None</option
+                >{#each Object.keys(items) as item}
+                  <option value={item}>{convertToCamelCase(item)}</option>
+                {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}>{convertToCamelCase(tool)}</option>
                 {/each}
                 {#each Object.keys(blocks) as block}
                   <option value={block}>{convertToCamelCase(block)}</option>
                 {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
+                {/each}
+              </select>
+            </div>
+            <div>
+              <label class="text-lg">Input Potion</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={recipes[selectedRecipe].firstItem}
+                ><option value="">None</option>
+                {#each Object.keys(potions) as potion}
+                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                {/each}
+                {#each defaultPotions as potion}
+                  <option value={potion}>{potion}</option>
                 {/each}
               </select>
             </div>

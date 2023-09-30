@@ -289,7 +289,13 @@ public class TreeInit {
                                 public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
-                            } : new CustomTree(name, properties) {
+                            } : new CustomTree(new AbstractTreeGrower(){
+                                @org.jetbrains.annotations.Nullable
+                                @Override
+                                protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource p_222910_, boolean p_222911_) {
+                                    return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(Project.MODID, name));
+                                }
+                            }, name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -326,7 +332,13 @@ public class TreeInit {
                                         return super.getFlammability(state, level, pos, direction);
                                     } else return fire_resistance;
                                 }
-                            } : new CustomTree(name, properties) {
+                            } : new CustomTree(new AbstractTreeGrower(){
+                                @org.jetbrains.annotations.Nullable
+                                @Override
+                                protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource p_222910_, boolean p_222911_) {
+                                    return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(Project.MODID, name));
+                                }
+                            }, name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -367,7 +379,13 @@ public class TreeInit {
                                 public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
                                     return silkTouchLevel == 0 ?  UniformInt.of(minXp, maxXp).sample(randomSource) : 0;
                                 }
-                            } : new CustomTree(name, properties) {
+                            } : new CustomTree(new AbstractTreeGrower(){
+                                @org.jetbrains.annotations.Nullable
+                                @Override
+                                protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource p_222910_, boolean p_222911_) {
+                                    return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(Project.MODID, name));
+                                }
+                            }, name, properties) {
                                 @Override
                                 public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                     if (!ignitedByLava && fire_resistance == 0) {
@@ -404,7 +422,13 @@ public class TreeInit {
                                     return super.getFlammability(state, level, pos, direction);
                                 } else return fire_resistance;
                             }
-                        } : new CustomTree(name, properties) {
+                        } : new CustomTree(new AbstractTreeGrower(){
+                                @org.jetbrains.annotations.Nullable
+                                @Override
+                                protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource p_222910_, boolean p_222911_) {
+                                    return ResourceKey.create(Registries.CONFIGURED_FEATURE, new ResourceLocation(Project.MODID, name));
+                                }
+                            }, name, properties) {
                             @Override
                             public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
                                 if (!ignitedByLava && fire_resistance == 0) {

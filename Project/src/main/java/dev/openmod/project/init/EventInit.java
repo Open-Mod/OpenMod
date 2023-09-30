@@ -165,7 +165,8 @@ public class EventInit {
                 }
                 if(isEvent) {
                     String plugin = (String) node.get("plugin");
-                    Node n = new Node(node, playerNodeData, connected_nodes, bus, null);
+                    RegistryObject item = null;
+                    Node n = new Node(node, playerNodeData, connected_nodes, bus, item);
                     //${plugins}
                 }
             }

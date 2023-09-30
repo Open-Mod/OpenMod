@@ -178,6 +178,9 @@
     <MenuItem tip="Collaboration" page="/collaboration">
       <i class="fa-solid fa-user-plus" />
     </MenuItem>
+    <MenuItem tip="Plugins" page="/plugins">
+      <i class="fa-solid fa-puzzle-piece" />
+    </MenuItem>
     <MenuItem tip="Run" page="/run">
       <i class="fa-solid fa-play" />
     </MenuItem>

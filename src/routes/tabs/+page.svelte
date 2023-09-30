@@ -13,7 +13,7 @@
   let toolsPath = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");

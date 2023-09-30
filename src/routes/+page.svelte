@@ -57,6 +57,7 @@
     projects[projectPath] = {
       name,
       createdAt: new Date(),
+      plugins: projects[projectPath]?.plugins ?? [],
       version,
     };
     await ipc.invoke("createProject", projectPath, update);

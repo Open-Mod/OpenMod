@@ -3,24 +3,28 @@
   import Accordion from "../../components/Accordion.svelte";
   let biomes = {};
   let blocks = {};
+  let trees = {};
   let defaultBlocks = [];
   let projectPath = "";
   let path = "";
   let blocksPath = "";
+  let treesPath = "";
   let projectName = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "biomes.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
       selected
     ].name;
     biomes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     defaultBlocks = fs.readJSONSync("./src/data/blocks.json");
     Object.keys(biomes).forEach((biome) => {
       biomes[biome].name = biome;
@@ -49,8 +53,16 @@
       name,
       weight: 1,
       type: "overworld",
-      blockAbove: Object.keys(blocks)[0] ?? defaultBlocks[0] ?? "",
-      blockUnder: Object.keys(blocks)[0] ?? defaultBlocks[0] ?? "",
+      blockAbove:
+        Object.keys(blocks)[0] ??
+        Object.keys(trees)[0] ??
+        defaultBlocks[0] ??
+        "",
+      blockUnder:
+        Object.keys(blocks)[0] ??
+        Object.keys(trees)[0] ??
+        defaultBlocks[0] ??
+        "",
       minTemp: "icy",
       maxTemp: "icy",
       minHumidity: "arid",
@@ -181,6 +193,9 @@
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
               {/each}
+              {#each Object.keys(trees) as tree}
+                <option value={tree}>{convertToCamelCase(tree)}</option>
+              {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>
               {/each}
@@ -194,6 +209,9 @@
             >
               {#each Object.keys(blocks) as block}
                 <option value={block}>{convertToCamelCase(block)}</option>
+              {/each}
+              {#each Object.keys(trees) as tree}
+                <option value={tree}>{convertToCamelCase(tree)}</option>
               {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>

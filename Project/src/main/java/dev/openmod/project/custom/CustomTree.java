@@ -17,19 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class CustomTree extends SaplingBlock implements EntityBlock {
     private String name;
-    public CustomTree(String name, Properties properties) {
-        super(new AbstractTreeGrower() {
-            @Override
-            public boolean growTree(ServerLevel p_222905_, ChunkGenerator p_222906_, BlockPos p_222907_, BlockState p_222908_, RandomSource p_222909_) {
-                return super.growTree(p_222905_, p_222906_, p_222907_, p_222908_, p_222909_);
-            }
-
-            @Nullable
-            @Override
-            protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource p_222910_, boolean p_222911_) {
-                return null;
-            }
-        }, properties);
+    public CustomTree(AbstractTreeGrower tree, String name, Properties properties) {
+        super(tree, properties);
         this.name = name;
     }
 

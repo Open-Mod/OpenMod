@@ -27,6 +27,8 @@ public class Project {
         SoundInit.init();
         BiomeInit.init(bus);
         ItemInit.init();
+        PotionInit.init();
+        RecipeInit.init(bus);
         BlockInit.init();
         TreeInit.init();
         MaterialInit.init();
@@ -36,6 +38,7 @@ public class Project {
         EventInit.init();
         CustomBlockEntities.init();
         ItemInit.ITEMS.register(bus);
+        PotionInit.POTIONS.register(bus);
         BlockInit.BLOCKS.register(bus);
         TabInit.TABS.register(bus);
         SoundInit.SOUNDS.register(bus);

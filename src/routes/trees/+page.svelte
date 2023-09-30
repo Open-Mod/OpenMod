@@ -19,7 +19,7 @@
   let nodesPath = "";
   onMount(() => {
     if (!selected) {
-      error("Please select a project!");
+      alert("Please select a project!");
       return (location.href = "/");
     }
     projectPath = pathModule.join(selected, "Project");
@@ -824,7 +824,7 @@
               bind:value={trees[selectedTree].modelType}
             >
               <option value="default">Default</option>
-              <option value="blockbench">Treebench</option>
+              <option value="blockbench">Blockbench</option>
             </select>
           </div>
           <div class="col-span-3">
@@ -855,6 +855,20 @@
                 on:drop={setTexture.bind(this, "texture")}
                 on:dragover|preventDefault
               />
+            </div>
+            <div>
+              <label class="text-lg">Model</label>
+              <div
+                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
+                style="{trees[selectedTree].model
+                  ? 'background-color: rgba(0,0,0,0.3)'
+                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
+                on:click={chooseTexture.bind(this, "model", "json")}
+                on:drop={setTexture.bind(this, "model")}
+                on:dragover|preventDefault
+              >
+                {trees[selectedTree].model?.name ?? ""}
+              </div>
             </div>
             <div>
               <label class="text-lg">Geo</label>
