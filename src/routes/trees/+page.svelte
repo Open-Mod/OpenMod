@@ -45,12 +45,16 @@
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     biomes = fs.existsSync(biomesPath) ? fs.readJSONSync(biomesPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
-    defaultBlocks = fs.readJSONSync("./src/data/blocks.json");
+    defaultBlocks = fs.readJSONSync(
+      isDev ? "./static/data/blocks.json" : "./resources/app/data/blocks.json"
+    );
     nodes = fs
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
       .filter((n) => (n.for == "tree" && !n.showInContext) || n.showInContext);
-    defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
+    defaultBiomes = fs.readJSONSync(
+      isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
+    );
     nodes.forEach((n) => {
       function node() {
         this.size = n.size;
@@ -143,6 +147,9 @@
       if (data.file.file != "trees.json") return;
       trees = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "trees.json", data: trees });
     };
   });
   let selectedTree = "";

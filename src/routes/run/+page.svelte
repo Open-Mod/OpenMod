@@ -21,7 +21,9 @@
     running = ipc.sendSync("isRunning");
     errors = ipc.sendSync("lastError");
     output = ipc.sendSync("lastLog");
-    defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
+    defaultBiomes = fs.readJSONSync(
+      isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
+    );
     ipc.on("err", (ev, data) => {
       errors = data;
     });
@@ -2735,18 +2737,7 @@
           "..",
           "Project"
         )
-      : pathModule.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "Project"
-        );
+      : pathModule.join("./", "Project");
     const pluginPath = pathModule.join(
       projectPath,
       "src",

@@ -1,0 +1,258 @@
+[
+  {
+    "name": "minecraft:badlands",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:bamboo_jungle",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:basalt_deltas",
+    "dimension": "nether"
+  },
+  {
+    "name": "minecraft:beach",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:birch_forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:cherry_grove",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:cold_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:crimson_forest",
+    "dimension": "nether"
+  },
+  {
+    "name": "minecraft:dark_forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:deep_cold_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:deep_dark",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:deep_frozen_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:deep_lukewarm_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:deep_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:desert",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:dripstone_caves",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:end_barrens",
+    "dimension": "end"
+  },
+  {
+    "name": "minecraft:end_highlands",
+    "dimension": "end"
+  },
+  {
+    "name": "minecraft:end_midlands",
+    "dimension": "end"
+  },
+  {
+    "name": "minecraft:eroded_badlands",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:flower_forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:frozen_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:frozen_peaks",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:frozen_river",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:grove",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:ice_spikes",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:jagged_peaks",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:jungle",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:lukewarm_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:lush_caves",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:mangrove_swamp",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:meadow",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:mushroom_fields",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:nether_wastes",
+    "dimension": "nether"
+  },
+  {
+    "name": "minecraft:ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:old_growth_birch_forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:old_growth_pine_taiga",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:old_growth_spruce_taiga",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:plains",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:river",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:savanna",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:savanna_plateau",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:small_end_islands",
+    "dimension": "end"
+  },
+  {
+    "name": "minecraft:snowy_beach",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:snowy_plains",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:snowy_slopes",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:snowy_taiga",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:soul_sand_valley",
+    "dimension": "nether"
+  },
+  {
+    "name": "minecraft:sparse_jungle",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:stony_peaks",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:stony_shore",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:sunflower_plains",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:swamp",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:taiga",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:the_end",
+    "dimension": "end"
+  },
+  {
+    "name": "minecraft:the_void",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:warm_ocean",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:warped_forest",
+    "dimension": "nether"
+  },
+  {
+    "name": "minecraft:windswept_forest",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:windswept_gravelly_hills",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:windswept_hills",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:windswept_savanna",
+    "dimension": "overworld"
+  },
+  {
+    "name": "minecraft:wooded_badlands",
+    "dimension": "overworld"
+  }
+]

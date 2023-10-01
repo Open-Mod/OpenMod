@@ -9,7 +9,6 @@
   let tabsPath = "";
   let tiersPath = "";
   let nodesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -29,9 +28,6 @@
       "plugins",
       "ui"
     );
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     tools = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     tiers = fs.existsSync(tiersPath) ? fs.readJSONSync(tiersPath) : {};
@@ -113,6 +109,9 @@
       if (data.file.file != "tools.json") return;
       tools = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "tools.json", data: tools });
     };
   });
   let selectedTool = "";

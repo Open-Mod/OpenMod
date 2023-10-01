@@ -9,7 +9,6 @@
   let tabsPath = "";
   let materialsPath = "";
   let nodesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -34,9 +33,6 @@
       "plugins",
       "ui"
     );
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     armors = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     materials = fs.existsSync(materialsPath)
@@ -120,6 +116,9 @@
       if (data.file.file != "armors.json") return;
       armors = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "armors.json", data: armors });
     };
   });
   let selectedArmor = "";

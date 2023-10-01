@@ -9,7 +9,6 @@
   let path = "";
   let blocksPath = "";
   let treesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -19,13 +18,12 @@
     path = pathModule.join(projectPath, "src", "data", "loottables.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     loottables = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
-    defaultItems = fs.readJSONSync("./src/data/items.json");
+    defaultItems = fs.readJSONSync(
+      isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
     Object.keys(loottables).forEach((loottable) => {
       loottables[loottable].name = loottable;
     });
@@ -33,6 +31,9 @@
     window.on_change = (data) => {
       if (data.file.file != "loottables.json") return;
       loottables = data.file.content;
+    };
+    window.onchange = () => {
+      send_changes({ file: "loottables.json", data: loottables });
     };
   });
   let selectedLoottable = "";

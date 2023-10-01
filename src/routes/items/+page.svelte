@@ -7,7 +7,6 @@
   let path = "";
   let tabsPath = "";
   let nodesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -26,9 +25,6 @@
       "plugins",
       "ui"
     );
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     items = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     nodes = fs
@@ -106,6 +102,9 @@
       if (data.file.file != "items.json") return;
       items = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "items.json", data: items });
     };
   });
   let selectedItem = "";

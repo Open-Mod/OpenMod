@@ -115,6 +115,9 @@
       if (data.file.file != "players.json") return;
       players = data.file.content;
     };
+    window.onchange = () => {
+      send_changes({ file: "players.json", data: players });
+    };
   });
   let selectedPlayer = "";
   let nodes = [];

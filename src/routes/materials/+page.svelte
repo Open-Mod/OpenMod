@@ -17,7 +17,6 @@
   let blocksPath = "";
   let treesPath = "";
   let soundsPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -31,9 +30,6 @@
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     materials = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
@@ -41,7 +37,9 @@
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
-    defaultItems = fs.readJSONSync("./src/data/items.json");
+    defaultItems = fs.readJSONSync(
+      isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
     Object.keys(materials).forEach((material) => {
       materials[material].name = material;
       materials[material].repairIngredient = materials[
@@ -59,6 +57,9 @@
     window.on_change = (data) => {
       if (data.file.file != "materials.json") return;
       materials = data.file.content;
+    };
+    window.onchange = () => {
+      send_changes({ file: "materials.json", data: materials });
     };
   });
   let selectedMaterial = "";

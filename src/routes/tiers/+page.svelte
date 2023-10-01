@@ -27,7 +27,9 @@
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
-    defaultItems = fs.readJSONSync("./src/data/items.json");
+    defaultItems = fs.readJSONSync(
+      isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
     Object.keys(tiers).forEach((tier) => {
       tiers[tier].name = tier;
       tiers[tier].repairIngredient = tiers[tier].repairIngredient.trim()
@@ -43,6 +45,9 @@
       if (data.file.file != "tiers.json") return;
       tiers = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "tiers.json", data: tiers });
     };
   });
   let selectedTier = "";

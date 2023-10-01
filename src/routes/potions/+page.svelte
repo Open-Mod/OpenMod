@@ -7,7 +7,6 @@
   let path = "";
   let tabsPath = "";
   let nodesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -26,9 +25,6 @@
       "plugins",
       "ui"
     );
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     potions = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     tabs = fs.existsSync(tabsPath) ? fs.readJSONSync(tabsPath) : {};
     nodes = fs
@@ -108,6 +104,9 @@
       if (data.file.file != "potions.json") return;
       potions = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "potions.json", data: potions });
     };
   });
   let selectedPotion = "";

@@ -5,7 +5,6 @@
   let projectsPath = "";
   let projectPath = "";
   let pluginsPath = "";
-  let projectName = "";
   let pluginName = "";
   let installedPlugins = [];
   let plugins = [];
@@ -28,7 +27,6 @@
       "openmod",
       "plugins"
     );
-    projectName = projects[selected].name;
     installedPlugins = projects[selected].plugins.filter((p) =>
       fs.existsSync(pathModule.join(pluginsPath, "ui", p.file))
     );

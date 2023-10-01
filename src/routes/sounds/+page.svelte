@@ -4,7 +4,6 @@
   let sounds = {};
   let projectPath = "";
   let path = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -12,9 +11,6 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "sounds.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     sounds = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     Object.keys(sounds).forEach((sound) => {
       sounds[sound].name = sound;
@@ -23,6 +19,9 @@
     window.on_change = (data) => {
       if (data.file.file != "sounds.json") return;
       sounds = data.file.content;
+    };
+    window.onchange = () => {
+      send_changes({ file: "sounds.json", data: sounds });
     };
   });
   let selectedSound = "";

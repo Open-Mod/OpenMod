@@ -18,7 +18,6 @@
   let blocksPath = "";
   let treesPath = "";
   let potionsPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -32,9 +31,6 @@
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     potionsPath = pathModule.join(projectPath, "src", "data", "potions.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     recipes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
@@ -42,8 +38,12 @@
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     potions = fs.existsSync(potionsPath) ? fs.readJSONSync(potionsPath) : {};
-    defaultItems = fs.readJSONSync("./src/data/items.json");
-    defaultPotions = fs.readJSONSync("./src/data/potions.json");
+    defaultItems = fs.readJSONSync(
+      isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
+    defaultPotions = fs.readJSONSync(
+      isDev ? "./static/data/potions.json" : "./resources/app/data/potions.json"
+    );
     Object.keys(recipes).forEach((recipe) => {
       recipes[recipe].name = recipe;
     });
@@ -51,6 +51,9 @@
     window.on_change = (data) => {
       if (data.file.file != "recipes.json") return;
       recipes = data.file.content;
+    };
+    window.onchange = () => {
+      send_changes({ file: "sounds.json", data: sounds });
     };
   });
   let selectedRecipe = "";

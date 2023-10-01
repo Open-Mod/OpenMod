@@ -44,7 +44,9 @@
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
       .filter((n) => (n.for == "block" && !n.showInContext) || n.showInContext);
-    defaultBiomes = fs.readJSONSync("./src/data/biomes.json");
+    defaultBiomes = fs.readJSONSync(
+      isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
+    );
     nodes.forEach((n) => {
       function node() {
         this.size = n.size;
@@ -137,6 +139,9 @@
       if (data.file.file != "blocks.json") return;
       blocks = data.file.content;
       updateEditor();
+    };
+    window.onchange = () => {
+      send_changes({ file: "blocks.json", data: blocks });
     };
   });
   let selectedBlock = "";

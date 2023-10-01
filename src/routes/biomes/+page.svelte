@@ -9,7 +9,6 @@
   let path = "";
   let blocksPath = "";
   let treesPath = "";
-  let projectName = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -19,13 +18,12 @@
     path = pathModule.join(projectPath, "src", "data", "biomes.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
-    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
-      selected
-    ].name;
     biomes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
-    defaultBlocks = fs.readJSONSync("./src/data/blocks.json");
+    defaultBlocks = fs.readJSONSync(
+      isDev ? "./static/data/blocks.json" : "./resources/app/data/blocks.json"
+    );
     Object.keys(biomes).forEach((biome) => {
       biomes[biome].name = biome;
       biomes[biome].blockAbove = biomes[biome].blockAbove.trim()
@@ -43,6 +41,9 @@
     window.on_change = (data) => {
       if (data.file.file != "biomes.json") return;
       biomes = data.file.content;
+    };
+    window.onchange = () => {
+      send_changes({ file: "biomes.json", data: biomes });
     };
   });
   let selectedBiome = "";
