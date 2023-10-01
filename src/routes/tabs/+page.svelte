@@ -30,7 +30,7 @@
     path = pathModule.join(projectPath, "src", "data", "tabs.json");
     tabs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
-    armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorssPath) : {};
+    armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};

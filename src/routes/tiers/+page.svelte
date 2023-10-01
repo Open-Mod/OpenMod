@@ -12,6 +12,7 @@
   let toolsPath = "";
   let itemsPath = "";
   let blocksPath = "";
+  let treesPath = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
