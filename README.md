@@ -16,6 +16,7 @@ OpenMod is here to redefine your Minecraft modding experience. Say goodbye to th
 Collaborate seamlessly with fellow creators using OpenMod's live collaboration feature. Share ideas, work in real-time, and see your mods come to life together.
 
 <img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1158071763217940480/image.png"/>
+
 Even if coding isn't your speciality, OpenMod has you covered. Our user-friendly visual node system makes coding a breeze, whether you're a beginner or an expert.
 
 <img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1158072023646486608/image.png"/>
