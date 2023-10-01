@@ -1,4 +1,3 @@
-![image](https://github.com/Open-Mod/OpenMod/assets/64137481/519ef109-2626-47e0-8c7e-608a1bbec73e)<img width="520" height="150" src="https://cdn.discordapp.com/attachments/867406024808726619/1142160139802124288/OpenMod.png"/>
 
 [![Plugins](https://img.shields.io/badge/Plugins-a87550?style=for-the-badge
 )](https://github.com/Open-Mod/Plugins/)
