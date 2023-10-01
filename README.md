@@ -23,7 +23,7 @@ Even if coding isn't your speciality, OpenMod has you covered. Our user-friendly
 
 But that's not all – OpenMod goes beyond the basics. Our plugin system lets other users enhance the app's capabilities. It's a community-driven approach that opens the door to endless possibilities.
 
-<img width="500" src="https://media.discordapp.net/attachments/867406024808726619/1158073567708201071/image.png"/>
+<img width="500" src="https://media.discordapp.net/attachments/867406024808726619/1158074087273418883/image.png"/>
 
 Why settle for the ordinary? OpenMod offers a platform where collaboration, creativity, and growth thrive. Step into the future of Minecraft modding with OpenMod today.
 
