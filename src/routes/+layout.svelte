@@ -126,6 +126,9 @@
   function getState() {
     return states[selected] ?? { id: "", connid: "", state: 0, users: 0 };
   }
+  function devtools() {
+    ipc.invoke("devtools");
+  }
 </script>
 
 <div class="flex w-screen h-screen" data-theme="dark">
@@ -186,8 +189,15 @@
     </MenuItem>
   </Menu>
   <slot />
-  {#if states[sel]?.state}
-    <div class="absolute bottom-3 right-3">
+  <div class="absolute bottom-3 right-3">
+    <a class="tooltip tooltip-top" data-tip="Dev Tools">
+      <button
+        class="btn btn-neutral rounded-full relative w-12"
+        on:click={devtools}
+        ><i class="fa-solid fa-terminal text-lg" />
+      </button>
+    </a>
+    {#if states[sel]?.state}
       <a class="tooltip tooltip-top" data-tip="Users">
         <button class="btn btn-neutral rounded-full relative w-12"
           ><i class="fa-solid fa-user-group text-lg" />
@@ -198,8 +208,8 @@
           </div>
         </button>
       </a>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
 <Error {error} />
 <Success {success} />

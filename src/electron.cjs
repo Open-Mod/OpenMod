@@ -92,6 +92,9 @@ ipcMain.on("lastError", (ev) => {
 ipcMain.on("lastLog", (ev) => {
   ev.returnValue = stdout;
 });
+ipcMain.handle("devtools", () => {
+  mainwindow.webContents.openDevTools();
+});
 ipcMain.handle("select", (ev, path) => {
   selected = path;
   mainwindow.webContents.send("select", path);
