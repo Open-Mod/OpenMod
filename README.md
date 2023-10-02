@@ -3,7 +3,7 @@
 [![Plugins](https://img.shields.io/badge/Plugins-a87550?style=for-the-badge
 )](https://github.com/Open-Mod/Plugins/)
 [![Download](https://img.shields.io/badge/Download-57874c?style=for-the-badge
-)](https://github.com/OpenMod/OpenMod/releases)
+)](https://github.com/Open-Mod/OpenMod/releases)
 [![License](https://img.shields.io/badge/GPLv3-License?style=for-the-badge&label=License&labelColor=gray&color=white
 )](https://github.com/Open-Mod/OpenMod/blob/main/LICENSE)
 # OpenMod - Minecraft Mod Maker
@@ -15,12 +15,15 @@ OpenMod is here to redefine your Minecraft modding experience. Say goodbye to th
 
 Collaborate seamlessly with fellow creators using OpenMod's live collaboration feature. Share ideas, work in real-time, and see your mods come to life together.
 
-<img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141331962498396270/image.png"/>
+<img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1158071763217940480/image.png"/>
+
 Even if coding isn't your speciality, OpenMod has you covered. Our user-friendly visual node system makes coding a breeze, whether you're a beginner or an expert.
 
-<img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1141332046325747722/image.png"/>
+<img width="500" src="https://cdn.discordapp.com/attachments/867406024808726619/1158072023646486608/image.png"/>
 
 But that's not all – OpenMod goes beyond the basics. Our plugin system lets other users enhance the app's capabilities. It's a community-driven approach that opens the door to endless possibilities.
+
+<img width="500" src="https://media.discordapp.net/attachments/867406024808726619/1158074087273418883/image.png"/>
 
 Why settle for the ordinary? OpenMod offers a platform where collaboration, creativity, and growth thrive. Step into the future of Minecraft modding with OpenMod today.
 
