@@ -1130,23 +1130,23 @@
         }
       } else if (items[item].modelType == "blockbench") {
         const model = items[item].model;
-        const modelData = model.data;
+        const modelData = model?.data;
         const geo = items[item].geo;
         const geoPath = pathModule.join(geosPath, `${item}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = items[item].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${item}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = items[item].texture;
         const texturePath = pathModule.join(itemTexturesPath, `${item}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
     });
     Object.keys(armors).forEach((armor) => {
@@ -1157,8 +1157,9 @@
           itemTexturesPath,
           `${armor}_item.png`
         );
-        const itemTextureData = itemTexture.data;
-        fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
+        const itemTextureData = itemTexture?.data;
+        if (itemTextureData)
+          fs.writeFileSync(itemTexturePath, itemTextureData, "base64");
         fs.writeJSONSync(modelPath, {
           parent: "minecraft:item/generated",
           textures: {
@@ -1512,28 +1513,30 @@
         const model = blocks[block].model;
         const innerModel = blocks[block].innerModel;
         const outerModel = blocks[block].outerModel;
-        const modelData = model.data;
-        const innerModelData = innerModel.data;
-        const outerModelData = outerModel.data;
+        const modelData = model?.data;
+        const innerModelData = innerModel?.data;
+        const outerModelData = outerModel?.data;
         const geo = blocks[block].geo;
         const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = blocks[block].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${block}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = blocks[block].texture;
         const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(innerModelPath, innerModelData, "base64");
-        fs.writeFileSync(outerModelPath, outerModelData, "base64");
-        fs.writeFileSync(itemModelPath, modelData, "base64");
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (innerModel)
+          fs.writeFileSync(innerModelPath, innerModelData, "base64");
+        if (outerModel)
+          fs.writeFileSync(outerModelPath, outerModelData, "base64");
+        if (model) fs.writeFileSync(itemModelPath, modelData, "base64");
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       } else if (
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "slab"
@@ -1549,28 +1552,29 @@
         const model = blocks[block].model;
         const blockModel = blocks[block].fullModel;
         const topModel = blocks[block].topModel;
-        const modelData = model.data;
-        const blockModelData = blockModel.data;
-        const topModelData = topModel.data;
+        const modelData = model?.data;
+        const blockModelData = blockModel?.data;
+        const topModelData = topModel?.data;
         const geo = blocks[block].geo;
         const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = blocks[block].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${block}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = blocks[block].texture;
         const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(blockModelPath, blockModelData, "base64");
-        fs.writeFileSync(topModelPath, topModelData, "base64");
-        fs.writeFileSync(itemModelPath, modelData, "base64");
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (blockModel)
+          fs.writeFileSync(blockModelPath, blockModelData, "base64");
+        if (topModel) fs.writeFileSync(topModelPath, topModelData, "base64");
+        if (model) fs.writeFileSync(itemModelPath, modelData, "base64");
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       } else if (
         blocks[block].modelType == "blockbench" &&
         blocks[block].type == "door"
@@ -1611,70 +1615,85 @@
         const topLeftOpenModel = blocks[block].topLeftOpenModel;
         const topRightModel = blocks[block].topRightModel;
         const topRightOpenModel = blocks[block].topRightOpenModel;
-        const modelData = model.data;
-        const bottomLeftOpenModelData = bottomLeftOpenModel.data;
-        const bottomRightModelData = bottomRightModel.data;
-        const bottomRightOpenModelData = bottomRightOpenModel.data;
-        const topLeftModelData = topLeftModel.data;
-        const topLeftOpenModelData = topLeftOpenModel.data;
-        const topRightModelData = topRightModel.data;
-        const topRightOpenModelData = topRightOpenModel.data;
+        const modelData = model?.data;
+        const bottomLeftOpenModelData = bottomLeftOpenModel?.data;
+        const bottomRightModelData = bottomRightModel?.data;
+        const bottomRightOpenModelData = bottomRightOpenModel?.data;
+        const topLeftModelData = topLeftModel?.data;
+        const topLeftOpenModelData = topLeftOpenModel?.data;
+        const topRightModelData = topRightModel?.data;
+        const topRightOpenModelData = topRightOpenModel?.data;
         const geo = blocks[block].geo;
         const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = blocks[block].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${block}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = blocks[block].texture;
         const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(
-          bottomLeftOpenModelPath,
-          bottomLeftOpenModelData,
-          "base64"
-        );
-        fs.writeFileSync(bottomRightModelPath, bottomRightModelData, "base64");
-        fs.writeFileSync(
-          bottomRightOpenModel,
-          bottomRightOpenModelData,
-          "base64"
-        );
-        fs.writeFileSync(topLeftModelPath, topLeftModelData, "base64");
-        fs.writeFileSync(topLeftOpenModelPath, topLeftOpenModelData, "base64");
-        fs.writeFileSync(topRightModelPath, topRightModelData, "base64");
-        fs.writeFileSync(
-          topRightOpenModelPath,
-          topRightOpenModelData,
-          "base64"
-        );
-        fs.writeFileSync(itemModelPath, modelData, "base64");
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (bottomLeftOpenModel)
+          fs.writeFileSync(
+            bottomLeftOpenModelPath,
+            bottomLeftOpenModelData,
+            "base64"
+          );
+        if (bottomRightModel)
+          fs.writeFileSync(
+            bottomRightModelPath,
+            bottomRightModelData,
+            "base64"
+          );
+        if (bottomRightOpenModel)
+          fs.writeFileSync(
+            bottomRightOpenModel,
+            bottomRightOpenModelData,
+            "base64"
+          );
+        if (topLeftModel)
+          fs.writeFileSync(topLeftModelPath, topLeftModelData, "base64");
+        if (topLeftOpenModel)
+          fs.writeFileSync(
+            topLeftOpenModelPath,
+            topLeftOpenModelData,
+            "base64"
+          );
+        if (topRightModel)
+          fs.writeFileSync(topRightModelPath, toptopRightModelData, "base64");
+        if (topRightOpenModel)
+          fs.writeFileSync(
+            topRightOpenModelPath,
+            topRightOpenModelData,
+            "base64"
+          );
+        if (model) fs.writeFileSync(itemModelPath, modelData, "base64");
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       } else if (blocks[block].modelType == "blockbench") {
         const model = blocks[block].model;
-        const modelData = model.data;
+        const modelData = model?.data;
         const geo = blocks[block].geo;
         const geoPath = pathModule.join(geosPath, `${block}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = blocks[block].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${block}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = blocks[block].texture;
         const texturePath = pathModule.join(blockTexturesPath, `${block}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(itemModelPath, modelData, "base64");
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (model) fs.writeFileSync(itemModelPath, modelData, "base64");
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
       const statePath = pathModule.join(blockstates, `${block}.json`);
       const mineablePath = pathModule.join(
@@ -2199,24 +2218,24 @@
         });
       } else if (trees[tree].modelType == "blockbench") {
         const model = trees[tree].model;
-        const modelData = model.data;
+        const modelData = model?.data;
         const geo = trees[tree].geo;
         const geoPath = pathModule.join(geosPath, `${tree}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = trees[tree].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${tree}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = trees[tree].texture;
         const texturePath = pathModule.join(blockTexturesPath, `${tree}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(itemModelPath, modelData, "base64");
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (model) fs.writeFileSync(itemModelPath, modelData, "base64");
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
       const statePath = pathModule.join(blockstates, `${tree}.json`);
       const mineablePath = pathModule.join(
@@ -2413,23 +2432,23 @@
         }
       } else if (tools[tool].modelType == "blockbench") {
         const model = tools[tool].model;
-        const modelData = model.data;
+        const modelData = model?.data;
         const geo = tools[tool].geo;
         const geoPath = pathModule.join(geosPath, `${tool}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = tools[tool].animation;
         const animationPath = pathModule.join(
           toolAnimations,
           `${tool}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = tools[tool].texture;
         const texturePath = pathModule.join(itemTexturesPath, `${tool}.png`);
-        const textureData = texture.data;
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(modelPath, modelData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
     });
     Object.keys(materials).forEach((material) => {
@@ -2455,22 +2474,22 @@
       } else if (materials[material].modelType == "blockbench") {
         const geo = materials[material].geo;
         const geoPath = pathModule.join(geosPath, `${material}.geo.json`);
-        const geoData = geo.data;
+        const geoData = geo?.data;
         const animation = materials[material].animation;
         const animationPath = pathModule.join(
           animationsPath,
           `${material}.animation.json`
         );
-        const animationData = animation.data;
+        const animationData = animation?.data;
         const texture = materials[material].texture;
         const texturePath = pathModule.join(
           itemTexturesPath,
           `${material}.png`
         );
-        const textureData = texture.data;
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeFileSync(geoPath, geoData, "base64");
-        fs.writeFileSync(animationPath, animationData, "base64");
+        const textureData = texture?.data;
+        if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+        if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+        if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
     });
     Object.keys(recipes).forEach((recipe) => {
@@ -2704,10 +2723,10 @@
       soundsObj[sound] = {
         sounds: [`${projectName.toLowerCase()}:${sound}`],
       };
-      const Sound = sounds[sound].sound.data;
+      const Sound = sounds[sound].sound?.data;
       const soundPath = pathModule.join(soundsPath, `${sound}.ogg`);
       const soundData = Sound.replace("data:audio/ogg;base64,", "");
-      fs.writeFileSync(soundPath, soundData, "base64");
+      if (Sound) fs.writeFileSync(soundPath, soundData, "base64");
     });
     fs.writeJSONSync(pathModule.join(assetsPath, "sounds.json"), soundsObj);
     Object.keys(loottables).forEach((loottable) => {

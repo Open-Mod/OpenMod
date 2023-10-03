@@ -521,7 +521,7 @@
               <label class="text-lg">Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={tools[selectedTool].texture[0]}
+                src={tools[selectedTool].texture?.data}
                 on:error={fallbackTexture}
                 on:click={chooseTexture}
                 on:drop={setTexture}
