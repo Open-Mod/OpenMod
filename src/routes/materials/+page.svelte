@@ -399,18 +399,18 @@
               <label class="text-lg">Texture #1</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={materials[selectedMaterial].texture1}
+                src={`data:image/png;base64,${materials[selectedMaterial].texture1?.data}`}
                 on:error={fallbackTexture}
                 on:click={chooseTexture.bind(this, "texture1", "png")}
                 on:drop={setTexture.bind(this, "texture1")}
                 on:dragover|preventDefault
               />
             </div>
-            <div class="col-start-1">
+            <div>
               <label class="text-lg">Texture #2</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
-                src={materials[selectedMaterial].texture2}
+                src={`data:image/png;base64,${materials[selectedMaterial].texture2?.data}`}
                 on:error={fallbackTexture}
                 on:click={chooseTexture.bind(this, "texture2", "png")}
                 on:drop={setTexture.bind(this, "texture2")}

@@ -97,11 +97,13 @@ public class Node {
                         ArrayList foundInputs = (ArrayList) foundNode.get("inputs");
                         for(Object foundInputEntry : foundInputs) {
                             Map foundInput = (Map)foundInputEntry;
-                            boolean found = ((Number) foundInput.get("link")).intValue() == link.intValue();
-                            if(found) {
-                                String id = ((Number) foundNode.get("id")).toString();
-                                String inputName = (String) foundInput.get("name");
-                                this.nodeData.put(id+":"+inputName, value);
+                            if(foundInput.get("link") != null) {
+                                boolean found = ((Number) foundInput.get("link")).intValue() == link.intValue();
+                                if (found) {
+                                    String id = ((Number) foundNode.get("id")).toString();
+                                    String inputName = (String) foundInput.get("name");
+                                    this.nodeData.put(id + ":" + inputName, value);
+                                }
                             }
                         }
                     }

@@ -523,8 +523,8 @@
                 class="w-48 h-48 cursor-pointer rounded-lg"
                 src={`data:image/png;base64,${tools[selectedTool].texture?.data}`}
                 on:error={fallbackTexture}
-                on:click={chooseTexture}
-                on:drop={setTexture}
+                on:click={chooseTexture.bind(this, "texture", "png")}
+                on:drop={setTexture.bind(this, "texture", "png")}
                 on:dragover|preventDefault
               />
             </div>
