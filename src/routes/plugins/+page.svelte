@@ -77,15 +77,13 @@
         pl.sha == p.sha &&
         pl.modSha == p.modSha
     );
-    projects[selected].plugins.splice(
-      projects[selected].plugins.findIndex(
-        (pl) =>
-          pl.name == p.name &&
-          pl.data.category == p.data.category &&
-          pl.data.for == p.data.for
-      ),
-      1
+    const oi = projects[selected].plugins.findIndex(
+      (pl) =>
+        pl.name == p.name &&
+        pl.data.category == p.data.category &&
+        pl.data.for == p.data.for
     );
+    if (oi > i) projects[selected].plugins.splice(oi, 1);
     if (i > -1) {
       projects[selected].plugins[i] = p;
     } else {
