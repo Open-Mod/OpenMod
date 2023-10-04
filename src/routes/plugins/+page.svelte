@@ -30,6 +30,9 @@
     installedPlugins = projects[selected].plugins.filter((p) =>
       fs.existsSync(pathModule.join(pluginsPath, "ui", p.file))
     );
+    modPlugins = await fetch(
+      `https://api.github.com/repos/Open-Mod/Plugins/contents/mod`
+    ).then((res) => res.json());
     plugins = await Promise.all(
       (
         await fetch(
@@ -40,15 +43,13 @@
         return {
           name: res.name,
           sha: p.sha,
+          modSha: modPlugins.find((pl) => pl.name == `${res.plugin}.java`).sha,
           file: p.name,
           data: res,
         };
       })
     );
     filteredPlugins = plugins;
-    modPlugins = await fetch(
-      `https://api.github.com/repos/Open-Mod/Plugins/contents/mod`
-    ).then((res) => res.json());
   });
   async function download(p) {
     if (
@@ -57,7 +58,8 @@
           pl.name == p.name &&
           pl.data.category == p.data.category &&
           pl.data.for == p.data.for &&
-          pl.sha == p.sha
+          pl.sha == p.sha &&
+          pl.modSha == p.modSha
       )
     )
       return;
@@ -72,7 +74,17 @@
         pl.name == p.name &&
         pl.data.category == p.data.category &&
         pl.data.for == p.data.for &&
-        pl.sha == p.sha
+        pl.sha == p.sha &&
+        pl.modSha == p.modSha
+    );
+    projects[selected].plugins.splice(
+      projects[selected].plugins.findIndex(
+        (pl) =>
+          pl.name == p.name &&
+          pl.data.category == p.data.category &&
+          pl.data.for == p.data.for
+      ),
+      1
     );
     if (i > -1) {
       projects[selected].plugins[i] = p;
@@ -124,22 +136,24 @@
         >
         <button
           class="btn {installedPlugins.find(
-            (p) =>
-              p.name == plugin.name &&
-              p.data.category == plugin.data.category &&
-              p.data.for == plugin.data.for &&
-              p.sha == plugin.sha
+            (pl) =>
+              pl.name == plugin.name &&
+              pl.data.category == plugin.data.category &&
+              pl.data.for == plugin.data.for &&
+              pl.sha == plugin.sha &&
+              pl.modSha == plugin.modSha
           )
             ? 'btn-neutral'
             : 'btn-warning'}"
           slot="footer"
           on:click={download.bind(this, plugin)}
           >{installedPlugins.find(
-            (p) =>
-              p.name == plugin.name &&
-              p.data.category == plugin.data.category &&
-              p.data.for == plugin.data.for &&
-              p.sha == plugin.sha
+            (pl) =>
+              pl.name == plugin.name &&
+              pl.data.category == plugin.data.category &&
+              pl.data.for == plugin.data.for &&
+              pl.sha == plugin.sha &&
+              pl.modSha == plugin.modSha
           )
             ? "Installed"
             : "Install"}</button
