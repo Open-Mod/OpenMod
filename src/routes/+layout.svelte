@@ -154,6 +154,9 @@
     <MenuItem tip="Tool Tiers" page="/tiers">
       <i class="fa-solid fa-ranking-star" />
     </MenuItem>
+    <MenuItem tip="Mobs" page="/mobs">
+      <i class="fa-solid fa-paw" />
+    </MenuItem>
     <MenuItem tip="Potions" page="/potions">
       <i class="fa-solid fa-flask" />
     </MenuItem>

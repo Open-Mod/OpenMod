@@ -1,5 +1,6 @@
 package dev.openmod.project.custom;
 
+import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraftforge.eventbus.api.Event;
 import software.bernie.geckolib.core.animation.AnimationState;
 
@@ -17,6 +18,32 @@ public class CustomEvent extends Event {
 
         public AnimationState getAnimationState() {
             return animationState;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public static class MobGoalsInit extends CustomEvent
+    {
+        private GoalSelector goalSelector;
+        private GoalSelector targetSelector;
+        private String name;
+        public MobGoalsInit(GoalSelector goalSelector, GoalSelector targetSelector, String name)
+        {
+            super();
+            this.goalSelector = goalSelector;
+            this.targetSelector = targetSelector;
+            this.name = name;
+        }
+
+        public GoalSelector getGoalSelector() {
+            return goalSelector;
+        }
+
+        public GoalSelector getTargetSelector() {
+            return targetSelector;
         }
 
         public String getName() {

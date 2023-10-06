@@ -53,6 +53,8 @@
     ipc.invoke("clearLogs");
     const itemsFile = pathModule.join(projectPath, "src", "data", "items.json");
     const items = fs.existsSync(itemsFile) ? fs.readJSONSync(itemsFile) : {};
+    const mobsFile = pathModule.join(projectPath, "src", "data", "mobs.json");
+    const mobs = fs.existsSync(mobsFile) ? fs.readJSONSync(mobsFile) : {};
     const blocksFile = pathModule.join(
       projectPath,
       "src",
@@ -187,6 +189,184 @@
                 )}]: Field "Level" of effect "${
                   effect.name
                 }" from item "${item}" must not be empty!`
+              );
+          }
+        });
+      });
+    });
+    Object.keys(mobs).forEach((mob) => {
+      Object.keys(mobs[mob]).forEach((property) => {
+        if (
+          mobs[mob][property] == null ||
+          String(mobs[mob][property]).trim() == ""
+        ) {
+          if (property == "hitboxWidth")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Hitbox Width" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "hitboxHeight")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Hitbox Height" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "sizeRatio")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Baby Size" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "armor")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Armor" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "armorToughness")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Armor Toughness" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "luck")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Luck" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "attackSpeed")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Attack Speed" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "attackDamage")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Attack Damage" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "attackKnockback")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Attack Knockback" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "flyingSpeed")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Flying Speed" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "followRange")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Follow Range" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "jumpStrength")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Jump Strength" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "knockbackResistance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Knockback Resistance" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "maxHealth")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Max Health" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "movementSpeed")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Movement Speed" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "spawnReinforcementsChance")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Spawn Reinforcements Chance" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "stacksTo")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Stack Size" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "bgColor" && mobs[mob].modelType == "default")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Egg Background Color" of mob "${mob}" must not be empty!`
+            );
+          else if (
+            property == "highlightColor" &&
+            mobs[mob].modelType == "default"
+          )
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Egg Highlight Color" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "burnTime" && mobs[mob].fuel)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Burn Time" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "food_nutrition" && mobs[mob].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Nutrition" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "food_saturationMod" && mobs[mob].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Saturation" of mob "${mob}" must not be empty!`
+            );
+        }
+      });
+      if (!mobs[mob].food) return;
+      mobs[mob].effects.forEach((effect) => {
+        Object.keys(effect).forEach((property) => {
+          if (
+            effect[property] == null ||
+            String(effect[property]).trim() == ""
+          ) {
+            if (property == "probability")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Probability" of effect "${
+                  effect.name
+                }" from mob "${mob}" must not be empty!`
+              );
+            else if (property == "duration")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Duration" of effect "${
+                  effect.name
+                }" from mob "${mob}" must not be empty!`
+              );
+            else if (property == "amplifier")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Level" of effect "${
+                  effect.name
+                }" from mob "${mob}" must not be empty!`
               );
           }
         });
@@ -957,6 +1137,16 @@
       "textures",
       "item"
     );
+    const mobTexturesPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "textures",
+      "entity"
+    );
     const blockTexturesPath = pathModule.join(
       projectPath,
       "src",
@@ -1081,6 +1271,7 @@
     fs.rmdirSync(itemModelsPath, { force: true, recursive: true });
     fs.rmdirSync(blockModelsPath, { force: true, recursive: true });
     fs.rmdirSync(itemTexturesPath, { force: true, recursive: true });
+    fs.rmdirSync(mobTexturesPath, { force: true, recursive: true });
     fs.rmdirSync(blockTexturesPath, { force: true, recursive: true });
     fs.rmdirSync(blockstates, { force: true, recursive: true });
     fs.rmdirSync(projectMinecraftData, { force: true, recursive: true });
@@ -1099,6 +1290,7 @@
     fs.ensureDirSync(itemModelsPath);
     fs.ensureDirSync(blockModelsPath);
     fs.ensureDirSync(itemTexturesPath);
+    fs.ensureDirSync(mobTexturesPath);
     fs.ensureDirSync(blockTexturesPath);
     fs.ensureDirSync(blockstates);
     fs.ensureDirSync(projectMinecraftData);
@@ -1147,6 +1339,34 @@
         if (model) fs.writeFileSync(modelPath, modelData, "base64");
         if (geo) fs.writeFileSync(geoPath, geoData, "base64");
         if (animation) fs.writeFileSync(animationPath, animationData, "base64");
+      }
+    });
+    Object.keys(mobs).forEach((mob) => {
+      const modelPath = pathModule.join(itemModelsPath, `${mob}.json`);
+      const geo = mobs[mob].geo;
+      const geoPath = pathModule.join(geosPath, `${mob}.geo.json`);
+      const geoData = geo?.data;
+      const animation = mobs[mob].animation;
+      const animationPath = pathModule.join(
+        animationsPath,
+        `${mob}.animation.json`
+      );
+      const animationData = animation?.data;
+      const texture = mobs[mob].texture;
+      const texturePath = pathModule.join(mobTexturesPath, `${mob}.png`);
+      const textureData = texture?.data;
+      if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+      if (geo) fs.writeFileSync(geoPath, geoData, "base64");
+      if (animation) fs.writeFileSync(animationPath, animationData, "base64");
+      if (mobs[mob].modelType == "default") {
+        fs.writeFileSync(texturePath, textureData, "base64");
+        fs.writeJSONSync(modelPath, {
+          parent: "minecraft:item/template_spawn_egg",
+        });
+      } else if (mobs[mob].modelType == "blockbench") {
+        const model = items[item].model;
+        const modelData = model?.data;
+        if (model) fs.writeFileSync(modelPath, modelData, "base64");
       }
     });
     Object.keys(armors).forEach((armor) => {
@@ -1351,7 +1571,7 @@
         if (bottomTexture) {
           const bottomTexturePath = pathModule.join(
             blockTexturesPath,
-            `bottom_${block}.${bottomTextureType}`
+            `bottom_${block}.png`
           );
           const bottomTextureData = bottomTexture.data;
           fs.writeFileSync(bottomTexturePath, bottomTextureData, "base64");
@@ -2460,7 +2680,7 @@
             textureArmorModelsPath,
             `layer_${material}_1.png`
           );
-          const textureData = texture1.replace("data:image/png;base64,", "");
+          const textureData = texture1.data;
           fs.writeFileSync(texturePath, textureData, "base64");
         }
         if (texture2) {
@@ -2468,7 +2688,7 @@
             textureArmorModelsPath,
             `layer_${material}_2.png`
           );
-          const textureData = texture2.replace("data:image/png;base64,", "");
+          const textureData = texture2.data;
           fs.writeFileSync(texturePath, textureData, "base64");
         }
       } else if (materials[material].modelType == "blockbench") {

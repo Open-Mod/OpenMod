@@ -14,6 +14,7 @@ public class Node {
     private Map nodeData;
     private ArrayList nodes;
     private IEventBus bus;
+
     private RegistryObject item;
     public Node(Map n, Map nodeData, ArrayList nodes, IEventBus bus, RegistryObject item) {
         this.data = n;

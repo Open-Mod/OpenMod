@@ -1,9 +1,14 @@
 package dev.openmod.project;
 
+import dev.openmod.project.custom.CustomMob;
+import dev.openmod.project.custom.CustomMobRenderer;
 import dev.openmod.project.init.*;
 import dev.openmod.project.custom.CustomBlockRenderer;
 import dev.openmod.project.custom.CustomBlockEntities;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,6 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.model.GeoModel;
 
 @Mod(Project.MODID)
 public class Project {
@@ -27,6 +33,7 @@ public class Project {
         SoundInit.init();
         BiomeInit.init(bus);
         ItemInit.init();
+        MobInit.init(bus);
         PotionInit.init();
         RecipeInit.init(bus);
         BlockInit.init();
@@ -38,6 +45,7 @@ public class Project {
         EventInit.init();
         CustomBlockEntities.init();
         ItemInit.ITEMS.register(bus);
+        MobInit.MOBS.register(bus);
         PotionInit.POTIONS.register(bus);
         BlockInit.BLOCKS.register(bus);
         TabInit.TABS.register(bus);
@@ -51,6 +59,9 @@ public class Project {
         public static void onClientSetup(FMLClientSetupEvent event) {
             for(RegistryObject<BlockEntityType<?>> blockEntry : CustomBlockEntities.BLOCK_ENTITIES.getEntries()) {
                 BlockEntityRenderers.register((BlockEntityType) blockEntry.get(), (context) -> new CustomBlockRenderer(blockEntry.getKey().location().getPath()));
+            }
+            for(RegistryObject<EntityType<?>> mobEntry : MobInit.MOBS.getEntries()) {
+                EntityRenderers.register((EntityType<CustomMob>) mobEntry.get(), (EntityRendererProvider.Context renderManager) -> new CustomMobRenderer(mobEntry.getKey().location().getPath(), renderManager));
             }
         }
     }

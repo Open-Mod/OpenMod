@@ -831,7 +831,7 @@
               />
             </div>
             {#if blocks[selectedBlock].type == "normal"}
-              <div>
+              <div class="col-start-1">
                 <label class="text-lg">Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -846,7 +846,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "slab"}
-              <div>
+              <div class="col-start-1">
                 <label class="text-lg">Bottom Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -889,7 +889,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "stairs"}
-              <div>
+              <div class="col-start-1">
                 <label class="text-lg">Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -932,7 +932,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "door"}
-              <div>
+              <div class="col-start-1">
                 <label class="text-lg">Bottom Left Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -1173,7 +1173,7 @@
               />
             </div>
           {:else if blocks[selectedBlock].modelType == "default" && (blocks[selectedBlock].type == "stairs" || blocks[selectedBlock].type == "slab")}
-            <div>
+            <div class="col-start-1">
               <label class="text-lg">Top Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"
@@ -1207,7 +1207,7 @@
               />
             </div>
           {:else if blocks[selectedBlock].modelType == "default" && blocks[selectedBlock].type == "door"}
-            <div>
+            <div class="col-start-1">
               <label class="text-lg">Top Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"

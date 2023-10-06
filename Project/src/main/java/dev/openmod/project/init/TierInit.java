@@ -36,7 +36,7 @@ public class TierInit {
                     }
                 }
                 if(item == null) item = RegistryObject.create(new ResourceLocation(repairIngredient), ForgeRegistries.ITEMS).get();
-                return Ingredient.of( item);
+                return Ingredient.of(item);
             }));
         }
     }

@@ -142,6 +142,16 @@
       "textures",
       "item"
     );
+    const entityTextures = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "textures",
+      "entity"
+    );
     const armorModels = pathModule.join(
       projectPath,
       "src",
@@ -289,6 +299,7 @@
     fs.ensureDirSync(sounds);
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
+    fs.ensureDirSync(entityTextures);
     fs.ensureDirSync(armorModels);
     fs.ensureDirSync(blockModels);
     fs.ensureDirSync(blockTextures);
