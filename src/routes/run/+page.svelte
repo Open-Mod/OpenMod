@@ -2678,7 +2678,7 @@
         if (texture1) {
           const texturePath = pathModule.join(
             textureArmorModelsPath,
-            `layer_${material}_1.png`
+            `${material}_layer_1.png`
           );
           const textureData = texture1.data;
           fs.writeFileSync(texturePath, textureData, "base64");
@@ -2686,7 +2686,7 @@
         if (texture2) {
           const texturePath = pathModule.join(
             textureArmorModelsPath,
-            `layer_${material}_2.png`
+            `${material}_layer_2.png`
           );
           const textureData = texture2.data;
           fs.writeFileSync(texturePath, textureData, "base64");
