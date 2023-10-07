@@ -317,6 +317,30 @@
                 new Date()
               )}]: Field "Egg Highlight Color" of mob "${mob}" must not be empty!`
             );
+          else if (property == "footstepSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Walk Sound" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "ambientSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Ambient Sound" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "hurtSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Hit Sound" of mob "${mob}" must not be empty!`
+            );
+          else if (property == "deathSound")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Death Sound" of mob "${mob}" must not be empty!`
+            );
           else if (property == "burnTime" && mobs[mob].fuel)
             addError(
               `[${formatDateToHHMMSS(
@@ -1276,7 +1300,6 @@
     fs.rmdirSync(blockstates, { force: true, recursive: true });
     fs.rmdirSync(projectMinecraftData, { force: true, recursive: true });
     fs.rmdirSync(minecraftData, { force: true, recursive: true });
-    fs.rmdirSync(minecraftMineable, { force: true, recursive: true });
     fs.rmdirSync(forgeData, { force: true, recursive: true });
     fs.rmdirSync(biomeModifier, { force: true, recursive: true });
     fs.rmdirSync(worldgenConfigured, { force: true, recursive: true });
@@ -1916,28 +1939,6 @@
         if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
       const statePath = pathModule.join(blockstates, `${block}.json`);
-      const mineablePath = pathModule.join(
-        minecraftMineable,
-        `${blocks[block].minedBy}.json`
-      );
-      let tierPath;
-      if (["netherite", "gold"].includes(blocks[block].minedByTier))
-        tierPath = pathModule.join(
-          forgeData,
-          `needs_${blocks[block].minedByTier}_tool.json`
-        );
-      else if (
-        ["wood", "stone", "iron", "diamond"].includes(blocks[block].minedByTier)
-      )
-        tierPath = pathModule.join(
-          minecraftData,
-          `needs_${blocks[block].minedByTier}_tool.json`
-        );
-      else
-        tierPath = pathModule.join(
-          projectMinecraftData,
-          `needs_${blocks[block].minedByTier}_tool.json`
-        );
       if (blocks[block].type == "normal") {
         fs.writeJSONSync(statePath, {
           variants: {
@@ -2296,28 +2297,6 @@
           },
         });
       }
-      if (blocks[block].dropItem) {
-        if (
-          fs.existsSync(mineablePath) &&
-          blocks[block].minedBy != "anything"
-        ) {
-          const mineable = fs.readJSONSync(mineablePath);
-          const tier = fs.readJSONSync(tierPath);
-          mineable.values.push(`${projectName.toLowerCase()}:${block}`);
-          tier.values.push(`${projectName.toLowerCase()}:${block}`);
-          fs.writeJSONSync(mineablePath, mineable);
-          fs.writeJSONSync(tierPath, tier);
-        } else if (blocks[block].minedBy != "anything") {
-          fs.writeJSONSync(mineablePath, {
-            replace: false,
-            values: [`${projectName.toLowerCase()}:${block}`],
-          });
-          fs.writeJSONSync(tierPath, {
-            replace: false,
-            values: [`${projectName.toLowerCase()}:${block}`],
-          });
-        }
-      }
       if (blocks[block].isOre && blocks[block].biomes.length) {
         const configurePath = pathModule.join(
           worldgenConfigured,
@@ -2458,28 +2437,6 @@
         if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       }
       const statePath = pathModule.join(blockstates, `${tree}.json`);
-      const mineablePath = pathModule.join(
-        minecraftMineable,
-        `${trees[tree].minedBy}.json`
-      );
-      let tierPath;
-      if (["netherite", "gold"].includes(trees[tree].minedByTier))
-        tierPath = pathModule.join(
-          forgeData,
-          `needs_${trees[tree].minedByTier}_tool.json`
-        );
-      else if (
-        ["wood", "stone", "iron", "diamond"].includes(trees[tree].minedByTier)
-      )
-        tierPath = pathModule.join(
-          minecraftData,
-          `needs_${trees[tree].minedByTier}_tool.json`
-        );
-      else
-        tierPath = pathModule.join(
-          projectMinecraftData,
-          `needs_${trees[tree].minedByTier}_tool.json`
-        );
       fs.writeJSONSync(statePath, {
         variants: {
           "": {
@@ -2531,25 +2488,6 @@
           decorators: [],
         },
       });
-      if (trees[tree].dropItem) {
-        if (fs.existsSync(mineablePath) && trees[tree].minedBy != "anything") {
-          const mineable = fs.readJSONSync(mineablePath);
-          const tier = fs.readJSONSync(tierPath);
-          mineable.values.push(`${projectName.toLowerCase()}:${tree}`);
-          tier.values.push(`${projectName.toLowerCase()}:${tree}`);
-          fs.writeJSONSync(mineablePath, mineable);
-          fs.writeJSONSync(tierPath, tier);
-        } else if (trees[tree].minedBy != "anything") {
-          fs.writeJSONSync(mineablePath, {
-            replace: false,
-            values: [`${projectName.toLowerCase()}:${tree}`],
-          });
-          fs.writeJSONSync(tierPath, {
-            replace: false,
-            values: [`${projectName.toLowerCase()}:${tree}`],
-          });
-        }
-      }
       if (trees[tree].biomes.length) {
         const placedPath = pathModule.join(worldgenPlaced, `${tree}.json`);
         const biomePath = pathModule.join(biomeModifier, `${tree}.json`);
@@ -2634,6 +2572,100 @@
           biomes: selectedBiomes.map((biome) => biome.name),
         });
       }
+    });
+    const mineablePaths = [
+      ...new Set([
+        ...Object.keys(blocks)
+          .filter((b) => blocks[b].dropItem && blocks[b].minedBy != "anything")
+          .map((b) =>
+            pathModule.join(minecraftMineable, `${blocks[b].minedBy}.json`)
+          ),
+        ...Object.keys(trees)
+          .filter((t) => trees[t].dropItem && trees[t].minedBy != "anything")
+          .map((t) =>
+            pathModule.join(minecraftMineable, `${trees[b].minedBy}.json`)
+          ),
+      ]),
+    ];
+    mineablePaths.forEach((mineablePath) => {
+      fs.writeJSONSync(mineablePath, {
+        replace: false,
+        values: [
+          ...Object.keys(blocks)
+            .filter((b) => mineablePath.includes(`${blocks[b].minedBy}.json`))
+            .map((b) => `${projectName.toLowerCase()}:${b}`),
+          ...Object.keys(trees)
+            .filter((t) => mineablePath.includes(`${trees[t].minedBy}.json`))
+            .map((t) => `${projectName.toLowerCase()}:${t}`),
+        ],
+      });
+    });
+    const tierPaths = [
+      ...new Set([
+        ...Object.keys(blocks)
+          .filter((b) => blocks[b].dropItem && blocks[b].minedBy != "anything")
+          .map((b) => {
+            if (["netherite", "gold"].includes(blocks[b].minedByTier))
+              return pathModule.join(
+                forgeData,
+                `needs_${blocks[b].minedByTier}_tool.json`
+              );
+            else if (
+              ["wood", "stone", "iron", "diamond"].includes(
+                blocks[b].minedByTier
+              )
+            )
+              return pathModule.join(
+                minecraftData,
+                `needs_${blocks[b].minedByTier}_tool.json`
+              );
+            else
+              return pathModule.join(
+                projectMinecraftData,
+                `needs_${blocks[b].minedByTier}_tool.json`
+              );
+          }),
+        ...Object.keys(trees)
+          .filter((t) => trees[t].dropItem && trees[t].minedBy != "anything")
+          .map((t) => {
+            if (["netherite", "gold"].includes(trees[t].minedByTier))
+              return pathModule.join(
+                forgeData,
+                `needs_${trees[t].minedByTier}_tool.json`
+              );
+            else if (
+              ["wood", "stone", "iron", "diamond"].includes(
+                trees[t].minedByTier
+              )
+            )
+              return pathModule.join(
+                minecraftData,
+                `needs_${trees[t].minedByTier}_tool.json`
+              );
+            else
+              return pathModule.join(
+                projectMinecraftData,
+                `needs_${trees[t].minedByTier}_tool.json`
+              );
+          }),
+      ]),
+    ];
+    tierPaths.forEach((tierPath) => {
+      fs.writeJSONSync(tierPath, {
+        replace: false,
+        values: [
+          ...Object.keys(blocks)
+            .filter((b) =>
+              tierPath.includes(`needs_${blocks[b].minedByTier}_tool.json`)
+            )
+            .map((b) => `${projectName.toLowerCase()}:${b}`),
+          ...Object.keys(trees)
+            .filter((t) =>
+              tierPath.includes(`needs_${trees[t].minedByTier}_tool.json`)
+            )
+            .map((t) => `${projectName.toLowerCase()}:${t}`),
+        ],
+      });
     });
     Object.keys(tools).forEach((tool) => {
       const modelPath = pathModule.join(itemModelsPath, `${tool}.json`);

@@ -4,6 +4,7 @@ package dev.openmod.project.init;
 import dev.openmod.project.util.Node;
 import dev.openmod.project.util.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -141,6 +142,70 @@ public class EventInit {
                         }
                     }
                     Node n = new Node(node, toolNodeData, connected_nodes, bus, item);
+                    //${plugins}
+                }
+            }
+        }
+        Map potionNodeData = new HashMap();
+        Map<String, Map> potions = Util.readFileAsJSON("../src/data/potions.json");
+        for (Map.Entry<String, Map> potionEntry : potions.entrySet()) {
+            Map data = potionEntry.getValue();
+            Map node_data = (Map) data.get("node_data");
+            ArrayList connected_nodes = (ArrayList) node_data.get("connected_nodes");
+            for(Object nodeEntry : connected_nodes) {
+                Map node = (Map)nodeEntry;
+                ArrayList inputs = (ArrayList) node.get("inputs");
+                boolean isEvent = true;
+                for(Object inputEntry : inputs) {
+                    Map input = (Map) inputEntry;
+                    boolean isConnector = ((String) input.get("type")).equals("connector");
+                    if(isConnector) {
+                        isEvent = false;
+                        break;
+                    }
+                }
+                if(isEvent) {
+                    String plugin = (String) node.get("plugin");
+                    RegistryObject item = null;
+                    for(RegistryObject<Item> entry : ItemInit.ITEMS.getEntries()) {
+                        if(potionEntry.getKey().equals(entry.getKey().location().getPath())) {
+                            item = entry;
+                            break;
+                        }
+                    }
+                    Node n = new Node(node, potionNodeData, connected_nodes, bus, item);
+                    //${plugins}
+                }
+            }
+        }
+        Map mobNodeData = new HashMap();
+        Map<String, Map> mobs = Util.readFileAsJSON("../src/data/mobs.json");
+        for (Map.Entry<String, Map> mobEntry : mobs.entrySet()) {
+            Map data = mobEntry.getValue();
+            Map node_data = (Map) data.get("node_data");
+            ArrayList connected_nodes = (ArrayList) node_data.get("connected_nodes");
+            for(Object nodeEntry : connected_nodes) {
+                Map node = (Map)nodeEntry;
+                ArrayList inputs = (ArrayList) node.get("inputs");
+                boolean isEvent = true;
+                for(Object inputEntry : inputs) {
+                    Map input = (Map) inputEntry;
+                    boolean isConnector = ((String) input.get("type")).equals("connector");
+                    if(isConnector) {
+                        isEvent = false;
+                        break;
+                    }
+                }
+                if(isEvent) {
+                    String plugin = (String) node.get("plugin");
+                    RegistryObject item = null;
+                    for(RegistryObject<EntityType<?>> entry : MobInit.MOBS.getEntries()) {
+                        if(mobEntry.getKey().equals(entry.getKey().location().getPath())) {
+                            item = entry;
+                            break;
+                        }
+                    }
+                    Node n = new Node(node, mobNodeData, connected_nodes, bus, item);
                     //${plugins}
                 }
             }

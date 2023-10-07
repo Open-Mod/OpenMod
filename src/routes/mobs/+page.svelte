@@ -3,6 +3,7 @@
   import Accordion from "../../components/Accordion.svelte";
   let mobs = {};
   let tabs = {};
+  let sounds = {};
   let items = {};
   let tools = {};
   let armors = {};
@@ -12,6 +13,7 @@
   let projectPath = "";
   let path = "";
   let tabsPath = "";
+  let soundsPath = "";
   let itemsPath = "";
   let toolsPath = "";
   let armorsPath = "";
@@ -26,6 +28,13 @@
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "mobs.json");
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
+    soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
+    mobs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
+    toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
+    armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
+    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
+    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     nodesPath = pathModule.join(
       projectPath,
       "src",
@@ -36,14 +45,8 @@
       "plugins",
       "ui"
     );
-    mobs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
-    itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
-    toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
-    armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
-    blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
-    treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
-    path = pathModule.join(projectPath, "src", "data", "mobs.json");
     tabs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
+    sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
@@ -129,6 +132,18 @@
           Object.keys(blocks)[0] ??
           Object.keys(trees)[0] ??
           defaultItems[0];
+      mobs[mob].footstepSound = mobs[mob].footstepSound.trim()
+        ? mobs[mob].footstepSound
+        : Object.keys(sounds)[0] ?? mobs[mob].footstepSound;
+      mobs[mob].ambientSound = mobs[mob].ambientSound.trim()
+        ? mobs[mob].ambientSound
+        : Object.keys(sounds)[0] ?? mobs[mob].ambientSound;
+      mobs[mob].hurtSound = mobs[mob].hurtSound.trim()
+        ? mobs[mob].hurtSound
+        : Object.keys(sounds)[0] ?? mobs[mob].hurtSound;
+      mobs[mob].deathSound = mobs[mob].deathSound.trim()
+        ? mobs[mob].deathSound
+        : Object.keys(sounds)[0] ?? mobs[mob].deathSound;
     });
     selectedMob = Object.keys(mobs)[0] ?? "";
     window.on_change = (data) => {
@@ -166,6 +181,7 @@
       stacksTo: 1,
       bgColor: "#000000",
       highlightColor: "#000000",
+      tab: "none",
       food:
         Object.keys(items)[0] ??
         Object.keys(tools)[0] ??
@@ -173,8 +189,12 @@
         Object.keys(blocks)[0] ??
         Object.keys(trees)[0] ??
         defaultItems[0],
-      tab: "none",
+      footstepSound: Object.keys(sounds)[0] ?? "",
+      ambientSound: Object.keys(sounds)[0] ?? "",
+      hurtSound: Object.keys(sounds)[0] ?? "",
+      deathSound: Object.keys(sounds)[0] ?? "",
       rarity: "common",
+      breed: true,
       fuel: false,
       food: false,
       fireResistant: false,
@@ -536,6 +556,18 @@
             </div>
           {/if}
           <div>
+            <label class="text-lg">Creative Tab</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].tab}
+            >
+              <option value="none">None</option>
+              {#each Object.keys(tabs) as tab}
+                <option value={tab}>{convertToCamelCase(tab)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
             <label class="text-lg">Food Item</label>
             <select
               class="select font-normal text-base w-full"
@@ -561,14 +593,66 @@
             </select>
           </div>
           <div>
-            <label class="text-lg">Creative Tab</label>
+            <label class="text-lg">Walk Sound</label>
             <select
               class="select font-normal text-base w-full"
-              bind:value={mobs[selectedMob].tab}
+              bind:value={mobs[selectedMob].footstepSound}
             >
-              <option value="none">None</option>
-              {#each Object.keys(tabs) as tab}
-                <option value={tab}>{convertToCamelCase(tab)}</option>
+              {#if !Object.keys(sounds).length}
+                <option disabled value={mobs[selectedMob].footstepSound}
+                  >No sounds</option
+                >
+              {/if}
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Ambient Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].ambientSound}
+            >
+              {#if !Object.keys(sounds).length}
+                <option disabled value={mobs[selectedMob].ambientSound}
+                  >No sounds</option
+                >
+              {/if}
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Hit Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].hurtSound}
+            >
+              {#if !Object.keys(sounds).length}
+                <option disabled value={mobs[selectedMob].hurtSound}
+                  >No sounds</option
+                >
+              {/if}
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="text-lg">Death Sound</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].deathSound}
+            >
+              {#if !Object.keys(sounds).length}
+                <option disabled value={mobs[selectedMob].deathSound}
+                  >No sounds</option
+                >
+              {/if}
+              {#each Object.keys(sounds) as sound}
+                <option value={sound}>{convertToCamelCase(sound)}</option>
               {/each}
             </select>
           </div>
@@ -581,6 +665,16 @@
                 value="uncommon">Uncommon Rarity</option
               ><option value="rare">Rare Rarity</option><option value="epic"
                 >Epic Rarity</option
+              ></select
+            >
+          </div>
+          <div>
+            <label class="text-lg">Can Breed?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].breed}
+              ><option value={true}>True</option><option value={false}
+                >False</option
               ></select
             >
           </div>

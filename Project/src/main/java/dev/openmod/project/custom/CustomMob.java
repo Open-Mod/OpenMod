@@ -32,14 +32,7 @@ public class CustomMob extends Animal implements GeoEntity {
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
-        EntityType<CustomMob> offSpring = null;
-        for(RegistryObject<EntityType<?>> mobEntry : MobInit.MOBS.getEntries()) {
-            if(name.equals(mobEntry.getKey().location().getPath())) {
-                offSpring = (EntityType<CustomMob>) mobEntry.get();
-                break;
-            }
-        }
-        return offSpring.create(p_146743_);
+        return null;
     }
 
     public PlayState predicate(AnimationState animationState) {

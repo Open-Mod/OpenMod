@@ -3,9 +3,15 @@ package dev.openmod.project.init;
 import dev.openmod.project.Project;
 import dev.openmod.project.custom.CustomMob;
 import dev.openmod.project.util.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -15,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,6 +32,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class MobInit {
     public static final DeferredRegister<EntityType<?>> MOBS = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Project.MODID);
@@ -44,6 +52,11 @@ public class MobInit {
             String rarity = (String) data.get("rarity");
             String bgColor = (String) data.get("bgColor");
             String highlightColor = (String) data.get("highlightColor");
+            String footstepSound = (String) data.get("footstepSound");
+            String ambientSound = (String) data.get("ambientSound");
+            String hurtSound = (String) data.get("hurtSound");
+            String deathSound = (String) data.get("deathSound");
+            boolean breed = (boolean) data.get("breed");
             boolean fuel = (boolean) data.get("fuel");
             boolean food = (boolean) data.get("food");
             boolean fireResistant = (boolean) data.get("fireResistant");
@@ -110,6 +123,19 @@ public class MobInit {
             else if(rarity.equals("rare")) itemProperties.rarity(Rarity.RARE);
             else if(rarity.equals("epic")) itemProperties.rarity(Rarity.EPIC);
             RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level) {
+                @org.jetbrains.annotations.Nullable
+                @Override
+                public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
+                    if(!breed) return null;
+                    EntityType<CustomMob> offSpring = null;
+                    for(RegistryObject<EntityType<?>> mobEntry : MobInit.MOBS.getEntries()) {
+                        if(name.equals(mobEntry.getKey().location().getPath())) {
+                            offSpring = (EntityType<CustomMob>) mobEntry.get();
+                            break;
+                        }
+                    }
+                    return offSpring.create(p_146743_);
+                }
                 @Override
                 public boolean isFood(ItemStack p_27600_) {
                     Item item = null;
@@ -121,6 +147,50 @@ public class MobInit {
                     }
                     if(item == null) item = RegistryObject.create(new ResourceLocation(foodItem), ForgeRegistries.ITEMS).get();
                     return p_27600_.getItem().equals(item);
+                }
+                protected void playStepSound(BlockPos pos, BlockState blockIn) {
+                    SoundEvent aFootstepSound = null;
+                    for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                        if(footstepSound.equals(soundEntry.getKey().location().getPath())) {
+                            aFootstepSound = soundEntry.get();
+                        }
+                        if(aFootstepSound != null) break;
+                    }
+                    this.playSound(aFootstepSound);
+                }
+
+                protected SoundEvent getAmbientSound() {
+                    SoundEvent aAmbientSound = null;
+                    for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                        if(ambientSound.equals(soundEntry.getKey().location().getPath())) {
+                            aAmbientSound = soundEntry.get();
+                        }
+                        if(aAmbientSound != null) break;
+                    }
+                    return aAmbientSound;
+
+                }
+
+                protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+                    SoundEvent aHurtSound = null;
+                    for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                        if(hurtSound.equals(soundEntry.getKey().location().getPath())) {
+                            aHurtSound = soundEntry.get();
+                        }
+                        if(aHurtSound != null) break;
+                    }
+                    return aHurtSound;
+                }
+
+                protected SoundEvent getDeathSound() {
+                    SoundEvent aDeathSound = null;
+                    for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
+                        if(deathSound.equals(soundEntry.getKey().location().getPath())) {
+                            aDeathSound = soundEntry.get();
+                        }
+                        if(aDeathSound != null) break;
+                    }
+                    return aDeathSound;
                 }
             }, MobCategory.CREATURE).sized(hitboxWidth, hitboxHeight).build(new ResourceLocation(Project.MODID, name).toString()));
            if(!tab.equals("none"))
