@@ -1378,16 +1378,10 @@
       if (texture) fs.writeFileSync(texturePath, textureData, "base64");
       if (geo) fs.writeFileSync(geoPath, geoData, "base64");
       if (animation) fs.writeFileSync(animationPath, animationData, "base64");
-      if (mobs[mob].modelType == "default") {
-        fs.writeFileSync(texturePath, textureData, "base64");
-        fs.writeJSONSync(modelPath, {
-          parent: "minecraft:item/template_spawn_egg",
-        });
-      } else if (mobs[mob].modelType == "blockbench") {
-        const model = items[item].model;
-        const modelData = model?.data;
-        if (model) fs.writeFileSync(modelPath, modelData, "base64");
-      }
+      fs.writeFileSync(texturePath, textureData, "base64");
+      fs.writeJSONSync(modelPath, {
+        parent: "minecraft:item/template_spawn_egg",
+      });
     });
     Object.keys(armors).forEach((armor) => {
       const modelPath = pathModule.join(itemModelsPath, `${armor}.json`);
