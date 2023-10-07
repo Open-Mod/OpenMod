@@ -198,7 +198,6 @@
       fuel: false,
       food: false,
       fireResistant: false,
-      modelType: "default",
       burnTime: 1,
       food_alwaysEat: false,
       food_fast: false,
@@ -450,6 +449,8 @@
             <label class="text-lg">Attack Speed</label>
             <input
               type="number"
+              min="0"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].attackSpeed}
             />
@@ -458,6 +459,8 @@
             <label class="text-lg">Attack Damage</label>
             <input
               type="number"
+              min="0"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].attackDamage}
             />
@@ -466,6 +469,8 @@
             <label class="text-lg">Attack Knockback</label>
             <input
               type="number"
+              min="0.1"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].attackKnockback}
             />
@@ -474,6 +479,8 @@
             <label class="text-lg">Flying Speed</label>
             <input
               type="number"
+              min="0.1"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].flyingSpeed}
             />
@@ -490,6 +497,8 @@
             <label class="text-lg">Jump Strength</label>
             <input
               type="number"
+              min="0"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].jumpStrength}
             />
@@ -498,6 +507,8 @@
             <label class="text-lg">Knockback Resistance</label>
             <input
               type="number"
+              min="0.1"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].knockbackResistance}
             />
@@ -514,6 +525,8 @@
             <label class="text-lg">Movement Speed</label>
             <input
               type="number"
+              min="0"
+              step="0.1"
               class="input w-full"
               bind:value={mobs[selectedMob].movementSpeed}
             />
@@ -537,24 +550,22 @@
               bind:value={mobs[selectedMob].stacksTo}
             />
           </div>
-          {#if mobs[selectedMob].modelType == "default"}
-            <div>
-              <label class="text-lg">Egg Background Color</label>
-              <input
-                type="color"
-                class="w-full"
-                bind:value={mobs[selectedMob].bgColor}
-              />
-            </div>
-            <div>
-              <label class="text-lg">Egg Highlight Color</label>
-              <input
-                type="color"
-                class="w-full"
-                bind:value={mobs[selectedMob].highlightColor}
-              />
-            </div>
-          {/if}
+          <div>
+            <label class="text-lg">Egg Background Color</label>
+            <input
+              type="color"
+              class="w-full"
+              bind:value={mobs[selectedMob].bgColor}
+            />
+          </div>
+          <div>
+            <label class="text-lg">Egg Highlight Color</label>
+            <input
+              type="color"
+              class="w-full"
+              bind:value={mobs[selectedMob].highlightColor}
+            />
+          </div>
           <div>
             <label class="text-lg">Creative Tab</label>
             <select
@@ -730,22 +741,6 @@
               on:dragover|preventDefault
             />
           </div>
-          {#if mobs[selectedMob].modelType == "blockbench"}
-            <div>
-              <label class="text-lg">Model</label>
-              <div
-                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                style="{mobs[selectedMob].model
-                  ? 'background-color: rgba(0,0,0,0.3)'
-                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                on:click={chooseTexture.bind(this, "model", "json")}
-                on:drop={setTexture.bind(this, "model")}
-                on:dragover|preventDefault
-              >
-                {mobs[selectedMob].model?.name ?? ""}
-              </div>
-            </div>
-          {/if}
           <div>
             <label class="text-lg">Geo</label>
             <div

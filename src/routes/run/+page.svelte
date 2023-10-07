@@ -302,16 +302,13 @@
                 new Date()
               )}]: Field "Stack Size" of mob "${mob}" must not be empty!`
             );
-          else if (property == "bgColor" && mobs[mob].modelType == "default")
+          else if (property == "bgColor")
             addError(
               `[${formatDateToHHMMSS(
                 new Date()
               )}]: Field "Egg Background Color" of mob "${mob}" must not be empty!`
             );
-          else if (
-            property == "highlightColor" &&
-            mobs[mob].modelType == "default"
-          )
+          else if (property == "highlightColor")
             addError(
               `[${formatDateToHHMMSS(
                 new Date()

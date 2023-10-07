@@ -65,13 +65,15 @@ public class Node {
                         ArrayList foundInputs = (ArrayList) foundNode.get("inputs");
                         for(Object foundInputEntry : foundInputs) {
                             Map foundInput = (Map)foundInputEntry;
-                            boolean found = ((Number) foundInput.get("link")).intValue() == link.intValue();
-                            if(found) {
-                                String plugin = (String) foundNode.get("plugin");
-                                RegistryObject data = this.item;
-                                Node n = new Node(foundNode, this.nodeData, this.nodes, bus, data);
-                                //${plugins}
-                                break;
+                            if(foundInput.get("link") != null) {
+                                boolean found = ((Number) foundInput.get("link")).intValue() == link.intValue();
+                                if (found) {
+                                    String plugin = (String) foundNode.get("plugin");
+                                    RegistryObject data = this.item;
+                                    Node n = new Node(foundNode, this.nodeData, this.nodes, bus, data);
+                                    //${plugins}
+                                    break;
+                                }
                             }
                         }
                     }

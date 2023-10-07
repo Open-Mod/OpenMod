@@ -8,7 +8,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -26,7 +25,7 @@ public class CustomMob extends Animal implements GeoEntity {
     public CustomMob(String name, EntityType entityType, Level level) {
         super(entityType, level);
         this.name = name;
-        eventBus.post(new CustomEvent.MobGoalsInit(this.goalSelector, this.targetSelector, name));
+        eventBus.post(new CustomEvent.MobGoalsInit(this, name));
     }
 
     @Nullable
