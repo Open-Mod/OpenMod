@@ -101,8 +101,10 @@
     filteredPlugins = plugins.filter(
       (p) =>
         p.name.toLowerCase().includes(ev.target.value.toLowerCase()) ||
-        (p.data.for ?? "any").includes(ev.target.value.toLowerCase()) ||
-        `${p.name.toLowerCase()} ${p.data.for ?? "any"}`.includes(
+        (p.data.for ?? p.data.category).includes(
+          ev.target.value.toLowerCase()
+        ) ||
+        `${p.name.toLowerCase()} ${p.data.for ?? p.data.category}`.includes(
           ev.target.value.toLowerCase()
         )
     );
@@ -130,7 +132,8 @@
         <span slot="subtitle"
           >{plugin.data.for
             ? plugin.data.for[0].toUpperCase() + plugin.data.for.slice(1)
-            : "Any"}</span
+            : plugin.data.category[0].toUpperCase() +
+              plugin.data.category.slice(1)}</span
         >
         <button
           class="btn {installedPlugins.find(
