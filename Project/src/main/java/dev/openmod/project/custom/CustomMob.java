@@ -20,18 +20,23 @@ import software.bernie.geckolib.core.object.PlayState;
 public class CustomMob extends Animal implements GeoEntity {
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private String name;
-    private IEventBus eventBus = MinecraftForge.EVENT_BUS;
+    private static IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
     public CustomMob(String name, EntityType entityType, Level level) {
         super(entityType, level);
         this.name = name;
-        eventBus.post(new CustomEvent.MobGoalsInit(this));
     }
 
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
         return null;
+    }
+
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+        eventBus.post(new CustomEvent.MobGoalsInit(this));
     }
 
     @Override
