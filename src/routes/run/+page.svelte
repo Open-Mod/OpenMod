@@ -1168,6 +1168,16 @@
       "textures",
       "entity"
     );
+    const mobloottables = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "loot_tables",
+      "entities"
+    );
     const blockTexturesPath = pathModule.join(
       projectPath,
       "src",
@@ -1186,6 +1196,16 @@
       "assets",
       projectName.toLowerCase(),
       "blockstates"
+    );
+    const blockloottables = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "loot_tables",
+      "blocks"
     );
     const projectMinecraftData = pathModule.join(
       projectPath,
@@ -1293,8 +1313,10 @@
     fs.rmdirSync(blockModelsPath, { force: true, recursive: true });
     fs.rmdirSync(itemTexturesPath, { force: true, recursive: true });
     fs.rmdirSync(mobTexturesPath, { force: true, recursive: true });
+    fs.rmdirSync(mobloottables, { force: true, recursive: true });
     fs.rmdirSync(blockTexturesPath, { force: true, recursive: true });
     fs.rmdirSync(blockstates, { force: true, recursive: true });
+    fs.rmdirSync(blockloottables, { force: true, recursive: true });
     fs.rmdirSync(projectMinecraftData, { force: true, recursive: true });
     fs.rmdirSync(minecraftData, { force: true, recursive: true });
     fs.rmdirSync(forgeData, { force: true, recursive: true });
@@ -1311,8 +1333,10 @@
     fs.ensureDirSync(blockModelsPath);
     fs.ensureDirSync(itemTexturesPath);
     fs.ensureDirSync(mobTexturesPath);
+    fs.ensureDirSync(mobloottables);
     fs.ensureDirSync(blockTexturesPath);
     fs.ensureDirSync(blockstates);
+    fs.ensureDirSync(blockloottables);
     fs.ensureDirSync(projectMinecraftData);
     fs.ensureDirSync(minecraftData);
     fs.ensureDirSync(minecraftMineable);
@@ -2982,6 +3006,12 @@
           `${loottables[loottable].for}.json`
         );
         fs.writeFileSync(blockloottablePath, loottables[loottable].json);
+      } else if (parse(loottables[loottable].json).type == "minecraft:entity") {
+        const mobloottablePath = pathModule.join(
+          mobloottables,
+          `${loottables[loottable].for}.json`
+        );
+        fs.writeFileSync(mobloottablePath, loottables[loottable].json);
       }
     });
     Object.keys(biomes).forEach((biome) => {

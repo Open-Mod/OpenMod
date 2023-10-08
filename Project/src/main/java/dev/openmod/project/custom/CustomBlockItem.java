@@ -64,7 +64,7 @@ public class CustomBlockItem extends BlockItem implements GeoItem {
     }
 
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, name));
+        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
         return PlayState.CONTINUE;
     }
 

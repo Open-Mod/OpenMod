@@ -25,7 +25,7 @@ public class CustomMob extends Animal implements GeoEntity {
     public CustomMob(String name, EntityType entityType, Level level) {
         super(entityType, level);
         this.name = name;
-        eventBus.post(new CustomEvent.MobGoalsInit(this, name));
+        eventBus.post(new CustomEvent.MobGoalsInit(this));
     }
 
     @Nullable
@@ -34,8 +34,20 @@ public class CustomMob extends Animal implements GeoEntity {
         return null;
     }
 
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        eventBus.post(new CustomEvent.MobServerAiStep(this));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        eventBus.post(new CustomEvent.MobTick(this));
+    }
+
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, name));
+        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
         return PlayState.CONTINUE;
     }
 

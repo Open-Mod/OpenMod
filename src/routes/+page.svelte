@@ -142,7 +142,7 @@
       "textures",
       "item"
     );
-    const entityTextures = pathModule.join(
+    const mobTextures = pathModule.join(
       projectPath,
       "src",
       "main",
@@ -151,6 +151,16 @@
       name.toLowerCase(),
       "textures",
       "entity"
+    );
+    const mobloottables = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      name.toLowerCase(),
+      "loot_tables",
+      "entities"
     );
     const armorModels = pathModule.join(
       projectPath,
@@ -299,7 +309,8 @@
     fs.ensureDirSync(sounds);
     fs.ensureDirSync(itemModels);
     fs.ensureDirSync(itemTextures);
-    fs.ensureDirSync(entityTextures);
+    fs.ensureDirSync(mobTextures);
+    fs.ensureDirSync(mobloottables);
     fs.ensureDirSync(armorModels);
     fs.ensureDirSync(blockModels);
     fs.ensureDirSync(blockTextures);

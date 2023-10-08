@@ -105,7 +105,6 @@
     delete biomes[selectedBiome];
     biomes = biomes;
     selectedBiome = Object.keys(biomes)[0];
-    updateEditor();
     send_changes({ file: "biomes.json", data: biomes });
   }
   function convertToCamelCase(inputString) {

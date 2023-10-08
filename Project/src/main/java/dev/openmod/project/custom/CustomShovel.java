@@ -62,7 +62,7 @@ public class CustomShovel extends ShovelItem implements GeoItem {
     }
 
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, name));
+        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
         return PlayState.CONTINUE;
     }
 

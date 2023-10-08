@@ -149,9 +149,10 @@
   function updateEditor() {
     if (!selectedPlayer || !editor) return;
     editor.graph.configure(players[selectedPlayer].node_data.graph);
+    const unadded = [];
     nodes
       .filter((n) => !n.showInContext)
-      .forEach((n, i) => {
+      .forEach((n) => {
         if (
           !editor.graph._nodes.find(
             (node) => node.type == `${n.category}/${n.name}`
@@ -159,13 +160,32 @@
         ) {
           const ev = LiteGraph.createNode(`${n.category}/${n.name}`);
           editor.graph.add(ev);
-          const node = editor.graph._nodes[i - 1]?.getBounding();
-          const y = node ? node[1] + node[3] + 50 : 30;
-          const x = node ? node[0] + node[2] + 20 : 30;
-          if (y < editor.canvas.height) ev.pos = [30, y];
-          else ev.pos = [x, 30];
+          unadded.push(ev);
         }
       });
+    arrangeNodesInGrid(unadded, editor.canvas.height);
+  }
+  function arrangeNodesInGrid(nodes, containerHeight) {
+    let x = 0;
+    let y = 30;
+    let maxWidth = 0;
+    for (let i = 0; i < nodes.length; i++) {
+      let node = nodes[i];
+      if (y + node.size[1] > containerHeight) {
+        y = 30;
+        x += maxWidth + 5;
+        maxWidth = 0;
+      }
+      node.pos[0] = x;
+      node.pos[1] = y;
+      y += node.size[1] + 35;
+      maxWidth = Math.max(maxWidth, node.size[0]);
+      if (y >= containerHeight) {
+        y = 30;
+        x += maxWidth + 5;
+        maxWidth = 0;
+      }
+    }
   }
 </script>
 

@@ -7,6 +7,7 @@
   let armors = {};
   let blocks = {};
   let trees = {};
+  let mobs = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
@@ -15,6 +16,7 @@
   let armorsPath = "";
   let blocksPath = "";
   let treesPath = "";
+  let mobsPath = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -27,6 +29,7 @@
     armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
+    mobsPath = pathModule.join(projectPath, "src", "data", "mobs.json");
     path = pathModule.join(projectPath, "src", "data", "tabs.json");
     tabs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
@@ -34,6 +37,7 @@
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
+    mobs = fs.existsSync(mobsPath) ? fs.readJSONSync(mobsPath) : {};
     defaultItems = fs.readJSONSync(
       isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
     );
@@ -71,6 +75,7 @@
         Object.keys(armors)[0] ??
         Object.keys(blocks)[0] ??
         Object.keys(trees)[0] ??
+        Object.keys(mobs)[0] ??
         defaultItems[0],
       withSearchbar: true,
       hideTitle: false,
@@ -106,7 +111,6 @@
     delete tabs[selectedTab];
     tabs = tabs;
     selectedTab = Object.keys(tabs)[0];
-    updateEditor();
     send_changes({ file: "tabs.json", data: tabs });
   }
   function convertToCamelCase(inputString) {
@@ -203,6 +207,9 @@
               {/each}
               {#each Object.keys(trees) as tree}
                 <option value={tree}>{convertToCamelCase(tree)}</option>
+              {/each}
+              {#each Object.keys(mobs) as mob}
+                <option value={mob}>{convertToCamelCase(mob)}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>

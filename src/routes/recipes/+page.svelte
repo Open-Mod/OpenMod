@@ -108,7 +108,6 @@
     delete recipes[selectedRecipe];
     recipes = recipes;
     selectedRecipe = Object.keys(recipes)[0];
-    updateEditor();
     send_changes({ file: "recipes.json", data: recipes });
   }
   function convertToCamelCase(inputString) {

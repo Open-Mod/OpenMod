@@ -4,11 +4,12 @@
   let loottables = {};
   let blocks = {};
   let trees = {};
-  let defaultItems = [];
+  let mobs = {};
   let projectPath = "";
   let path = "";
   let blocksPath = "";
   let treesPath = "";
+  let mobsPath = "";
   onMount(() => {
     if (!selected) {
       alert("Please select a project!");
@@ -18,12 +19,11 @@
     path = pathModule.join(projectPath, "src", "data", "loottables.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
+    mobsPath = pathModule.join(projectPath, "src", "data", "mobs.json");
     loottables = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
-    defaultItems = fs.readJSONSync(
-      isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
-    );
+    mobs = fs.existsSync(mobsPath) ? fs.readJSONSync(mobsPath) : {};
     Object.keys(loottables).forEach((loottable) => {
       loottables[loottable].name = loottable;
     });
@@ -44,7 +44,7 @@
       name,
       for:
         Object.keys(blocks).filter((block) => blocks[block].dropItem)[0] ??
-        defaultItems[0] ??
+        Object.keys(mobs)[0] ??
         "",
       json: "{}",
     };
@@ -70,10 +70,8 @@
       loottables[loottable].name = loottable;
       loottables[loottable].for = loottables[loottable].for.trim()
         ? loottables[loottable].for
-        : Object.keys(
-            Object.keys(blocks).filter((block) => blocks[block].dropItem)
-          )[0] ??
-          defaultItems[0] ??
+        : Object.keys(blocks).filter((block) => blocks[block].dropItem)[0] ??
+          Object.keys(mobs)[0] ??
           loottables[loottable].for;
     });
     selectedLoottable = loottables[selectedLoottable]
@@ -86,7 +84,6 @@
     delete loottables[selectedLoottable];
     loottables = loottables;
     selectedLoottable = Object.keys(loottables)[0];
-    updateEditor();
     send_changes({ file: "loottables.json", data: loottables });
   }
   function convertToCamelCase(inputString) {
@@ -101,6 +98,10 @@
   function setDefault() {
     if (parse(loottables[selectedLoottable].json).type == "minecraft:block") {
       loottables[selectedLoottable].for = Object.keys(blocks)[0];
+    } else if (
+      parse(loottables[selectedLoottable].json).type == "minecraft:entity"
+    ) {
+      loottables[selectedLoottable].for = Object.keys(mobs)[0];
     }
   }
   function parse(json) {
@@ -177,8 +178,22 @@
                 {#each Object.keys(trees).filter((tree) => trees[tree].dropItem) as tree}
                   <option value={tree}>{convertToCamelCase(tree)}</option>
                 {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
+              </select>
+            </div>
+          {:else if parse(loottables[selectedLoottable].json).type == "minecraft:entity"}
+            <div>
+              <label class="text-lg">For Mob</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={loottables[selectedLoottable].for}
+              >
+                {#if !Object.keys(mobs).length}
+                  <option disabled value={loottables[selectedLoottable].for}
+                    >No mobs</option
+                  >
+                {/if}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{convertToCamelCase(mob)}</option>
                 {/each}
               </select>
             </div>

@@ -45,7 +45,6 @@
     window.on_change = (data) => {
       if (data.file.file != "tiers.json") return;
       tiers = data.file.content;
-      updateEditor();
     };
     window.onchange = () => {
       send_changes({ file: "tiers.json", data: tiers });
@@ -98,7 +97,6 @@
     delete tiers[selectedTier];
     tiers = tiers;
     selectedTier = Object.keys(tiers)[0];
-    updateEditor();
     send_changes({ file: "tiers.json", data: tiers });
   }
   function convertToCamelCase(inputString) {

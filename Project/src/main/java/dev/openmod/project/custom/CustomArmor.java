@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 
 public class CustomArmor extends ArmorItem implements GeoItem {
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
-    private String name;
     private IEventBus eventBus = MinecraftForge.EVENT_BUS;
     private String materialName;
     private boolean custom;
@@ -67,7 +66,7 @@ public class CustomArmor extends ArmorItem implements GeoItem {
     }
 
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, name));
+        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
         return PlayState.CONTINUE;
     }
 

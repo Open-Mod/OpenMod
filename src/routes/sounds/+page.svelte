@@ -63,7 +63,6 @@
     selectedSound = sounds[selectedSound]
       ? selectedSound
       : Object.keys(sounds)[0];
-    updateEditor();
     send_changes({ file: "sounds.json", data: sounds });
   }
   async function chooseSound() {
