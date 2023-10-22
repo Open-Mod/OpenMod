@@ -1,13 +1,9 @@
 <script>
   import { onMount } from "svelte";
   import Modal from "../components/Modal.svelte";
-  import Error from "../components/Error.svelte";
-  import Success from "../components/Success.svelte";
   let projects = {};
   let projectName = "";
   let projectPath = "";
-  let error = "";
-  let success = "";
   let current = "";
   let percent = 0;
   onMount(() => {
@@ -25,27 +21,21 @@
     });
   });
   async function add(ev, update, path) {
-    if (!projectName.trim() && !update) {
-      error = "Project name must not be empty!";
-      return setTimeout(() => {
-        error = "";
-      }, 2000);
+    if (projectName.trim().length < 2 && !update) {
+      return error("Project name must have at least 2 characters!");
+    }
+    if (projectName.trim().length > 63 && !update) {
+      return error("Project name must have at most 63 characters!");
     }
     let name = projectName
       .trim()
       .replace(/\s/g, "_")
       .replace(/./g, (char) => (/[^a-zA-Z\d_]/g.test(char) ? "" : char));
     if (!projectPath && !update) {
-      error = "Project folder must not be empty!";
-      return setTimeout(() => {
-        error = "";
-      }, 2000);
+      return error("Project folder must not be empty!");
     }
     if (projects[projectPath] && !update) {
-      error = "Project already exists!";
-      return setTimeout(() => {
-        error = "";
-      }, 2000);
+      return error("Project already exists!");
     }
     window["Add Project"].close();
     if (update) {
@@ -325,10 +315,7 @@
     fs.ensureDirSync(worldgenPlaced);
     fs.ensureDirSync(worldgenBiomes);
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
-    success = `Project ${update ? "updated" : "created"} successfully!`;
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success(`Project ${update ? "updated" : "created"} successfully!`);
   }
   function deleteProject(project) {
     delete projects[project];
@@ -343,10 +330,7 @@
       ipc.invoke("select", "");
     }
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
-    success = "Project deleted successfully!";
-    setTimeout(() => {
-      success = "";
-    }, 2000);
+    success("Project deleted successfully!");
   }
   async function choosePath() {
     const response = await ipc.invoke("dialog", "openDirectory");
@@ -469,5 +453,3 @@
     {percent}%
   </div>
 </div>
-<Error {error} />
-<Success {success} />

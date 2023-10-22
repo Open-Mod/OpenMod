@@ -64,7 +64,6 @@ public class TreeInit {
             float speedFactor = ((Number) data.get("speedFactor")).floatValue();
             String modelType = (String) data.get("modelType");
             String tab = (String) data.get("tab");
-            String bodyBlock = (String) data.get("bodyBlock");
             String mapColor = (String) data.get("mapColor");
             String instrument = (String) data.get("instrument");
             String breakSound = (String) data.get("breakSound");
@@ -228,15 +227,6 @@ public class TreeInit {
             else if (instrument.equals("bit")) properties.instrument(NoteBlockInstrument.BIT);
             else if (instrument.equals("banjo")) properties.instrument(NoteBlockInstrument.BANJO);
             else if (instrument.equals("pling")) properties.instrument(NoteBlockInstrument.PLING);
-            Block aBodyBlock = null;
-            for(RegistryObject<Block> blockEntry : BlockInit.BLOCKS.getEntries()) {
-                if(bodyBlock.equals(blockEntry.getKey().location().getPath())) {
-                    aBodyBlock = blockEntry.get();
-                    break;
-                }
-            }
-            if(aBodyBlock == null) aBodyBlock = RegistryObject.create(new ResourceLocation(bodyBlock), ForgeRegistries.BLOCKS).get();
-            Block finalABodyBlock = aBodyBlock;
             Supplier<SoundEvent> aBreakSound = null;
             Supplier<SoundEvent> aWalkSound = null;
             Supplier<SoundEvent> aPlaceSound = null;

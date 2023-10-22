@@ -2320,14 +2320,16 @@
         const placedPath = pathModule.join(worldgenPlaced, `${block}.json`);
         const biomePath = pathModule.join(biomeModifier, `${block}.json`);
         const targets = [];
-        const selectedBiomes = blocks[block].biomes.map((b) => {
-          if (biomes[b])
-            return {
-              name: `${projectName.toLowerCase()}:${b}`,
-              dimension: biomes[b].type,
-            };
-          else return defaultBiomes.find((biome) => biome.name == b);
-        });
+        const selectedBiomes = blocks[block].biomes
+          .map((b) => {
+            if (biomes[b])
+              return {
+                name: `${projectName.toLowerCase()}:${b}`,
+                dimension: biomes[b].type,
+              };
+            else return defaultBiomes.find((biome) => biome.name == b);
+          })
+          .filter((b) => b);
         if (selectedBiomes.find((b) => b.dimension == "overworld"))
           targets.push({
             target: {
@@ -2507,14 +2509,16 @@
         const placedPath = pathModule.join(worldgenPlaced, `${tree}.json`);
         const biomePath = pathModule.join(biomeModifier, `${tree}.json`);
         const targets = [];
-        const selectedBiomes = trees[tree].biomes.map((b) => {
-          if (biomes[b])
-            return {
-              name: `${projectName.toLowerCase()}:${b}`,
-              dimension: biomes[b].type,
-            };
-          else return defaultBiomes.find((biome) => biome.name == b);
-        });
+        const selectedBiomes = trees[tree].biomes
+          .map((b) => {
+            if (biomes[b])
+              return {
+                name: `${projectName.toLowerCase()}:${b}`,
+                dimension: biomes[b].type,
+              };
+            else return defaultBiomes.find((biome) => biome.name == b);
+          })
+          .filter((b) => b);
         if (selectedBiomes.find((b) => b.dimension == "overworld"))
           targets.push({
             target: {

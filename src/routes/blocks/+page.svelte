@@ -851,7 +851,7 @@
               />
             </div>
             {#if blocks[selectedBlock].type == "normal"}
-              <div class="col-start-1">
+              <div>
                 <label class="text-lg">Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -866,7 +866,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "slab"}
-              <div class="col-start-1">
+              <div>
                 <label class="text-lg">Bottom Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -909,7 +909,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "stairs"}
-              <div class="col-start-1">
+              <div>
                 <label class="text-lg">Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
@@ -952,7 +952,7 @@
                 </div>
               </div>
             {:else if blocks[selectedBlock].type == "door"}
-              <div class="col-start-1">
+              <div>
                 <label class="text-lg">Bottom Left Model</label>
                 <div
                   class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
