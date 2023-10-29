@@ -52,7 +52,7 @@ public class CustomMob extends Animal implements GeoEntity {
     }
 
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
+        eventBus.post(new CustomEvent.AnimationInit_mob(animationState, this));
         return PlayState.CONTINUE;
     }
 

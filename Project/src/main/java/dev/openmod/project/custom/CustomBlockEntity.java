@@ -21,7 +21,7 @@ public class CustomBlockEntity extends BlockEntity implements GeoBlockEntity {
         this.name = name;
     }
     public PlayState predicate(AnimationState animationState) {
-        eventBus.post(new CustomEvent.AnimationInit(animationState, this));
+        eventBus.post(new CustomEvent.AnimationInit_block(animationState, this));
         return PlayState.CONTINUE;
     }
 

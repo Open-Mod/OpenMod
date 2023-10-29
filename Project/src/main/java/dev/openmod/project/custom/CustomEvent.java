@@ -25,6 +25,46 @@ public class CustomEvent extends Event {
         }
     }
 
+    public static class AnimationInit_block extends CustomEvent
+    {
+        private AnimationState animationState;
+        private Object item;
+        public AnimationInit_block(AnimationState animationState, Object item)
+        {
+            super();
+            this.animationState = animationState;
+            this.item = item;
+        }
+
+        public AnimationState getAnimationState() {
+            return animationState;
+        }
+
+        public Object get() {
+            return item;
+        }
+    }
+
+    public static class AnimationInit_mob extends CustomEvent
+    {
+        private AnimationState animationState;
+        private Object item;
+        public AnimationInit_mob(AnimationState animationState, Object item)
+        {
+            super();
+            this.animationState = animationState;
+            this.item = item;
+        }
+
+        public AnimationState getAnimationState() {
+            return animationState;
+        }
+
+        public Object get() {
+            return item;
+        }
+    }
+
     public static class MobGoalsInit extends CustomEvent
     {
         private Mob mob;
