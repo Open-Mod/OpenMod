@@ -67,7 +67,7 @@ public class CustomMobRenderer extends GeoEntityRenderer<CustomMob> {
                     break;
                 }
             }
-            int sizeRatio = ((Number) data.get("sizeRatio")).intValue() / 100;
+            float sizeRatio = ((Number) data.get("sizeRatio")).intValue() / 100f;
             poseStack.scale(sizeRatio, sizeRatio, sizeRatio);
         }
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
