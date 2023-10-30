@@ -7,6 +7,7 @@
   let mobs = {};
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let blocksPath = "";
   let treesPath = "";
   let mobsPath = "";
@@ -17,6 +18,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "loottables.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     mobsPath = pathModule.join(projectPath, "src", "data", "mobs.json");
@@ -85,15 +89,6 @@
     loottables = loottables;
     selectedLoottable = Object.keys(loottables)[0];
     send_changes({ file: "loottables.json", data: loottables });
-  }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
   }
   function setDefault() {
     if (parse(loottables[selectedLoottable].json).type == "minecraft:block") {
@@ -173,10 +168,14 @@
                   >
                 {/if}
                 {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees).filter((tree) => trees[tree].dropItem) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
                 {/each}
               </select>
             </div>
@@ -193,7 +192,7 @@
                   >
                 {/if}
                 {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{convertToCamelCase(mob)}</option>
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
               </select>
             </div>

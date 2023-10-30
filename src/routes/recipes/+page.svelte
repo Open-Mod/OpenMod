@@ -7,16 +7,19 @@
   let tools = {};
   let blocks = {};
   let trees = {};
+  let mobs = {};
   let potions = {};
   let defaultItems = [];
   let defaultPotions = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let itemsPath = "";
   let armorsPath = "";
   let toolsPath = "";
   let blocksPath = "";
   let treesPath = "";
+  let mobsPath = "";
   let potionsPath = "";
   onMount(() => {
     if (!selected) {
@@ -25,11 +28,15 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "recipes.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
+    mobsPath = pathModule.join(projectPath, "src", "data", "mobs.json");
     potionsPath = pathModule.join(projectPath, "src", "data", "potions.json");
     recipes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
@@ -37,6 +44,7 @@
     tools = fs.existsSync(toolsPath) ? fs.readJSONSync(toolsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
+    mobs = fs.existsSync(mobsPath) ? fs.readJSONSync(mobsPath) : {};
     potions = fs.existsSync(potionsPath) ? fs.readJSONSync(potionsPath) : {};
     defaultItems = fs.readJSONSync(
       isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
@@ -109,15 +117,6 @@
     recipes = recipes;
     selectedRecipe = Object.keys(recipes)[0];
     send_changes({ file: "recipes.json", data: recipes });
-  }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
   }
 </script>
 
@@ -196,22 +195,37 @@
                 bind:value={recipes[selectedRecipe].resultItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
                 {#each Object.keys(potions) as potion}
-                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                  <option value={potion}
+                    >{projectName.toLowerCase()}:{potion}</option
+                  >
                 {/each}
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -225,20 +239,33 @@
                 bind:value={recipes[selectedRecipe].firstItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -252,20 +279,33 @@
                 bind:value={recipes[selectedRecipe].secondItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -279,20 +319,33 @@
                 bind:value={recipes[selectedRecipe].thirdItem}
               >
                 <option value="">None</option>{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -306,20 +359,33 @@
                 bind:value={recipes[selectedRecipe].fourthItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -333,20 +399,33 @@
                 bind:value={recipes[selectedRecipe].fifthItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -360,20 +439,33 @@
                 bind:value={recipes[selectedRecipe].sixthItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -387,20 +479,33 @@
                 bind:value={recipes[selectedRecipe].seventhItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -414,20 +519,33 @@
                 bind:value={recipes[selectedRecipe].eighthItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -441,20 +559,33 @@
                 bind:value={recipes[selectedRecipe].ninethItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -498,19 +629,32 @@
                 bind:value={recipes[selectedRecipe].resultItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -524,20 +668,33 @@
                 bind:value={recipes[selectedRecipe].firstItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
 
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -563,7 +720,9 @@
                 bind:value={recipes[selectedRecipe].resultItem}
                 ><option value="">None</option>
                 {#each Object.keys(potions) as potion}
-                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                  <option value={potion}
+                    >{projectName.toLowerCase()}:{potion}</option
+                  >
                 {/each}
                 {#each defaultPotions as potion}
                   <option value={potion}>{potion}</option>
@@ -577,19 +736,32 @@
                 bind:value={recipes[selectedRecipe].secondItem}
                 ><option value="">None</option
                 >{#each Object.keys(items) as item}
-                  <option value={item}>{convertToCamelCase(item)}</option>
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
                 {/each}
                 {#each Object.keys(armors) as armor}
-                  <option value={armor}>{convertToCamelCase(armor)}</option>
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
                 {/each}
                 {#each Object.keys(tools) as tool}
-                  <option value={tool}>{convertToCamelCase(tool)}</option>
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
                 {/each}
                 {#each Object.keys(blocks) as block}
-                  <option value={block}>{convertToCamelCase(block)}</option>
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
                 {/each}
                 {#each Object.keys(trees) as tree}
-                  <option value={tree}>{convertToCamelCase(tree)}</option>
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
                 {/each}
                 {#each defaultItems as item}
                   <option value={item}>{item}</option>
@@ -603,7 +775,9 @@
                 bind:value={recipes[selectedRecipe].firstItem}
                 ><option value="">None</option>
                 {#each Object.keys(potions) as potion}
-                  <option value={potion}>{convertToCamelCase(potion)}</option>
+                  <option value={potion}
+                    >{projectName.toLowerCase()}:{potion}</option
+                  >
                 {/each}
                 {#each defaultPotions as potion}
                   <option value={potion}>{potion}</option>

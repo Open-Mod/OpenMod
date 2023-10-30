@@ -7,6 +7,7 @@
   let defaultBlocks = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let blocksPath = "";
   let treesPath = "";
   onMount(() => {
@@ -16,6 +17,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "biomes.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
     biomes = fs.existsSync(path) ? fs.readJSONSync(path) : {};
@@ -107,15 +111,6 @@
     selectedBiome = Object.keys(biomes)[0];
     send_changes({ file: "biomes.json", data: biomes });
   }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
-  }
 </script>
 
 <svelte:head>
@@ -191,10 +186,12 @@
               bind:value={biomes[selectedBiome].blockAbove}
             >
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each Object.keys(trees) as tree}
-                <option value={tree}>{convertToCamelCase(tree)}</option>
+                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
               {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>
@@ -208,10 +205,12 @@
               bind:value={biomes[selectedBiome].blockUnder}
             >
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each Object.keys(trees) as tree}
-                <option value={tree}>{convertToCamelCase(tree)}</option>
+                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
               {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>

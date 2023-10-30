@@ -7,15 +7,18 @@
   let items = {};
   let blocks = {};
   let trees = {};
+  let mobs = {};
   let sounds = {};
   let defaultItems = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let armorsPath = "";
   let toolsPath = "";
   let itemsPath = "";
   let blocksPath = "";
   let treesPath = "";
+  let mobsPath = "";
   let soundsPath = "";
   onMount(() => {
     if (!selected) {
@@ -24,11 +27,15 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "materials.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     blocksPath = pathModule.join(projectPath, "src", "data", "blocks.json");
     treesPath = pathModule.join(projectPath, "src", "data", "trees.json");
+    mobsPath = pathModule.join(projectPath, "src", "data", "mobs.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     materials = fs.existsSync(path) ? fs.readJSONSync(path) : {};
     armors = fs.existsSync(armorsPath) ? fs.readJSONSync(armorsPath) : {};
@@ -36,6 +43,7 @@
     items = fs.existsSync(itemsPath) ? fs.readJSONSync(itemsPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
+    mobs = fs.existsSync(mobsPath) ? fs.readJSONSync(mobsPath) : {};
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     defaultItems = fs.readJSONSync(
       isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
@@ -51,6 +59,7 @@
           Object.keys(items)[0] ??
           Object.keys(blocks)[0] ??
           Object.keys(trees)[0] ??
+          Object.keys(mobs)[0] ??
           defaultItems[0];
     });
     selectedMaterial = Object.keys(materials)[0] ?? "";
@@ -86,6 +95,7 @@
         Object.keys(items)[0] ??
         Object.keys(blocks)[0] ??
         Object.keys(trees)[0] ??
+        Object.keys(mobs)[0] ??
         defaultItems[0],
     };
     selectedMaterial = name;
@@ -148,15 +158,6 @@
       send_changes({ file: "materials.json", data: materials });
     };
     reader.readAsDataURL(ev.dataTransfer.files[0]);
-  }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
   }
 </script>
 
@@ -314,7 +315,9 @@
             >
               <option value="default">Default</option>
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -325,19 +328,26 @@
               bind:value={materials[selectedMaterial].repairIngredient}
             >
               {#each Object.keys(armors) as armor}
-                <option value={armor}>{convertToCamelCase(armor)}</option>
+                <option value={armor}
+                  >{projectName.toLowerCase()}:{armor}</option
+                >
               {/each}
               {#each Object.keys(tools) as tool}
-                <option value={tool}>{convertToCamelCase(tool)}</option>
+                <option value={tool}>{projectName.toLowerCase()}:{tool}</option>
               {/each}
               {#each Object.keys(items) as item}
-                <option value={item}>{convertToCamelCase(item)}</option>
+                <option value={item}>{projectName.toLowerCase()}:{item}</option>
               {/each}
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each Object.keys(trees) as tree}
-                <option value={tree}>{convertToCamelCase(tree)}</option>
+                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
+              {/each}
+              {#each Object.keys(mobs) as mob}
+                <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>

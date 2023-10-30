@@ -11,6 +11,7 @@
   let defaultItems = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let itemsPath = "";
   let toolsPath = "";
   let armorsPath = "";
@@ -24,6 +25,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "tabs.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     itemsPath = pathModule.join(projectPath, "src", "data", "items.json");
     toolsPath = pathModule.join(projectPath, "src", "data", "tools.json");
     armorsPath = pathModule.join(projectPath, "src", "data", "armors.json");
@@ -194,22 +198,26 @@
               class="select font-normal text-base w-full"
               bind:value={tabs[selectedTab].icon}
               >{#each Object.keys(items) as item}
-                <option value={item}>{convertToCamelCase(item)}</option>
+                <option value={item}>{projectName.toLowerCase()}:{item}</option>
               {/each}
               {#each Object.keys(tools) as tool}
-                <option value={tool}>{convertToCamelCase(tool)}</option>
+                <option value={tool}>{projectName.toLowerCase()}:{tool}</option>
               {/each}
               {#each Object.keys(armors) as armor}
-                <option value={armor}>{convertToCamelCase(armor)}</option>
+                <option value={armor}
+                  >{projectName.toLowerCase()}:{armor}</option
+                >
               {/each}
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each Object.keys(trees) as tree}
-                <option value={tree}>{convertToCamelCase(tree)}</option>
+                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
               {/each}
               {#each Object.keys(mobs) as mob}
-                <option value={mob}>{convertToCamelCase(mob)}</option>
+                <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>

@@ -12,6 +12,7 @@
   let defaultItems = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let tabsPath = "";
   let soundsPath = "";
   let itemsPath = "";
@@ -27,6 +28,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "mobs.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
     mobs = fs.existsSync(path) ? fs.readJSONSync(path) : {};
@@ -357,16 +361,6 @@
       }
     }
   }
-
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
-  }
 </script>
 
 <svelte:head>
@@ -597,7 +591,7 @@
             >
               <option value="none">None</option>
               {#each Object.keys(tabs) as tab}
-                <option value={tab}>{convertToCamelCase(tab)}</option>
+                <option value={tab}>{projectName.toLowerCase()}:{tab}</option>
               {/each}
             </select>
           </div>
@@ -607,19 +601,23 @@
               class="select font-normal text-base w-full"
               bind:value={mobs[selectedMob].foodItem}
               >{#each Object.keys(items) as item}
-                <option value={item}>{convertToCamelCase(item)}</option>
+                <option value={item}>{projectName.toLowerCase()}:{item}</option>
               {/each}
               {#each Object.keys(tools) as tool}
-                <option value={tool}>{convertToCamelCase(tool)}</option>
+                <option value={tool}>{projectName.toLowerCase()}:{tool}</option>
               {/each}
               {#each Object.keys(armors) as armor}
-                <option value={armor}>{convertToCamelCase(armor)}</option>
+                <option value={armor}
+                  >{projectName.toLowerCase()}:{armor}</option
+                >
               {/each}
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each Object.keys(trees) as tree}
-                <option value={tree}>{convertToCamelCase(tree)}</option>
+                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>
@@ -638,7 +636,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -654,7 +654,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -670,7 +672,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -686,7 +690,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>

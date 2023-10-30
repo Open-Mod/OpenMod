@@ -11,6 +11,7 @@
   let defaultBlocks = [];
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let tabsPath = "";
   let tiersPath = "";
   let soundsPath = "";
@@ -24,6 +25,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "trees.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     tiersPath = pathModule.join(projectPath, "src", "data", "tiers.json");
     soundsPath = pathModule.join(projectPath, "src", "data", "sounds.json");
@@ -356,15 +360,6 @@
       }
     }
   }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
-  }
 </script>
 
 <svelte:head>
@@ -556,7 +551,7 @@
             >
               <option value="none">None</option>
               {#each Object.keys(tabs) as tab}
-                <option value={tab}>{convertToCamelCase(tab)}</option>
+                <option value={tab}>{projectName.toLowerCase()}:{tab}</option>
               {/each}
             </select>
           </div>
@@ -567,7 +562,9 @@
               bind:value={trees[selectedTree].leavesBlock}
             >
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>
@@ -581,7 +578,9 @@
               bind:value={trees[selectedTree].bodyBlock}
             >
               {#each Object.keys(blocks) as block}
-                <option value={block}>{convertToCamelCase(block)}</option>
+                <option value={block}
+                  >{projectName.toLowerCase()}:{block}</option
+                >
               {/each}
               {#each defaultBlocks as block}
                 <option value={block}>{block}</option>
@@ -697,7 +696,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -713,7 +714,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -729,7 +732,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -745,7 +750,9 @@
                 >
               {/if}
               {#each Object.keys(sounds) as sound}
-                <option value={sound}>{convertToCamelCase(sound)}</option>
+                <option value={sound}
+                  >{projectName.toLowerCase()}:{sound}</option
+                >
               {/each}
             </select>
           </div>
@@ -828,7 +835,9 @@
                   <option value="diamond">Diamond</option>
                   <option value="netherite">Netherite</option>
                   {#each Object.keys(tiers) as tier}
-                    <option value={tier}>{convertToCamelCase(tier)}</option>
+                    <option value={tier}
+                      >{projectName.toLowerCase()}:{tier}</option
+                    >
                   {/each}
                 </select>
               </div>
@@ -864,7 +873,9 @@
               bind:value={trees[selectedTree].biomes}
             >
               {#each Object.keys(biomes) as biome}
-                <option value={biome}>{convertToCamelCase(biome)}</option>
+                <option value={biome}
+                  >{projectName.toLowerCase()}:{biome}</option
+                >
               {/each}
               {#each defaultBiomes as biome}
                 <option value={biome.name}>{biome.name}</option>

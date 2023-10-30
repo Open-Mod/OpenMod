@@ -5,6 +5,7 @@
   let tabs = {};
   let projectPath = "";
   let path = "";
+  let projectName = "";
   let tabsPath = "";
   let nodesPath = "";
   onMount(() => {
@@ -14,6 +15,9 @@
     }
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "src", "data", "items.json");
+    projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
+      selected
+    ].name;
     tabsPath = pathModule.join(projectPath, "src", "data", "tabs.json");
     nodesPath = pathModule.join(
       projectPath,
@@ -280,15 +284,6 @@
       }
     }
   }
-  function convertToCamelCase(inputString) {
-    const words = inputString.split("_");
-    const convertedString = words
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-    return convertedString;
-  }
 </script>
 
 <svelte:head>
@@ -356,7 +351,7 @@
             >
               <option value="none">None</option>
               {#each Object.keys(tabs) as tab}
-                <option value={tab}>{convertToCamelCase(tab)}</option>
+                <option value={tab}>{projectName.toLowerCase()}:{tab}</option>
               {/each}
             </select>
           </div>
