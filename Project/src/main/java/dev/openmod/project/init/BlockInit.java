@@ -48,9 +48,9 @@ public class BlockInit {
             int fire_resistance = 300 - ((Number) data.get("fire_resistance")).intValue() * 3;
             int lightLevel = ((Number) data.get("lightLevel")).intValue();
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
-            float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
             int minXp = ((Number) data.get("minXp")).intValue();
             int maxXp = ((Number) data.get("maxXp")).intValue();
+            float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
             float friction = ((Number) data.get("friction")).floatValue() / 100f;
             float jumpFactor = ((Number) data.get("jumpFactor")).floatValue();
             float speedFactor = ((Number) data.get("speedFactor")).floatValue();

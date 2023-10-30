@@ -4,6 +4,9 @@ import dev.openmod.project.init.MobInit;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,7 +47,14 @@ public class CustomMob extends Animal implements GeoEntity {
         super.customServerAiStep();
         eventBus.post(new CustomEvent.MobServerAiStep(this));
     }
-
+    public void setWalking() {
+        this.moveControl = new MoveControl(this);
+        this.navigation = this.createNavigation(this.level());
+    }
+    public void setFlying() {
+        this.moveControl = new FlyingMoveControl(this, 10, true);
+        this.navigation = new FlyingPathNavigation(this, this.level());
+    }
     @Override
     public void tick() {
         super.tick();

@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -32,7 +32,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class MobInit {
     public static final DeferredRegister<EntityType<?>> MOBS = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Project.MODID);
@@ -44,6 +43,8 @@ public class MobInit {
             Item.Properties itemProperties = new Item.Properties();
             FoodProperties.Builder foodProperties = new FoodProperties.Builder();
             int stacksTo = ((Number) data.get("stacksTo")).intValue();
+            int minXp = ((Number) data.get("minXp")).intValue();
+            int maxXp = ((Number) data.get("maxXp")).intValue();
             float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
             float hitboxWidth = ((Number)data.get("hitboxWidth")).floatValue();
             float hitboxHeight = ((Number)data.get("hitboxHeight")).floatValue();
@@ -57,6 +58,7 @@ public class MobInit {
             String hurtSound = (String) data.get("hurtSound");
             String deathSound = (String) data.get("deathSound");
             boolean breed = (boolean) data.get("breed");
+            boolean dropXp = (boolean) data.get("dropXp");
             boolean fuel = (boolean) data.get("fuel");
             boolean food = (boolean) data.get("food");
             boolean fireResistant = (boolean) data.get("fireResistant");
@@ -148,6 +150,12 @@ public class MobInit {
                     if(item == null) item = RegistryObject.create(new ResourceLocation(foodItem), ForgeRegistries.ITEMS).get();
                     return p_27600_.getItem().equals(item);
                 }
+
+                @Override
+                public int getExperienceReward() {
+                    return dropXp ? UniformInt.of(minXp, maxXp).sample(this.level().random) : 0;
+                }
+
                 protected void playStepSound(BlockPos pos, BlockState blockIn) {
                     SoundEvent aFootstepSound = null;
                     for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {

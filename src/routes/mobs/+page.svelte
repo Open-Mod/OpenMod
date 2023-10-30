@@ -199,6 +199,9 @@
       deathSound: Object.keys(sounds)[0] ?? "",
       rarity: "common",
       breed: true,
+      dropXp: false,
+      minXp: 0,
+      maxXp: 0,
       fuel: false,
       food: false,
       fireResistant: false,
@@ -718,6 +721,36 @@
               ></select
             >
           </div>
+          <div>
+            <label class="text-lg">Can Drop Experience?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].dropXp}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if mobs[selectedMob].dropXp}
+            <div>
+              <label class="text-lg">Minimum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={mobs[selectedMob].minXp}
+              />
+            </div>
+            <div>
+              <label class="text-lg">Maximum Experience</label>
+              <input
+                type="number"
+                min="1"
+                class="input w-full"
+                bind:value={mobs[selectedMob].maxXp}
+              />
+            </div>
+          {/if}
           <div>
             <label class="text-lg">Is Fuel?</label>
             <select
