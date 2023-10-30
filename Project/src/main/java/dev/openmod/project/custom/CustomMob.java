@@ -2,13 +2,17 @@ package dev.openmod.project.custom;
 
 import dev.openmod.project.init.MobInit;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +63,12 @@ public class CustomMob extends Animal implements GeoEntity {
     public void tick() {
         super.tick();
         eventBus.post(new CustomEvent.MobTick(this));
+    }
+
+    @Override
+    public InteractionResult interactAt(Player p_19980_, Vec3 p_19981_, InteractionHand p_19982_) {
+        eventBus.post(new CustomEvent.MobInteract(p_19980_, p_19981_, p_19982_, this));
+        return super.interactAt(p_19980_, p_19981_, p_19982_);
     }
 
     public PlayState predicate(AnimationState animationState) {

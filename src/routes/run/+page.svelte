@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  let translate;
   let running = false;
   let errors = [];
   let output = "";
@@ -13,6 +14,7 @@
       alert("Please select a project!");
       return (location.href = "/");
     }
+    translate = require("translate-google");
     projectPath = pathModule.join(selected, "Project");
     path = pathModule.join(projectPath, "gradlew.bat");
     projectName = fs.readJSONSync(pathModule.join(appPath, "projects.json"))[
@@ -1110,6 +1112,15 @@
       });
     });
     if (errors.length) return (running = false);
+    const translationsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      projectName.toLowerCase(),
+      "lang"
+    );
     const animationsPath = pathModule.join(
       projectPath,
       "src",
@@ -1307,6 +1318,7 @@
       "worldgen",
       "biome"
     );
+    fs.rmdirSync(translationsPath, { force: true, recursive: true });
     fs.rmdirSync(animationsPath, { force: true, recursive: true });
     fs.rmdirSync(geosPath, { force: true, recursive: true });
     fs.rmdirSync(itemModelsPath, { force: true, recursive: true });
@@ -1327,6 +1339,7 @@
     fs.rmdirSync(assetsPath, { force: true, recursive: true });
     fs.rmdirSync(soundsPath, { force: true, recursive: true });
     fs.rmdirSync(biomesPath, { force: true, recursive: true });
+    fs.ensureDirSync(translationsPath);
     fs.ensureDirSync(animationsPath);
     fs.ensureDirSync(geosPath);
     fs.ensureDirSync(itemModelsPath);
@@ -1349,6 +1362,150 @@
     fs.ensureDirSync(assetsPath);
     fs.ensureDirSync(soundsPath);
     fs.ensureDirSync(biomesPath);
+    const obj = {};
+    Object.keys(items).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    Object.keys(blocks).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    Object.keys(armors).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    Object.keys(tools).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    Object.keys(mobs).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    Object.keys(potions).forEach((key) => {
+      obj[`item.minecraft.potion.effect.${key}`] = convertToCamelCase(key);
+      obj[`item.minecraft.splash_potion.effect.${key}`] = `${convertToCamelCase(
+        key
+      )} (Splash)`;
+      obj[
+        `item.minecraft.lingering_potion.effect.${key}`
+      ] = `${convertToCamelCase(key)} (Lingering)`;
+    });
+    Object.keys(trees).forEach((key) => {
+      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+    });
+    [
+      "af_ZA",
+      "sq_AL",
+      "ar_SA",
+      "hy_AM",
+      "az_AZ",
+      "eu_ES",
+      "be_BY",
+      "bn_IN",
+      "bs_BA",
+      "bg_BG",
+      "ca_ES",
+      "ceb_PH",
+      "ny_MW",
+      "zh-cn",
+      "zh-tw",
+      "co_FR",
+      "hr_HR",
+      "cs_CZ",
+      "da_DK",
+      "nl_NL",
+      "en_US",
+      "en_UK",
+      "eo",
+      "et_EE",
+      "tl_PH",
+      "fi_FI",
+      "fr_FR",
+      "fy_NL",
+      "gl_ES",
+      "ka_GE",
+      "de_DE",
+      "el_GR",
+      "gu_IN",
+      "ht_HT",
+      "ha_NG",
+      "haw_US",
+      "iw_IL",
+      "hi_IN",
+      "hmn",
+      "hu_HU",
+      "is_IS",
+      "ig_NG",
+      "id_ID",
+      "ga_IE",
+      "it_IT",
+      "ja_JP",
+      "jw_ID",
+      "kn_IN",
+      "kk_KZ",
+      "km_KH",
+      "ko_KR",
+      "ku",
+      "ky_KG",
+      "lo_LA",
+      "la",
+      "lv_LV",
+      "lt_LT",
+      "lb_LU",
+      "mk_MK",
+      "mg_MG",
+      "ms_MY",
+      "ml_IN",
+      "mt_MT",
+      "mi_NZ",
+      "mr_IN",
+      "mn_MN",
+      "my_MM",
+      "ne_NP",
+      "no_NO",
+      "ps_AF",
+      "fa_IR",
+      "pl_PL",
+      "pt_BR",
+      "ma",
+      "ro_RO",
+      "ru_RU",
+      "sm_WS",
+      "gd_GB",
+      "sr_RS",
+      "st_LS",
+      "sn_ZW",
+      "sd_PK",
+      "si_LK",
+      "sk_SK",
+      "sl_SI",
+      "so_SO",
+      "es_ES",
+      "su_ID",
+      "sw_KE",
+      "sv_SE",
+      "tg_TJ",
+      "ta_IN",
+      "te_IN",
+      "th_TH",
+      "tr_TR",
+      "uk_UA",
+      "ur_PK",
+      "uz_UZ",
+      "vi_VN",
+      "cy_GB",
+      "xh_ZA",
+      "yi",
+      "yo_NG",
+      "zu_ZA",
+    ].forEach(async (lang) => {
+      fs.writeJSONSync(
+        pathModule.join(
+          translationsPath,
+          `${lang.toLowerCase().split("-").join("_")}.json`
+        ),
+        await translate(obj, {
+          to: lang.toLowerCase().replace(/\_(.*?)$/g, ""),
+        })
+      );
+    });
     Object.keys(items).forEach((item) => {
       const modelPath = pathModule.join(itemModelsPath, `${item}.json`);
       if (items[item].modelType == "default") {
@@ -3124,6 +3281,15 @@
     errors.push(err);
     errors = errors;
     ipc.invoke("addError", err);
+  }
+  function convertToCamelCase(inputString) {
+    const words = inputString.split("_");
+    const convertedString = words
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+    return convertedString;
   }
 </script>
 

@@ -85,6 +85,15 @@
       "plugins",
       "ui"
     );
+    const translations = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "assets",
+      name.toLowerCase(),
+      "lang"
+    );
     const animations = pathModule.join(
       projectPath,
       "src",
@@ -294,6 +303,7 @@
     );
     fs.ensureDirSync(mod);
     fs.ensureDirSync(ui);
+    fs.ensureDirSync(translations);
     fs.ensureDirSync(animations);
     fs.ensureDirSync(geo);
     fs.ensureDirSync(sounds);

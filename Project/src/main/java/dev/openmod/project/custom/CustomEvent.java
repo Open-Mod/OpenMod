@@ -1,6 +1,9 @@
 package dev.openmod.project.custom;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.Event;
 import software.bernie.geckolib.core.animation.AnimationState;
 
@@ -104,6 +107,35 @@ public class CustomEvent extends Event {
 
         public Mob get() {
             return mob;
+        }
+
+    }
+    public static class MobInteract extends CustomEvent
+    {
+        private Mob mob;
+        private Player player;
+        private Vec3 pos;
+        private InteractionHand hand;
+        public MobInteract(Player player, Vec3 pos, InteractionHand hand, Mob mob)
+        {
+            super();
+            this.mob = mob;
+            this.player = player;
+            this.pos = pos;
+            this.hand = hand;
+        }
+
+        public Mob getMob() {
+            return mob;
+        }
+        public Player getPlayer() {
+            return player;
+        }
+        public Vec3 getPos() {
+            return pos;
+        }
+        public InteractionHand getHand() {
+            return hand;
         }
 
     }

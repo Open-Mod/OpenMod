@@ -2612,6 +2612,7 @@ document.onclick = (ev) => {
   /* Creates a clone of this node */
   LGraphNode.prototype.clone = function () {
     var node = LiteGraph.createNode(this.type);
+    console.log(this.constructor.showInContext);
     if (!node || !this.constructor.showInContext) {
       return null;
     }
