@@ -135,6 +135,16 @@
           Object.keys(armors)[0] ??
           Object.keys(blocks)[0] ??
           Object.keys(trees)[0] ??
+          Object.keys(mobs)[0] ??
+          defaultItems[0];
+      mobs[mob].ridingItem = mobs[mob].ridingItem?.trim()
+        ? mobs[mob].ridingItem
+        : Object.keys(items)[0] ??
+          Object.keys(tools)[0] ??
+          Object.keys(armors)[0] ??
+          Object.keys(blocks)[0] ??
+          Object.keys(trees)[0] ??
+          Object.keys(mobs)[0] ??
           defaultItems[0];
       mobs[mob].footstepSound = mobs[mob].footstepSound.trim()
         ? mobs[mob].footstepSound
@@ -186,18 +196,22 @@
       bgColor: "#000000",
       highlightColor: "#000000",
       tab: "none",
-      food:
+      ridingItem: "none",
+      foodItem:
         Object.keys(items)[0] ??
         Object.keys(tools)[0] ??
         Object.keys(armors)[0] ??
         Object.keys(blocks)[0] ??
         Object.keys(trees)[0] ??
+        Object.keys(mobs)[0] ??
         defaultItems[0],
       footstepSound: Object.keys(sounds)[0] ?? "",
       ambientSound: Object.keys(sounds)[0] ?? "",
       hurtSound: Object.keys(sounds)[0] ?? "",
       deathSound: Object.keys(sounds)[0] ?? "",
       rarity: "common",
+      rideable: true,
+      requiresSaddle: true,
       breed: true,
       dropXp: false,
       minXp: 0,
@@ -598,6 +612,48 @@
               {/each}
             </select>
           </div>
+          {#if mobs[selectedMob].rideable}
+            <div>
+              <label class="text-lg">Riding Item</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={mobs[selectedMob].ridingItem}
+              >
+                <option value="none">None</option>
+                {#each Object.keys(items) as item}
+                  <option value={item}
+                    >{projectName.toLowerCase()}:{item}</option
+                  >
+                {/each}
+                {#each Object.keys(tools) as tool}
+                  <option value={tool}
+                    >{projectName.toLowerCase()}:{tool}</option
+                  >
+                {/each}
+                {#each Object.keys(armors) as armor}
+                  <option value={armor}
+                    >{projectName.toLowerCase()}:{armor}</option
+                  >
+                {/each}
+                {#each Object.keys(blocks) as block}
+                  <option value={block}
+                    >{projectName.toLowerCase()}:{block}</option
+                  >
+                {/each}
+                {#each Object.keys(trees) as tree}
+                  <option value={tree}
+                    >{projectName.toLowerCase()}:{tree}</option
+                  >
+                {/each}
+                {#each Object.keys(mobs) as mob}
+                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
+                {/each}
+                {#each defaultItems as item}
+                  <option value={item}>{item}</option>
+                {/each}</select
+              >
+            </div>
+          {/if}
           <div>
             <label class="text-lg">Food Item</label>
             <select
@@ -621,6 +677,9 @@
               {/each}
               {#each Object.keys(trees) as tree}
                 <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
+              {/each}
+              {#each Object.keys(mobs) as mob}
+                <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
               {/each}
               {#each defaultItems as item}
                 <option value={item}>{item}</option>
@@ -711,6 +770,28 @@
               ></select
             >
           </div>
+          <div>
+            <label class="text-lg">Is Rideable?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].rideable}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          {#if mobs[selectedMob].rideable}
+            <div>
+              <label class="text-lg">Requires Saddle?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={mobs[selectedMob].requiresSaddle}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+          {/if}
           <div>
             <label class="text-lg">Can Breed?</label>
             <select

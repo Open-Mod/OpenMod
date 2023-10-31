@@ -32,6 +32,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class MobInit {
     public static final DeferredRegister<EntityType<?>> MOBS = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Project.MODID);
@@ -48,6 +49,7 @@ public class MobInit {
             float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
             float hitboxWidth = ((Number)data.get("hitboxWidth")).floatValue();
             float hitboxHeight = ((Number)data.get("hitboxHeight")).floatValue();
+            String ridingItem = (String) data.get("ridingItem");
             String foodItem = (String) data.get("foodItem");
             String tab = (String) data.get("tab");
             String rarity = (String) data.get("rarity");
@@ -57,6 +59,8 @@ public class MobInit {
             String ambientSound = (String) data.get("ambientSound");
             String hurtSound = (String) data.get("hurtSound");
             String deathSound = (String) data.get("deathSound");
+            boolean rideable = (boolean) data.get("rideable");
+            boolean requiresSaddle = (boolean) data.get("requiresSaddle");
             boolean breed = (boolean) data.get("breed");
             boolean dropXp = (boolean) data.get("dropXp");
             boolean fuel = (boolean) data.get("fuel");
@@ -124,7 +128,7 @@ public class MobInit {
             else if(rarity.equals("uncommon")) itemProperties.rarity(Rarity.UNCOMMON);
             else if(rarity.equals("rare")) itemProperties.rarity(Rarity.RARE);
             else if(rarity.equals("epic")) itemProperties.rarity(Rarity.EPIC);
-            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level) {
+            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, requiresSaddle, rideable, ridingItem) {
                 @org.jetbrains.annotations.Nullable
                 @Override
                 public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
@@ -201,19 +205,19 @@ public class MobInit {
                     return aDeathSound;
                 }
             }, MobCategory.CREATURE).sized(hitboxWidth, hitboxHeight).build(new ResourceLocation(Project.MODID, name).toString()));
-           if(!tab.equals("none"))
+            if(!tab.equals("none"))
                 TabInit.tabItems.get(tab).put(name, ItemInit.ITEMS.register(name, () -> fuel ? new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties) {
                     @Override
                     public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                         return ((Number) burnTime).intValue();
                     }
                 } : new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties)));
-           else ItemInit.ITEMS.register(name, () -> fuel ? new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties) {
-               @Override
-               public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-                   return ((Number) burnTime).intValue();
-               }
-           } : new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties));
+            else ItemInit.ITEMS.register(name, () -> fuel ? new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties) {
+                @Override
+                public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+                    return ((Number) burnTime).intValue();
+                }
+            } : new ForgeSpawnEggItem(mobObject, Integer.parseInt(bgColor.substring(1), 16), Integer.parseInt(highlightColor.substring(1), 16),itemProperties));
         }
         bus.addListener((EntityAttributeCreationEvent event) ->
         {

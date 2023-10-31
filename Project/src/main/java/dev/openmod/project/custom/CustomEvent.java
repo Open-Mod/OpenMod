@@ -114,14 +114,12 @@ public class CustomEvent extends Event {
     {
         private Mob mob;
         private Player player;
-        private Vec3 pos;
         private InteractionHand hand;
-        public MobInteract(Player player, Vec3 pos, InteractionHand hand, Mob mob)
+        public MobInteract(Player player, InteractionHand hand, Mob mob)
         {
             super();
             this.mob = mob;
             this.player = player;
-            this.pos = pos;
             this.hand = hand;
         }
 
@@ -130,9 +128,6 @@ public class CustomEvent extends Event {
         }
         public Player getPlayer() {
             return player;
-        }
-        public Vec3 getPos() {
-            return pos;
         }
         public InteractionHand getHand() {
             return hand;
