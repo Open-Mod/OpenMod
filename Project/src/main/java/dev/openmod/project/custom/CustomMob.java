@@ -54,7 +54,7 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
     private Supplier<Item> ridingItem;
     private static IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
-    public CustomMob(String name, EntityType entityType, Level level, boolean requiresSaddle, boolean rideable, String ridingItem) {
+    public CustomMob(String name, EntityType entityType, Level level, boolean requiresSaddle, boolean rideable, String ridingItem, String controller) {
         super(entityType, level);
         this.name = name;
         this.requiresSaddle = requiresSaddle;
@@ -72,6 +72,10 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
             this.ridingItem = item;
         } else
             this.ridingItem = null;
+        if(controller.equals("walking"))
+            this.setWalking();
+        else if(controller.equals("flying"))
+            this.setFlying();
     }
 
     @Nullable
@@ -236,9 +240,9 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
 
     protected float getRiddenSpeed(Player p_278258_) {
         if(this.level().getBlockState(new BlockPos((int) this.getX(), (int) this.getY() - 1, (int) this.getZ())).isAir() && flies())
-            return (float)(this.getAttributeValue(Attributes.FLYING_SPEED));
+            return (float)(this.getAttributeValue(Attributes.FLYING_SPEED) * 0.225D);
         else
-            return (float)(this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+            return (float)(this.getAttributeValue(Attributes.MOVEMENT_SPEED) * 0.225D);
     }
     public Vec3 getDismountLocationForPassenger(LivingEntity p_29487_) {
         Direction direction = this.getMotionDirection();

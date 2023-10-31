@@ -196,6 +196,7 @@
       bgColor: "#000000",
       highlightColor: "#000000",
       tab: "none",
+      controller: "walking",
       ridingItem: "none",
       foodItem:
         Object.keys(items)[0] ??
@@ -612,6 +613,16 @@
               {/each}
             </select>
           </div>
+          <div>
+            <label class="text-lg">Movement Controller</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].controller}
+            >
+              <option value="walking">Walking</option>
+              <option value="flying">Flying</option>
+            </select>
+          </div>
           {#if mobs[selectedMob].rideable}
             <div>
               <label class="text-lg">Riding Item</label>
@@ -885,7 +896,7 @@
             />
           </div>
           {#if mobs[selectedMob].rideable && mobs[selectedMob].requiresSaddle}
-            <div class="col-start-1">
+            <div>
               <label class="text-lg">Saddled Texture</label>
               <img
                 class="w-48 h-48 cursor-pointer rounded-lg"

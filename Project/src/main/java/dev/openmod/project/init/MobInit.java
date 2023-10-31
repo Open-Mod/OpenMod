@@ -49,9 +49,10 @@ public class MobInit {
             float burnTime = ((Number) data.get("burnTime")).floatValue() * 20f;
             float hitboxWidth = ((Number)data.get("hitboxWidth")).floatValue();
             float hitboxHeight = ((Number)data.get("hitboxHeight")).floatValue();
+            String tab = (String) data.get("tab");
+            String controller = (String) data.get("controller");
             String ridingItem = (String) data.get("ridingItem");
             String foodItem = (String) data.get("foodItem");
-            String tab = (String) data.get("tab");
             String rarity = (String) data.get("rarity");
             String bgColor = (String) data.get("bgColor");
             String highlightColor = (String) data.get("highlightColor");
@@ -128,7 +129,7 @@ public class MobInit {
             else if(rarity.equals("uncommon")) itemProperties.rarity(Rarity.UNCOMMON);
             else if(rarity.equals("rare")) itemProperties.rarity(Rarity.RARE);
             else if(rarity.equals("epic")) itemProperties.rarity(Rarity.EPIC);
-            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, requiresSaddle, rideable, ridingItem) {
+            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, requiresSaddle, rideable, ridingItem, controller) {
                 @org.jetbrains.annotations.Nullable
                 @Override
                 public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {
