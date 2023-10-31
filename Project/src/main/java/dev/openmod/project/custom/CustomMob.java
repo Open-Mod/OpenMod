@@ -49,7 +49,7 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private ItemBasedSteering steering = new ItemBasedSteering(this.entityData, DATA_BOOST_TIME, DATA_SADDLE_ID);
     private String name;
-    private boolean requiresSaddle;
+    public boolean requiresSaddle;
     private boolean rideable;
     private Supplier<Item> ridingItem;
     private static IEventBus eventBus = MinecraftForge.EVENT_BUS;

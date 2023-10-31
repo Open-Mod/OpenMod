@@ -52,6 +52,7 @@ public class CustomMobRenderer extends GeoEntityRenderer<CustomMob> {
 
     @Override
     public ResourceLocation getTextureLocation(CustomMob animatable) {
+        if(animatable.isSaddled() && animatable.requiresSaddle) return new ResourceLocation(Project.MODID, "textures/entity/" + name + "_saddle.png");
         return new ResourceLocation(Project.MODID, "textures/entity/" + name + ".png");
     }
 

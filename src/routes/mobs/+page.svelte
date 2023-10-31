@@ -884,6 +884,19 @@
               on:dragover|preventDefault
             />
           </div>
+          {#if mobs[selectedMob].rideable && mobs[selectedMob].requiresSaddle}
+            <div class="col-start-1">
+              <label class="text-lg">Saddled Texture</label>
+              <img
+                class="w-48 h-48 cursor-pointer rounded-lg"
+                src={`data:image/png;base64,${mobs[selectedMob].saddled?.data}`}
+                on:error={fallbackTexture}
+                on:click={chooseTexture.bind(this, "saddled", "png")}
+                on:drop={setTexture.bind(this, "saddled")}
+                on:dragover|preventDefault
+              />
+            </div>
+          {/if}
           <div>
             <label class="text-lg">Geo</label>
             <div

@@ -1367,7 +1367,8 @@
       obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
     });
     Object.keys(blocks).forEach((key) => {
-      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+      obj[`block.${projectName.toLowerCase()}.${key}`] =
+        convertToCamelCase(key);
     });
     Object.keys(armors).forEach((key) => {
       obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
@@ -1388,7 +1389,8 @@
       ] = `${convertToCamelCase(key)} (Lingering)`;
     });
     Object.keys(trees).forEach((key) => {
-      obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
+      obj[`block.${projectName.toLowerCase()}.${key}`] =
+        convertToCamelCase(key);
     });
     [
       "af_ZA",
@@ -1556,7 +1558,12 @@
       const texture = mobs[mob].texture;
       const texturePath = pathModule.join(mobTexturesPath, `${mob}.png`);
       const textureData = texture?.data;
+      const saddled = mobs[mob].saddled;
+      const saddledPath = pathModule.join(mobTexturesPath, `${mob}_saddle.png`);
+      const saddledData = saddled?.data;
       if (texture) fs.writeFileSync(texturePath, textureData, "base64");
+      if (saddled && mobs[mob].requiresSaddle && mobs[mob].rideable)
+        fs.writeFileSync(saddledPath, saddledData, "base64");
       if (geo) fs.writeFileSync(geoPath, geoData, "base64");
       if (animation) fs.writeFileSync(animationPath, animationData, "base64");
       fs.writeFileSync(texturePath, textureData, "base64");
