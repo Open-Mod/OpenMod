@@ -113,6 +113,15 @@
       "biomes.json"
     );
     const biomes = fs.existsSync(biomesFile) ? fs.readJSONSync(biomesFile) : {};
+    const structuresFile = pathModule.join(
+      projectPath,
+      "src",
+      "data",
+      "structures.json"
+    );
+    const structures = fs.existsSync(structuresFile)
+      ? fs.readJSONSync(structuresFile)
+      : {};
     const loottablesFile = pathModule.join(
       projectPath,
       "src",
@@ -1096,6 +1105,33 @@
         }
       });
     });
+    Object.keys(structures).forEach((structure) => {
+      Object.keys(structures[structure]).forEach((property) => {
+        if (
+          structures[structure][property] == null ||
+          String(structures[structure][property]).trim() == ""
+        ) {
+          if (property == "structureJson")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Structure JSON" of structure "${structure}" must not be empty!`
+            );
+          else if (property == "structureSetJson")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Structure Set JSON" of structure "${structure}" must not be empty!`
+            );
+          else if (property == "templatePoolJson")
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Template Pool JSON" of structure "${structure}" must not be empty!`
+            );
+        }
+      });
+    });
     Object.keys(loottables).forEach((loottable) => {
       Object.keys(loottables[loottable]).forEach((property) => {
         if (
@@ -1279,6 +1315,45 @@
       "worldgen",
       "placed_feature"
     );
+    const actualStructuresPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "structures"
+    );
+    const structuresPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "structure"
+    );
+    const structureSetsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "structure_set"
+    );
+    const templatePoolsPath = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "template_pool"
+    );
     const textureArmorModelsPath = pathModule.join(
       projectPath,
       "src",
@@ -1318,6 +1393,7 @@
       "worldgen",
       "biome"
     );
+    const worldsPath = pathModule.join(projectPath, "run", "saves");
     fs.rmdirSync(translationsPath, { force: true, recursive: true });
     fs.rmdirSync(animationsPath, { force: true, recursive: true });
     fs.rmdirSync(geosPath, { force: true, recursive: true });
@@ -1335,6 +1411,10 @@
     fs.rmdirSync(biomeModifier, { force: true, recursive: true });
     fs.rmdirSync(worldgenConfigured, { force: true, recursive: true });
     fs.rmdirSync(worldgenPlaced, { force: true, recursive: true });
+    fs.rmdirSync(actualStructuresPath, { force: true, recursive: true });
+    fs.rmdirSync(structuresPath, { force: true, recursive: true });
+    fs.rmdirSync(structureSetsPath, { force: true, recursive: true });
+    fs.rmdirSync(templatePoolsPath, { force: true, recursive: true });
     fs.rmdirSync(recipesPath, { force: true, recursive: true });
     fs.rmdirSync(assetsPath, { force: true, recursive: true });
     fs.rmdirSync(soundsPath, { force: true, recursive: true });
@@ -1357,11 +1437,26 @@
     fs.ensureDirSync(biomeModifier);
     fs.ensureDirSync(worldgenConfigured);
     fs.ensureDirSync(worldgenPlaced);
+    fs.ensureDirSync(actualStructuresPath);
+    fs.ensureDirSync(structuresPath);
+    fs.ensureDirSync(structureSetsPath);
+    fs.ensureDirSync(templatePoolsPath);
     fs.ensureDirSync(textureArmorModelsPath);
     fs.ensureDirSync(recipesPath);
     fs.ensureDirSync(assetsPath);
     fs.ensureDirSync(soundsPath);
     fs.ensureDirSync(biomesPath);
+    fs.readdirSync(worldsPath).forEach((world) => {
+      const worldPath = pathModule.join(worldsPath, world);
+      const structuresPath = pathModule.join(
+        worldPath,
+        "generated",
+        "minecraft",
+        "structures"
+      );
+      if (fs.existsSync(structuresPath))
+        fs.copySync(structuresPath, actualStructuresPath);
+    });
     const obj = {};
     Object.keys(items).forEach((key) => {
       obj[`item.${projectName.toLowerCase()}.${key}`] = convertToCamelCase(key);
@@ -3185,6 +3280,29 @@
     Object.keys(biomes).forEach((biome) => {
       const biomePath = pathModule.join(biomesPath, `${biome}.json`);
       fs.writeFileSync(biomePath, biomes[biome].json);
+    });
+    Object.keys(structures).forEach((structure) => {
+      const structurePath = pathModule.join(
+        structuresPath,
+        `${structure}.json`
+      );
+      const structureSetPath = pathModule.join(
+        structureSetsPath,
+        `${structure}.json`
+      );
+      const templatePoolPath = pathModule.join(
+        templatePoolsPath,
+        `${structure}.json`
+      );
+      fs.writeFileSync(structurePath, structures[structure].structureJson);
+      fs.writeFileSync(
+        structureSetPath,
+        structures[structure].structureSetJson
+      );
+      fs.writeFileSync(
+        templatePoolPath,
+        structures[structure].templatePoolJson
+      );
     });
     const basePath = isDev
       ? pathModule.join(

@@ -291,6 +291,45 @@
       "worldgen",
       "biome"
     );
+    const structures = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "structures"
+    );
+    const worldgenStructures = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "structure"
+    );
+    const worldgenStructureSets = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "structure_set"
+    );
+    const worldgenTemplatePools = pathModule.join(
+      projectPath,
+      "src",
+      "main",
+      "resources",
+      "data",
+      projectName.toLowerCase(),
+      "worldgen",
+      "template_pool"
+    );
     fs.writeFileSync(
       project,
       projectData.replace("${project}", name.toLowerCase())
@@ -324,6 +363,10 @@
     fs.ensureDirSync(worldgenConfigured);
     fs.ensureDirSync(worldgenPlaced);
     fs.ensureDirSync(worldgenBiomes);
+    fs.ensureDirSync(structures);
+    fs.ensureDirSync(worldgenStructures);
+    fs.ensureDirSync(worldgenStructureSets);
+    fs.ensureDirSync(worldgenTemplatePools);
     fs.writeJSONSync(pathModule.join(appPath, "projects.json"), projects);
     success(`Project ${update ? "updated" : "created"} successfully!`);
   }

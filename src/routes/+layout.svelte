@@ -175,6 +175,9 @@
     <MenuItem tip="Biomes" page="/biomes">
       <i class="fa-solid fa-mountain-sun" />
     </MenuItem>
+    <MenuItem tip="Structures" page="/structures">
+      <i class="fa-solid fa-building" />
+    </MenuItem>
     <MenuItem tip="Trees" page="/trees">
       <i class="fa-solid fa-tree" />
     </MenuItem>
