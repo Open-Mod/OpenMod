@@ -240,9 +240,9 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
 
     protected float getRiddenSpeed(Player p_278258_) {
         if(this.level().getBlockState(new BlockPos((int) this.getX(), (int) this.getY() - 1, (int) this.getZ())).isAir() && flies())
-            return (float)(this.getAttributeValue(Attributes.FLYING_SPEED) * 0.225D);
+            return (float)(this.getAttributeValue(Attributes.FLYING_SPEED));
         else
-            return (float)(this.getAttributeValue(Attributes.MOVEMENT_SPEED) * 0.225D);
+            return (float)(this.getAttributeValue(Attributes.MOVEMENT_SPEED));
     }
     public Vec3 getDismountLocationForPassenger(LivingEntity p_29487_) {
         Direction direction = this.getMotionDirection();
