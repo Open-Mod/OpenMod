@@ -125,7 +125,7 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
     }
     @Override
     protected Vec3 getRiddenInput(Player p_278309_, Vec3 p_275479_) {
-        LivingEntity driver = (LivingEntity) this.getPassengers().get(0);
+        LivingEntity driver = (LivingEntity) this.getFirstPassenger();
         return new Vec3(0.0D, ridingItem == null ? driver.zza * this.getXRot() / 45 * -1 : this.getXRot() / 45 * -1, ridingItem == null ? driver.zza : 1.0D);
     }
     @Override
