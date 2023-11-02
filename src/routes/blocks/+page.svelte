@@ -140,9 +140,11 @@
     });
     selectedBlock = Object.keys(blocks)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "blocks.json") return;
-      blocks = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "blocks.json") return;
+        blocks = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedBlock = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "blocks.json", data: blocks });

@@ -43,8 +43,10 @@
     });
     selectedBiome = Object.keys(biomes)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "biomes.json") return;
-      biomes = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "biomes.json") return;
+        biomes = data.file.data;
+      } else if (data.type == "SELECTED") selectedBiome = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "biomes.json", data: biomes });

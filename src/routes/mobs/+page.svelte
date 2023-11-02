@@ -161,9 +161,11 @@
     });
     selectedMob = Object.keys(mobs)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "mobs.json") return;
-      mobs = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "mobs.json") return;
+        mobs = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedMob = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "mobs.json", data: mobs });

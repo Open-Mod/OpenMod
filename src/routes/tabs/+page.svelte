@@ -58,8 +58,10 @@
     });
     selectedTab = Object.keys(tabs)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "tabs.json") return;
-      tabs = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "tabs.json") return;
+        tabs = data.file.data;
+      } else if (data.type == "SELECTED") selectedTab = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "tabs.json", data: tabs });

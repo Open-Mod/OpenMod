@@ -30,6 +30,10 @@
     installedPlugins = projects[selected].plugins.filter((p) =>
       fs.existsSync(pathModule.join(pluginsPath, "ui", p.file))
     );
+    if (projects[selected].plugins.length != installedPlugins.length) {
+      projects[selected].plugins = installedPlugins;
+      fs.writeJSONSync(projectsPath, projects);
+    }
     modPlugins = await fetch(
       `https://api.github.com/repos/Open-Mod/Plugins/contents/mod`
     ).then((res) => res.json());
@@ -96,6 +100,19 @@
     fs.writeJSONSync(uiPath, p.data);
     fs.writeFileSync(modPath, data);
     fs.writeJSONSync(projectsPath, projects);
+    send_plugin(
+      {
+        mod: {
+          file: p.file,
+          data: data,
+        },
+        ui: {
+          file: `${p.data.plugin}.java`,
+          data: p.data,
+        },
+      },
+      installedPlugins
+    );
   }
   function search(ev) {
     filteredPlugins = plugins.filter(

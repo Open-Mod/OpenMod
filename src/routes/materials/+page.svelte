@@ -64,8 +64,10 @@
     });
     selectedMaterial = Object.keys(materials)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "materials.json") return;
-      materials = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "materials.json") return;
+        materials = data.file.data;
+      } else if (data.type == "SELECTED") selectedMaterial = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "materials.json", data: materials });

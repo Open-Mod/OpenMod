@@ -17,8 +17,10 @@
     });
     selectedSound = Object.keys(sounds)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "sounds.json") return;
-      sounds = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "sounds.json") return;
+        sounds = data.file.data;
+      } else if (data.type == "SELECTED") selectedSound = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "sounds.json", data: sounds });

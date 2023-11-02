@@ -101,9 +101,11 @@
     });
     selectedPotion = Object.keys(potions)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "potions.json") return;
-      potions = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "potions.json") return;
+        potions = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedPotion = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "potions.json", data: potions });

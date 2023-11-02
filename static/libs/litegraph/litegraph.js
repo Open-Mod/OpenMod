@@ -2056,7 +2056,7 @@ document.onclick = (ev) => {
       console.log("Graph changed");
     }
     this.sendActionToCanvas("setDirty", [true, true]);
-    if (this.on_change) {
+    if (this.on_change && !configure) {
       this.on_change(this);
     }
   };
@@ -2141,7 +2141,9 @@ document.onclick = (ev) => {
    * @param {String} str configure a graph from a JSON string
    * @param {Boolean} returns if there was any error parsing
    */
+  let configure = false;
   LGraph.prototype.configure = function (data, keep_old) {
+    configure = true;
     if (!data) {
       return;
     }
@@ -2231,6 +2233,7 @@ document.onclick = (ev) => {
     this._version++;
     this.setDirtyCanvas(true, true);
     this.sendActionToCanvas("adjustNodesSize");
+    configure = false;
     return error;
   };
 

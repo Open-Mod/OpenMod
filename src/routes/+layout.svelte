@@ -10,6 +10,8 @@
   let success = "";
   const peers = {};
   const states = {};
+  let projects = [];
+  let projectsPath = "";
   let sel;
   onMount(async () => {
     PeerJS = (await import("peerjs")).default;
@@ -19,9 +21,14 @@
     window.host = host;
     window.disconnect = disconnect;
     window.send_changes = send_changes;
+    window.send_selected = send_selected;
+    window.send_plugin = send_plugin;
     window.getState = getState;
+    projectsPath = pathModule.join(appPath, "projects.json");
+    projects = fs.readJSONSync(projectsPath);
     sel = selected;
     ipc.on("select", (ev, p) => {
+      disconnect();
       selected = p;
       sel = selected;
     });
@@ -37,31 +44,71 @@
   function connect(id) {
     return new Promise((resolve) => {
       const peer = new PeerJS();
-      const conns = [peer.connect(id)];
-      const current = selected;
-      const dataPath = pathModule.join(current, "Project", "src", "data");
-      conns[0].on("data", (packet) => {
-        const data = JSON.parse(packet);
-        if (data.type == "SETUP") {
-          data.files.forEach((file) => {
-            fs.writeJSONSync(pathModule.join(dataPath, file.file), file.data);
-          });
-        } else if (data.type == "CHANGE") {
-          fs.writeJSONSync(
-            pathModule.join(dataPath, data.flle.file),
-            data.file.data
-          );
-          if (current != selected) return;
-          window.on_change?.(data);
-        } else if (data.type == "USERS") {
-          states[selected].users = data.data;
-        }
-      });
-      peer.on("open", function (i) {
-        resolve(i);
+      peer.on("open", (i) => {
         states[selected] = { id: i, connid: id, state: 2, users: 0 };
+        resolve(i);
+        const conns = [peer.connect(id)];
+        const current = selected;
+        const dataPath = pathModule.join(current, "Project", "src", "data");
+        const pluginsPath = pathModule.join(
+          current,
+          "Project",
+          "src",
+          "main",
+          "java",
+          "dev",
+          "openmod",
+          "plugins"
+        );
+        const pluginsModPath = pathModule.join(pluginsPath, "mod");
+        const pluginsUIPath = pathModule.join(pluginsPath, "ui");
+        conns[0].on("data", (packet) => {
+          const data = JSON.parse(packet);
+          if (data.type == "SETUP") {
+            data.files.forEach((file) => {
+              fs.writeJSONSync(pathModule.join(dataPath, file.file), file.data);
+            });
+            fs.rmdirSync(pluginsModPath, { force: true, recursive: true });
+            fs.rmdirSync(pluginsUIPath, { force: true, recursive: true });
+            fs.mkdirSync(pluginsModPath);
+            fs.mkdirSync(pluginsUIPath);
+            data.plugins.mod.forEach((file) => {
+              fs.writeJSONSync(
+                pathModule.join(pluginsModPath, file.file),
+                file.data
+              );
+            });
+            data.plugins.ui.forEach((file) => {
+              fs.writeJSONSync(
+                pathModule.join(pluginsUIPath, file.file),
+                file.data
+              );
+            });
+          } else if (data.type == "CHANGE") {
+            fs.writeJSONSync(
+              pathModule.join(dataPath, data.file.file),
+              data.file.data
+            );
+            window.on_change?.(data);
+          } else if (data.type == "SELECTED") {
+            window.on_change?.(data);
+          } else if (data.type == "PLUGIN") {
+            fs.writeFileSync(
+              pathModule.join(pluginsModPath, data.plugin.mod.file),
+              data.plugin.mod.data
+            );
+            fs.writeFileSync(
+              pathModule.join(pluginsModPath, data.plugin.ui.file),
+              data.plugin.ui.data
+            );
+            projects[selected].plugins = data.data;
+            fs.writeJSONSync(projectsPath, projects);
+          } else if (data.type == "USERS") {
+            states[selected].users = data.data;
+          }
+        });
+        peers[selected] = { peer, conns };
       });
-      peers[selected] = { peer, conns };
     });
   }
   function host() {
@@ -70,17 +117,42 @@
       const conns = [];
       const current = selected;
       const dataPath = pathModule.join(current, "Project", "src", "data");
+      const pluginsPath = pathModule.join(
+        current,
+        "Project",
+        "src",
+        "main",
+        "java",
+        "dev",
+        "openmod",
+        "plugins"
+      );
+      const pluginsModPath = pathModule.join(pluginsPath, "mod");
+      const pluginsUIPath = pathModule.join(pluginsPath, "ui");
+      window.peer = peer;
       peer.on("connection", (conn) => {
         conns.push(conn);
         conn.on("data", (packet) => {
           const data = JSON.parse(packet);
           if (data.type == "CHANGE") {
             fs.writeJSONSync(
-              pathModule.join(dataPath, data.flle.file),
+              pathModule.join(dataPath, data.file.file),
               data.file.data
             );
-            if (current != selected) return;
             window.on_change?.(data);
+          } else if (data.type == "SELECTED") {
+            window.on_change?.(data);
+          } else if (data.type == "PLUGIN") {
+            fs.writeFileSync(
+              pathModule.join(pluginsModPath, data.plugin.mod.file),
+              data.plugin.mod.data
+            );
+            fs.writeFileSync(
+              pathModule.join(pluginsModPath, data.plugin.ui.file),
+              data.plugin.ui.data
+            );
+            projects[selected].plugins = data.data;
+            fs.writeJSONSync(projectsPath, projects);
           }
         });
         conn.on("open", () => {
@@ -91,6 +163,16 @@
                 file,
                 data: fs.readJSONSync(pathModule.join(dataPath, file)),
               })),
+              plugins: {
+                mod: fs.readdirSync(pluginsModPath).map((file) => ({
+                  file,
+                  data: fs.readJSONSync(pathModule.join(pluginsModPath, file)),
+                })),
+                ui: fs.readdirSync(pluginsUIPath).map((file) => ({
+                  file,
+                  data: fs.readJSONSync(pathModule.join(pluginsUIPath, file)),
+                })),
+              },
             })
           );
           conns.forEach((conn) =>
@@ -98,9 +180,13 @@
           );
           states[selected].users = conns.length;
         });
-        conn.on("close", () =>
-          conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
-        );
+        conn.on("close", () => {
+          conns.splice(conns.indexOf(conn, 1));
+          conns.forEach((conn) =>
+            conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
+          );
+          states[selected].users = conns.length;
+        });
         peers[selected] = { peer, conns };
       });
       peer.on("open", function (i) {
@@ -119,6 +205,20 @@
   function send_changes(file) {
     if (!peers[selected]) return;
     const packet = JSON.stringify({ type: "CHANGE", file });
+    peers[selected].conns.forEach((conn) => {
+      conn.send(packet);
+    });
+  }
+  function send_selected(s) {
+    if (!peers[selected]) return;
+    const packet = JSON.stringify({ type: "SELECTED", selected: s });
+    peers[selected].conns.forEach((conn) => {
+      conn.send(packet);
+    });
+  }
+  function send_plugin(p, d) {
+    if (!peers[selected]) return;
+    const packet = JSON.stringify({ type: "PLUGIN", plugin: p, data: d });
     peers[selected].conns.forEach((conn) => {
       conn.send(packet);
     });

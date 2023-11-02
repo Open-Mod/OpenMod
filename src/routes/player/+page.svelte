@@ -112,8 +112,11 @@
     });
     selectedPlayer = Object.keys(players)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "players.json") return;
-      players = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "players.json") return;
+        players = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedPlayer = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "players.json", data: players });

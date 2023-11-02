@@ -103,9 +103,11 @@
     });
     selectedItem = Object.keys(items)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "items.json") return;
-      items = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "items.json") return;
+        items = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedItem = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "items.json", data: items });
@@ -169,6 +171,7 @@
       items[item].name = item;
     });
     selectedItem = items[selectedItem] ? selectedItem : Object.keys(items)[0];
+    send_selected(selectedItem);
     success("Items saved successfully!");
   }
   function deleteItem() {
@@ -178,6 +181,7 @@
     selectedItem = Object.keys(items)[0];
     updateEditor();
     send_changes({ file: "items.json", data: items });
+    send_selected(selectedItem);
   }
   function fallbackTexture(ev) {
     ev.target.src = "/images/dropzone.png";

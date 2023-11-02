@@ -21,8 +21,10 @@
     });
     selectedStructure = Object.keys(structures)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "structures.json") return;
-      structures = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "structures.json") return;
+        structures = data.file.data;
+      } else if (data.type == "SELECTED") selectedStructure = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "structures.json", data: structures });

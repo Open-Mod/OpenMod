@@ -117,9 +117,11 @@
     });
     selectedArmor = Object.keys(armors)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "armors.json") return;
-      armors = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "armors.json") return;
+        armors = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedArmor = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "armors.json", data: armors });

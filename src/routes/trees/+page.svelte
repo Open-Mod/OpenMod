@@ -148,9 +148,11 @@
     });
     selectedTree = Object.keys(trees)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "trees.json") return;
-      trees = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "trees.json") return;
+        trees = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedTree = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "trees.json", data: trees });

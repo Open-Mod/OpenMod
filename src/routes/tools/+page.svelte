@@ -110,9 +110,11 @@
     });
     selectedTool = Object.keys(tools)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "tools.json") return;
-      tools = data.file.content;
-      updateEditor();
+      if (data.type == "CHANGE") {
+        if (data.file.file == "tools.json") return;
+        tools = data.file.data;
+        updateEditor();
+      } else if (data.type == "SELECTED") selectedTool = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "tools.json", data: tools });

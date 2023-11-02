@@ -52,8 +52,10 @@
     });
     selectedTier = Object.keys(tiers)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "tiers.json") return;
-      tiers = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "tiers.json") return;
+        tiers = data.file.data;
+      } else if (data.type == "SELECTED") selectedTier = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "tiers.json", data: tiers });

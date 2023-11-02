@@ -33,8 +33,10 @@
     });
     selectedLoottable = Object.keys(loottables)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "loottables.json") return;
-      loottables = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "loottables.json") return;
+        loottables = data.file.data;
+      } else if (data.type == "SELECTED") selectedLoottable = data.selected;
     };
     window.onchange = () => {
       send_changes({ file: "loottables.json", data: loottables });

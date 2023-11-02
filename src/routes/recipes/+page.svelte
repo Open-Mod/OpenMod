@@ -57,11 +57,13 @@
     });
     selectedRecipe = Object.keys(recipes)[0] ?? "";
     window.on_change = (data) => {
-      if (data.file.file != "recipes.json") return;
-      recipes = data.file.content;
+      if (data.type == "CHANGE") {
+        if (data.file.file == "recipes.json") return;
+        recipes = data.file.data;
+      } else if (data.type == "SELECTED") selectedRecipe = data.selected;
     };
     window.onchange = () => {
-      send_changes({ file: "sounds.json", data: sounds });
+      send_changes({ file: "recipes.json", data: recipes });
     };
   });
   let selectedRecipe = "";
