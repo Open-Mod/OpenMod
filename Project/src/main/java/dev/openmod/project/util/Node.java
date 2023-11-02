@@ -33,6 +33,7 @@ public class Node {
             boolean isEvent = true;
             for(Object inputEntry : inputs) {
                 Map input = (Map) inputEntry;
+                if(input.get("type") == null) continue;
                 boolean isConnector = ((String) input.get("type")).equals("connector");
                 if(isConnector) {
                     isEvent = false;
@@ -41,6 +42,7 @@ public class Node {
             }
             for(Object outputEntry : foundOutputs) {
                 Map output = (Map) outputEntry;
+                if(output.get("type") == null) continue;
                 boolean isConnector = ((String) output.get("type")).equals("connector");
                 if(isConnector) {
                     isEvent = false;
