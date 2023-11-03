@@ -32,14 +32,10 @@
       biomes[biome].name = biome;
       biomes[biome].blockAbove = biomes[biome].blockAbove.trim()
         ? biomes[biome].blockAbove
-        : Object.keys(blocks)[0] ??
-          defaultBlocks[0] ??
-          biomes[biome].blockAbove;
+        : Object.keys(blocks)[0] ?? defaultBlocks[0];
       biomes[biome].blockUnder = biomes[biome].blockUnder.trim()
         ? biomes[biome].blockUnder
-        : Object.keys(blocks)[0] ??
-          defaultBlocks[0] ??
-          biomes[biome].blockUnder;
+        : Object.keys(blocks)[0] ?? defaultBlocks[0];
     });
     selectedBiome = Object.keys(biomes)[0] ?? "";
     window.on_change = (data) => {

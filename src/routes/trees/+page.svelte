@@ -9,6 +9,7 @@
   let blocks = {};
   let defaultBiomes = [];
   let defaultBlocks = [];
+  let defaultSounds = [];
   let projectPath = "";
   let path = "";
   let projectName = "";
@@ -49,16 +50,19 @@
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     biomes = fs.existsSync(biomesPath) ? fs.readJSONSync(biomesPath) : {};
     blocks = fs.existsSync(blocksPath) ? fs.readJSONSync(blocksPath) : {};
+    defaultBiomes = fs.readJSONSync(
+      isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
+    );
     defaultBlocks = fs.readJSONSync(
       isDev ? "./static/data/blocks.json" : "./resources/app/data/blocks.json"
+    );
+    defaultSounds = fs.readJSONSync(
+      isDev ? "./static/data/sounds.json" : "./resources/app/data/sounds.json"
     );
     nodes = fs
       .readdirSync(nodesPath)
       .map((n) => fs.readJSONSync(pathModule.join(nodesPath, n)))
       .filter((n) => (n.for == "tree" && !n.showInContext) || n.showInContext);
-    defaultBiomes = fs.readJSONSync(
-      isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
-    );
     nodes.forEach((n) => {
       function node() {
         this.size = n.size;
@@ -126,22 +130,22 @@
       trees[tree].name = tree;
       trees[tree].leavesBlock = trees[tree].leavesBlock.trim()
         ? trees[tree].leavesBlock
-        : Object.keys(blocks)[0] ?? defaultBlocks[0] ?? trees[tree].leavesBlock;
+        : Object.keys(blocks)[0] ?? defaultBlocks[0];
       trees[tree].bodyBlock = trees[tree].bodyBlock.trim()
         ? trees[tree].bodyBlock
-        : Object.keys(blocks)[0] ?? defaultBlocks[0] ?? trees[tree].bodyBlock;
+        : Object.keys(blocks)[0] ?? defaultBlocks[0];
       trees[tree].breakSound = trees[tree].breakSound.trim()
         ? trees[tree].breakSound
-        : Object.keys(sounds)[0] ?? trees[tree].breakSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       trees[tree].walkSound = trees[tree].walkSound.trim()
         ? trees[tree].walkSound
-        : Object.keys(sounds)[0] ?? trees[tree].walkSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       trees[tree].placeSound = trees[tree].placeSound.trim()
         ? trees[tree].placeSound
-        : Object.keys(sounds)[0] ?? trees[tree].placeSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       trees[tree].hitSound = trees[tree].hitSound.trim()
         ? trees[tree].hitSound
-        : Object.keys(sounds)[0] ?? trees[tree].hitSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       trees[tree].biomes = trees[tree].biomes.length
         ? trees[tree].biomes
         : [Object.keys(biomes)[0] ?? defaultBiomes[0]];
@@ -184,10 +188,10 @@
       bodyBlock: Object.keys(blocks)[0] ?? defaultBlocks[0],
       mapColor: "none",
       instrument: "none",
-      breakSound: Object.keys(sounds)[0] ?? "",
-      walkSound: Object.keys(sounds)[0] ?? "",
-      placeSound: Object.keys(sounds)[0] ?? "",
-      hitSound: Object.keys(sounds)[0] ?? "",
+      breakSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      walkSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      placeSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      hitSound: Object.keys(sounds)[0] ?? defaultSounds[0],
       biomes: [Object.keys(biomes)[0] ?? defaultBiomes[0]],
       pushReaction: "ignore",
       dropXp: false,
@@ -1178,5 +1182,8 @@
 <datalist id="soundList">
   {#each Object.keys(sounds) as sound}
     <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+  {#each defaultSounds as sound}
+    <option value={sound} />
   {/each}
 </datalist>

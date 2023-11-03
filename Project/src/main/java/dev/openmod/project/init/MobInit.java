@@ -169,6 +169,7 @@ public class MobInit {
                         }
                         if(aFootstepSound != null) break;
                     }
+                    if(aFootstepSound == null) aFootstepSound = RegistryObject.create(new ResourceLocation(footstepSound), ForgeRegistries.SOUND_EVENTS).get();
                     this.playSound(aFootstepSound);
                 }
 
@@ -180,6 +181,7 @@ public class MobInit {
                         }
                         if(aAmbientSound != null) break;
                     }
+                    if(aAmbientSound == null) aAmbientSound = RegistryObject.create(new ResourceLocation(ambientSound), ForgeRegistries.SOUND_EVENTS).get();
                     return aAmbientSound;
 
                 }
@@ -192,6 +194,7 @@ public class MobInit {
                         }
                         if(aHurtSound != null) break;
                     }
+                    if(aHurtSound == null) aHurtSound = RegistryObject.create(new ResourceLocation(hurtSound), ForgeRegistries.SOUND_EVENTS).get();
                     return aHurtSound;
                 }
 
@@ -203,6 +206,7 @@ public class MobInit {
                         }
                         if(aDeathSound != null) break;
                     }
+                    if(aDeathSound == null) aDeathSound = RegistryObject.create(new ResourceLocation(deathSound), ForgeRegistries.SOUND_EVENTS).get();
                     return aDeathSound;
                 }
             }, MobCategory.CREATURE).sized(hitboxWidth, hitboxHeight).build(new ResourceLocation(Project.MODID, name).toString()));

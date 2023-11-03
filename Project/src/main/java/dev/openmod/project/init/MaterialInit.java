@@ -42,6 +42,7 @@ public class MaterialInit {
                     break;
                 }
             }
+            if(aEquipSound == null) aEquipSound = RegistryObject.create(new ResourceLocation(equipSound), ForgeRegistries.SOUND_EVENTS).get();
             materialItems.put(name, new CustomArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
                 Item item = null;
                 for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {

@@ -10,6 +10,7 @@
   let mobs = {};
   let sounds = {};
   let defaultItems = [];
+  let defaultSounds = [];
   let projectPath = "";
   let path = "";
   let projectName = "";
@@ -47,6 +48,9 @@
     sounds = fs.existsSync(soundsPath) ? fs.readJSONSync(soundsPath) : {};
     defaultItems = fs.readJSONSync(
       isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
+    defaultSounds = fs.readJSONSync(
+      isDev ? "./static/data/sounds.json" : "./resources/app/data/sounds.json"
     );
     Object.keys(materials).forEach((material) => {
       materials[material].name = material;
@@ -408,6 +412,9 @@
   <option value="default">Default</option>
   {#each Object.keys(sounds) as sound}
     <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+  {#each defaultSounds as sound}
+    <option value={sound} />
   {/each}
 </datalist>
 <datalist id="ingredientList">

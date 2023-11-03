@@ -10,6 +10,7 @@
   let blocks = {};
   let trees = {};
   let defaultItems = [];
+  let defaultSounds = [];
   let projectPath = "";
   let path = "";
   let projectName = "";
@@ -58,6 +59,9 @@
     trees = fs.existsSync(treesPath) ? fs.readJSONSync(treesPath) : {};
     defaultItems = fs.readJSONSync(
       isDev ? "./static/data/items.json" : "./resources/app/data/items.json"
+    );
+    defaultSounds = fs.readJSONSync(
+      isDev ? "./static/data/sounds.json" : "./resources/app/data/sounds.json"
     );
     nodes = fs
       .readdirSync(nodesPath)
@@ -148,16 +152,16 @@
           defaultItems[0];
       mobs[mob].footstepSound = mobs[mob].footstepSound.trim()
         ? mobs[mob].footstepSound
-        : Object.keys(sounds)[0] ?? mobs[mob].footstepSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       mobs[mob].ambientSound = mobs[mob].ambientSound.trim()
         ? mobs[mob].ambientSound
-        : Object.keys(sounds)[0] ?? mobs[mob].ambientSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       mobs[mob].hurtSound = mobs[mob].hurtSound.trim()
         ? mobs[mob].hurtSound
-        : Object.keys(sounds)[0] ?? mobs[mob].hurtSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       mobs[mob].deathSound = mobs[mob].deathSound.trim()
         ? mobs[mob].deathSound
-        : Object.keys(sounds)[0] ?? mobs[mob].deathSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
     });
     selectedMob = Object.keys(mobs)[0] ?? "";
     window.on_change = (data) => {
@@ -208,10 +212,10 @@
         Object.keys(trees)[0] ??
         Object.keys(mobs)[0] ??
         defaultItems[0],
-      footstepSound: Object.keys(sounds)[0] ?? "",
-      ambientSound: Object.keys(sounds)[0] ?? "",
-      hurtSound: Object.keys(sounds)[0] ?? "",
-      deathSound: Object.keys(sounds)[0] ?? "",
+      footstepSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      ambientSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      hurtSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      deathSound: Object.keys(sounds)[0] ?? defaultSounds[0],
       rarity: "common",
       rideable: true,
       requiresSaddle: true,
@@ -704,7 +708,7 @@
             <input
               list="soundList"
               class="input w-full"
-              bind:value={mobs[selectedMob].walkSound}
+              bind:value={mobs[selectedMob].footstepSound}
             />
           </div>
           <div>
@@ -720,7 +724,7 @@
             <input
               list="soundList"
               class="input w-full"
-              bind:value={mobs[selectedMob].hitSound}
+              bind:value={mobs[selectedMob].hurtSound}
             />
           </div>
           <div>
@@ -1094,5 +1098,8 @@
 <datalist id="soundList">
   {#each Object.keys(sounds) as sound}
     <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+  {#each defaultSounds as sound}
+    <option value={sound} />
   {/each}
 </datalist>

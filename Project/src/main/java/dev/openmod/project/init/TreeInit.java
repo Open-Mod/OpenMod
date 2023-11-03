@@ -246,6 +246,10 @@ public class TreeInit {
                 }
                 if(aBreakSound != null && aWalkSound != null && aPlaceSound != null && aHitSound != null) break;
             }
+            if(aBreakSound == null) aBreakSound = () -> RegistryObject.create(new ResourceLocation(breakSound), ForgeRegistries.SOUND_EVENTS).get();
+            if(aWalkSound == null) aWalkSound = () -> RegistryObject.create(new ResourceLocation(walkSound), ForgeRegistries.SOUND_EVENTS).get();
+            if(aPlaceSound == null) aPlaceSound = () -> RegistryObject.create(new ResourceLocation(placeSound), ForgeRegistries.SOUND_EVENTS).get();
+            if(aHitSound == null) aHitSound = () -> RegistryObject.create(new ResourceLocation(hitSound), ForgeRegistries.SOUND_EVENTS).get();
             ForgeSoundType soundType = new ForgeSoundType(1f, 1f, aBreakSound, aWalkSound, aPlaceSound, aHitSound, aWalkSound );
             properties.sound(soundType);
             if(pushReaction.equals("ignore")) properties.pushReaction(PushReaction.IGNORE);

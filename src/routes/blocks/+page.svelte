@@ -6,6 +6,7 @@
   let tiers = {};
   let sounds = {};
   let biomes = {};
+  let defaultSounds = [];
   let defaultBiomes = [];
   let projectPath = "";
   let path = "";
@@ -50,6 +51,9 @@
       .filter((n) => (n.for == "block" && !n.showInContext) || n.showInContext);
     defaultBiomes = fs.readJSONSync(
       isDev ? "./static/data/biomes.json" : "./resources/app/data/biomes.json"
+    );
+    defaultSounds = fs.readJSONSync(
+      isDev ? "./static/data/sounds.json" : "./resources/app/data/sounds.json"
     );
     nodes.forEach((n) => {
       function node() {
@@ -118,22 +122,22 @@
       blocks[block].name = block;
       blocks[block].breakSound = blocks[block].breakSound.trim()
         ? blocks[block].breakSound
-        : Object.keys(sounds)[0] ?? blocks[block].breakSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].walkSound = blocks[block].walkSound.trim()
         ? blocks[block].walkSound
-        : Object.keys(sounds)[0] ?? blocks[block].walkSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].placeSound = blocks[block].placeSound.trim()
         ? blocks[block].placeSound
-        : Object.keys(sounds)[0] ?? blocks[block].placeSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].hitSound = blocks[block].hitSound.trim()
         ? blocks[block].hitSound
-        : Object.keys(sounds)[0] ?? blocks[block].hitSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].openSound = blocks[block].openSound.trim()
         ? blocks[block].openSound
-        : Object.keys(sounds)[0] ?? blocks[block].openSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].closeSound = blocks[block].closeSound.trim()
         ? blocks[block].closeSound
-        : Object.keys(sounds)[0] ?? blocks[block].closeSound;
+        : Object.keys(sounds)[0] ?? defaultSounds[0];
       blocks[block].biomes = blocks[block].biomes.length
         ? blocks[block].biomes
         : [Object.keys(biomes)[0] ?? defaultBiomes[0]];
@@ -168,12 +172,12 @@
       tab: "none",
       mapColor: "none",
       instrument: "none",
-      breakSound: Object.keys(sounds)[0] ?? "",
-      walkSound: Object.keys(sounds)[0] ?? "",
-      placeSound: Object.keys(sounds)[0] ?? "",
-      hitSound: Object.keys(sounds)[0] ?? "",
-      openSound: Object.keys(sounds)[0] ?? "",
-      closeSound: Object.keys(sounds)[0] ?? "",
+      breakSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      walkSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      placeSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      hitSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      openSound: Object.keys(sounds)[0] ?? defaultSounds[0],
+      closeSound: Object.keys(sounds)[0] ?? defaultSounds[0],
       biomes: [Object.keys(biomes)[0] ?? defaultBiomes[0]],
       pushReaction: "ignore",
       openedByHand: false,
@@ -1558,5 +1562,8 @@
 <datalist id="soundList">
   {#each Object.keys(sounds) as sound}
     <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+  {#each defaultSounds as sound}
+    <option value={sound} />
   {/each}
 </datalist>
