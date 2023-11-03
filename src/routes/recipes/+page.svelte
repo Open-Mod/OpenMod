@@ -192,407 +192,83 @@
             </div>
             <div>
               <label class="text-lg">Result Item</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].resultItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-                {#each Object.keys(potions) as potion}
-                  <option value={potion}
-                    >{projectName.toLowerCase()}:{potion}</option
-                  >
-                {/each}
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #1</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].firstItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #2</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].secondItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #3</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].thirdItem}
-              >
-                <option value="">None</option>{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #4</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].fourthItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #5</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].fifthItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #6</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].sixthItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #7</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].seventhItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #8</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].eighthItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item #9</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].ninethItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
           {:else if recipes[selectedRecipe].type == "smelting"}
             <div>
@@ -626,82 +302,19 @@
             </div>
             <div>
               <label class="text-lg">Result Item</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].resultItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Item</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].firstItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
           {:else if recipes[selectedRecipe].type == "brewing"}
             <div>
@@ -733,58 +346,19 @@
             </div>
             <div>
               <label class="text-lg">Ingredient Item</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="itemList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].secondItem}
-                ><option value="">None</option
-                >{#each Object.keys(items) as item}
-                  <option value={item}
-                    >{projectName.toLowerCase()}:{item}</option
-                  >
-                {/each}
-                {#each Object.keys(armors) as armor}
-                  <option value={armor}
-                    >{projectName.toLowerCase()}:{armor}</option
-                  >
-                {/each}
-                {#each Object.keys(tools) as tool}
-                  <option value={tool}
-                    >{projectName.toLowerCase()}:{tool}</option
-                  >
-                {/each}
-                {#each Object.keys(blocks) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-                {#each defaultItems as item}
-                  <option value={item}>{item}</option>
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Input Potion</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="potionList"
+                class="input w-full"
                 bind:value={recipes[selectedRecipe].firstItem}
-                ><option value="">None</option>
-                {#each Object.keys(potions) as potion}
-                  <option value={potion}
-                    >{projectName.toLowerCase()}:{potion}</option
-                  >
-                {/each}
-                {#each defaultPotions as potion}
-                  <option value={potion}>{potion}</option>
-                {/each}
-              </select>
+              />
             </div>
           {/if}
         </div></Accordion
@@ -792,3 +366,37 @@
     {/if}
   </div>
 </div>
+<datalist id="itemList">
+  {#each Object.keys(items) as item}
+    <option value="{projectName.toLowerCase()}:{item}" />
+  {/each}
+  {#each Object.keys(armors) as armor}
+    <option value="{projectName.toLowerCase()}:{armor}" />
+  {/each}
+  {#each Object.keys(tools) as tool}
+    <option value="{projectName.toLowerCase()}:{tool}" />
+  {/each}
+  {#each Object.keys(potions) as potion}
+    <option value="{projectName.toLowerCase()}:{potion}" />
+  {/each}
+  {#each Object.keys(blocks) as block}
+    <option value="{projectName.toLowerCase()}:{block}" />
+  {/each}
+  {#each Object.keys(trees) as tree}
+    <option value="{projectName.toLowerCase()}:{tree}" />
+  {/each}
+  {#each Object.keys(mobs) as mob}
+    <option value="{projectName.toLowerCase()}:{mob}" />
+  {/each}
+  {#each defaultItems as item}
+    <option value={item} />
+  {/each}
+</datalist>
+<datalist id="potionList">
+  {#each Object.keys(potions) as potion}
+    <option value="{projectName.toLowerCase()}:{potion}" />
+  {/each}
+  {#each defaultPotions as potion}
+    <option value={potion} />
+  {/each}
+</datalist>

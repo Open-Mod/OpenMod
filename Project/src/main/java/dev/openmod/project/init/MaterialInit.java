@@ -1,5 +1,6 @@
 package dev.openmod.project.init;
 
+import dev.openmod.project.Project;
 import dev.openmod.project.custom.CustomArmorMaterial;
 import dev.openmod.project.util.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +45,7 @@ public class MaterialInit {
             materialItems.put(name, new CustomArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
                 Item item = null;
                 for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                    if(repairIngredient.equals(itemEntry.getKey().location().getPath())) {
+                    if(repairIngredient.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {
                         item = itemEntry.get();
                         break;
                     }

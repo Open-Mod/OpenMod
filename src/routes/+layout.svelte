@@ -8,8 +8,8 @@
   let PeerJS;
   let error = "";
   let success = "";
-  const peers = {};
-  const states = {};
+  let currentPeer = {};
+  let state = {};
   let projects = [];
   let projectsPath = "";
   let sel;
@@ -45,7 +45,7 @@
     return new Promise((resolve) => {
       const peer = new PeerJS();
       peer.on("open", (i) => {
-        states[selected] = { id: i, connid: id, state: 2, users: 0 };
+        state = { id: i, connid: id, state: 2, users: 0 };
         resolve(i);
         const conns = [peer.connect(id)];
         const current = selected;
@@ -104,10 +104,11 @@
             projects[selected].plugins = data.data;
             fs.writeJSONSync(projectsPath, projects);
           } else if (data.type == "USERS") {
-            states[selected].users = data.data;
+            state.users = data.data;
+            state = state;
           }
         });
-        peers[selected] = { peer, conns };
+        currentPeer = { peer, conns };
       });
     });
   }
@@ -166,11 +167,11 @@
               plugins: {
                 mod: fs.readdirSync(pluginsModPath).map((file) => ({
                   file,
-                  data: fs.readJSONSync(pathModule.join(pluginsModPath, file)),
+                  data: fs.readFileSync(pathModule.join(pluginsModPath, file)),
                 })),
                 ui: fs.readdirSync(pluginsUIPath).map((file) => ({
                   file,
-                  data: fs.readJSONSync(pathModule.join(pluginsUIPath, file)),
+                  data: fs.readFileSync(pathModule.join(pluginsUIPath, file)),
                 })),
               },
             })
@@ -178,53 +179,55 @@
           conns.forEach((conn) =>
             conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
           );
-          states[selected].users = conns.length;
+          state.users = conns.length;
+          state = state;
         });
         conn.on("close", () => {
           conns.splice(conns.indexOf(conn, 1));
           conns.forEach((conn) =>
             conn.send(JSON.stringify({ type: "USERS", data: conns.length }))
           );
-          states[selected].users = conns.length;
+          state.users = conns.length;
+          state = state;
         });
-        peers[selected] = { peer, conns };
+        currentPeer = { peer, conns };
       });
       peer.on("open", function (i) {
         resolve(i);
-        states[selected] = { id: i, connid: "", state: 1, users: 0 };
+        state = { id: i, connid: "", state: 1, users: 0 };
       });
-      peers[selected] = { peer, conns };
+      currentPeer = { peer, conns };
     });
   }
   function disconnect() {
-    if (!peers[selected]) return "";
-    peers[selected].peer.destroy();
-    states[selected] = { id: "", connid: "", state: 0, users: 0 };
+    if (!currentPeer.peer) return "";
+    currentPeer.peer.destroy();
+    state = { id: "", connid: "", state: 0, users: 0 };
     return "";
   }
   function send_changes(file) {
-    if (!peers[selected]) return;
+    if (!currentPeer.peer) return;
     const packet = JSON.stringify({ type: "CHANGE", file });
-    peers[selected].conns.forEach((conn) => {
+    currentPeer.conns.forEach((conn) => {
       conn.send(packet);
     });
   }
   function send_selected(s) {
-    if (!peers[selected]) return;
+    if (!currentPeer.peer) return;
     const packet = JSON.stringify({ type: "SELECTED", selected: s });
-    peers[selected].conns.forEach((conn) => {
+    currentPeer.conns.forEach((conn) => {
       conn.send(packet);
     });
   }
   function send_plugin(p, d) {
-    if (!peers[selected]) return;
+    if (!currentPeer.peer) return;
     const packet = JSON.stringify({ type: "PLUGIN", plugin: p, data: d });
-    peers[selected].conns.forEach((conn) => {
+    currentPeer.conns.forEach((conn) => {
       conn.send(packet);
     });
   }
   function getState() {
-    return states[selected] ?? { id: "", connid: "", state: 0, users: 0 };
+    return state.id ? state : { id: "", connid: "", state: 0, users: 0 };
   }
   function devtools() {
     ipc.invoke("devtools");
@@ -303,14 +306,14 @@
         ><i class="fa-solid fa-terminal text-lg" />
       </button>
     </a>
-    {#if states[sel]?.state}
+    {#if state.state}
       <a class="tooltip tooltip-top" data-tip="Users">
         <button class="btn btn-neutral rounded-full relative w-12"
           ><i class="fa-solid fa-user-group text-lg" />
           <div
             class="badge badge-info rounded-full w-3 absolute top-[-5px] right-[-5px]"
           >
-            {states[sel].users + 1}
+            {state.users + 1}
           </div>
         </button>
       </a>

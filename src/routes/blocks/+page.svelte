@@ -602,112 +602,52 @@
           </div>
           <div>
             <label class="text-lg">Break Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              class="input w-full"
               bind:value={blocks[selectedBlock].breakSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].breakSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Walk Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              class="input w-full"
               bind:value={blocks[selectedBlock].walkSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].walkSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Place Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              class="input w-full"
               bind:value={blocks[selectedBlock].placeSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].placeSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Hit Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              class="input w-full"
               bind:value={blocks[selectedBlock].hitSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={blocks[selectedBlock].hitSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           {#if blocks[selectedBlock].type == "door"}
             <div>
               <label class="text-lg">Open Sound</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="soundList"
+                class="input w-full"
                 bind:value={blocks[selectedBlock].openSound}
-              >
-                {#if !Object.keys(sounds).length}
-                  <option disabled value={blocks[selectedBlock].openSound}
-                    >No sounds</option
-                  >
-                {/if}
-                {#each Object.keys(sounds) as sound}
-                  <option value={sound}
-                    >{projectName.toLowerCase()}:{sound}</option
-                  >
-                {/each}
-              </select>
+              />
             </div>
             <div>
               <label class="text-lg">Close Sound</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="soundList"
+                class="input w-full"
                 bind:value={blocks[selectedBlock].closeSound}
-              >
-                {#if !Object.keys(sounds).length}
-                  <option disabled value={blocks[selectedBlock].closeSound}
-                    >No sounds</option
-                  >
-                {/if}
-                {#each Object.keys(sounds) as sound}
-                  <option value={sound}
-                    >{projectName.toLowerCase()}:{sound}</option
-                  >
-                {/each}
-              </select>
+              />
             </div>
           {/if}
           <div>
@@ -1615,3 +1555,11 @@
     {/if}
   </div>
 </div>
+<datalist id="soundList">
+  {#if !Object.keys(sounds).length}
+    <option disabled value="">No sounds</option>
+  {/if}
+  {#each Object.keys(sounds) as sound}
+    <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+</datalist>

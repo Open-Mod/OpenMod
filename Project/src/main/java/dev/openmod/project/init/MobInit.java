@@ -147,7 +147,7 @@ public class MobInit {
                 public boolean isFood(ItemStack p_27600_) {
                     Item item = null;
                     for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                        if(foodItem.equals(itemEntry.getKey().location().getPath())) {
+                        if(foodItem.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {
                             item = itemEntry.get();
                             break;
                         }
@@ -164,7 +164,7 @@ public class MobInit {
                 protected void playStepSound(BlockPos pos, BlockState blockIn) {
                     SoundEvent aFootstepSound = null;
                     for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                        if(footstepSound.equals(soundEntry.getKey().location().getPath())) {
+                        if(footstepSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                             aFootstepSound = soundEntry.get();
                         }
                         if(aFootstepSound != null) break;
@@ -175,7 +175,7 @@ public class MobInit {
                 protected SoundEvent getAmbientSound() {
                     SoundEvent aAmbientSound = null;
                     for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                        if(ambientSound.equals(soundEntry.getKey().location().getPath())) {
+                        if(ambientSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                             aAmbientSound = soundEntry.get();
                         }
                         if(aAmbientSound != null) break;
@@ -187,7 +187,7 @@ public class MobInit {
                 protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
                     SoundEvent aHurtSound = null;
                     for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                        if(hurtSound.equals(soundEntry.getKey().location().getPath())) {
+                        if(hurtSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                             aHurtSound = soundEntry.get();
                         }
                         if(aHurtSound != null) break;
@@ -198,7 +198,7 @@ public class MobInit {
                 protected SoundEvent getDeathSound() {
                     SoundEvent aDeathSound = null;
                     for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                        if(deathSound.equals(soundEntry.getKey().location().getPath())) {
+                        if(deathSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                             aDeathSound = soundEntry.get();
                         }
                         if(aDeathSound != null) break;

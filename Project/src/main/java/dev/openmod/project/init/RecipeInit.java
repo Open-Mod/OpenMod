@@ -1,5 +1,6 @@
 package dev.openmod.project.init;
 
+import dev.openmod.project.Project;
 import dev.openmod.project.custom.CustomBrewingRecipe;
 import dev.openmod.project.util.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -33,17 +34,17 @@ public class RecipeInit {
                     Potion aInput = null;
                     Potion aOutput = null;
                     for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
-                        if(ingredient.equals(itemEntry.getKey().location().getPath())) {
+                        if(ingredient.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {
                             aIngredient = itemEntry.get();
                         }
                         if(aIngredient != null) break;
                     }
                     if(aIngredient == null) aIngredient = RegistryObject.create(new ResourceLocation(ingredient), ForgeRegistries.ITEMS).get();
                     for(RegistryObject<Potion> potionEntry : PotionInit.POTIONS.getEntries()) {
-                        if(input.equals(potionEntry.getKey().location().getPath())) {
+                        if(input.equals(Project.MODID + ":" + potionEntry.getKey().location().getPath())) {
                             aInput = potionEntry.get();
                         }
-                        if(output.equals(potionEntry.getKey().location().getPath())) {
+                        if(output.equals(Project.MODID + ":" + potionEntry.getKey().location().getPath())) {
                             aOutput = potionEntry.get();
                         }
                         if(aInput != null && aOutput != null) break;

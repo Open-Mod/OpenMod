@@ -46,7 +46,7 @@ public class TabInit {
                 Item item = null;
                 for(Object objectItemEntry : items.entrySet()) {
                     Map.Entry<String, Supplier<? extends ItemLike>> itemEntry = (Map.Entry<String, Supplier<? extends ItemLike>>) objectItemEntry;
-                    if(itemEntry.getKey().equals(icon)) {
+                    if(icon.equals(Project.MODID + ":" + itemEntry.getKey())) {
                         item = itemEntry.getValue().get().asItem();
                         break;
                     }

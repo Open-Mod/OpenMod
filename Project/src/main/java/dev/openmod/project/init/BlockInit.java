@@ -230,16 +230,16 @@ public class BlockInit {
             Supplier<SoundEvent> aPlaceSound = null;
             Supplier<SoundEvent> aHitSound = null;
             for(RegistryObject<SoundEvent> soundEntry : SoundInit.SOUNDS.getEntries()) {
-                if(breakSound.equals(soundEntry.getKey().location().getPath())) {
+                if(breakSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                     aBreakSound = () -> soundEntry.get();
                 }
-                if(walkSound.equals(soundEntry.getKey().location().getPath())) {
+                if(walkSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                     aWalkSound = () -> soundEntry.get();
                 }
-                if(placeSound.equals(soundEntry.getKey().location().getPath())) {
+                if(placeSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                     aPlaceSound = () -> soundEntry.get();
                 }
-                if(hitSound.equals(soundEntry.getKey().location().getPath())) {
+                if(hitSound.equals(Project.MODID + ":" + soundEntry.getKey().location().getPath())) {
                     aHitSound = () -> soundEntry.get();
                 }
                 if(aBreakSound != null && aWalkSound != null && aPlaceSound != null && aHitSound != null) break;

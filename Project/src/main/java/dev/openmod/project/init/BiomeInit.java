@@ -44,14 +44,14 @@ public class BiomeInit {
                     Block above = null;
                     Block under = null;
                     for(RegistryObject<Block> itemEntry : BlockInit.BLOCKS.getEntries()) {
-                        if(blockAbove.equals(itemEntry.getKey().location().getPath())) {
+                        if(blockAbove.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {
                             above = itemEntry.get();
                             break;
                         }
                     }
                     if(above == null) above = RegistryObject.create(new ResourceLocation(blockAbove), ForgeRegistries.BLOCKS).get();
                     for(RegistryObject<Block> itemEntry : BlockInit.BLOCKS.getEntries()) {
-                        if(blockUnder.equals(itemEntry.getKey().location().getPath())) {
+                        if(blockUnder.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {
                             under = itemEntry.get();
                             break;
                         }

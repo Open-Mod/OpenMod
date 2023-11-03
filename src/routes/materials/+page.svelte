@@ -311,50 +311,19 @@
           </div>
           <div>
             <label class="text-lg">Equip Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              class="input w-full"
               bind:value={materials[selectedMaterial].equipSound}
-            >
-              <option value="default">Default</option>
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Repair With Item</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="ingredientList"
+              class="input w-full"
               bind:value={materials[selectedMaterial].repairIngredient}
-            >
-              {#each Object.keys(armors) as armor}
-                <option value={armor}
-                  >{projectName.toLowerCase()}:{armor}</option
-                >
-              {/each}
-              {#each Object.keys(tools) as tool}
-                <option value={tool}>{projectName.toLowerCase()}:{tool}</option>
-              {/each}
-              {#each Object.keys(items) as item}
-                <option value={item}>{projectName.toLowerCase()}:{item}</option>
-              {/each}
-              {#each Object.keys(blocks) as block}
-                <option value={block}
-                  >{projectName.toLowerCase()}:{block}</option
-                >
-              {/each}
-              {#each Object.keys(trees) as tree}
-                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
-              {/each}
-              {#each Object.keys(mobs) as mob}
-                <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-              {/each}
-              {#each defaultItems as item}
-                <option value={item}>{item}</option>
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Model Type</label>
@@ -435,3 +404,31 @@
     {/if}
   </div>
 </div>
+<datalist id="soundList">
+  <option value="default">Default</option>
+  {#each Object.keys(sounds) as sound}
+    <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+</datalist>
+<datalist id="ingredientList">
+  {#each Object.keys(armors) as armor}
+    <option value="{projectName.toLowerCase()}:{armor}" />{/each}
+  {#each Object.keys(tools) as tool}
+    <option value="{projectName.toLowerCase()}:{tool}" />
+  {/each}
+  {#each Object.keys(items) as item}
+    <option value="{projectName.toLowerCase()}:{item}" />
+  {/each}
+  {#each Object.keys(blocks) as block}
+    <option value="{projectName.toLowerCase()}:{block}" />
+  {/each}
+  {#each Object.keys(trees) as tree}
+    <option value="{projectName.toLowerCase()}:{tree}" />
+  {/each}
+  {#each Object.keys(mobs) as mob}
+    <option value="{projectName.toLowerCase()}:{mob}" />
+  {/each}
+  {#each defaultItems as item}
+    <option value={item} />
+  {/each}
+</datalist>

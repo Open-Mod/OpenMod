@@ -196,35 +196,11 @@
           {/if}
           <div>
             <label class="text-lg">Use Item For Icon</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="itemList"
+              class="input w-full"
               bind:value={tabs[selectedTab].icon}
-              >{#each Object.keys(items) as item}
-                <option value={item}>{projectName.toLowerCase()}:{item}</option>
-              {/each}
-              {#each Object.keys(tools) as tool}
-                <option value={tool}>{projectName.toLowerCase()}:{tool}</option>
-              {/each}
-              {#each Object.keys(armors) as armor}
-                <option value={armor}
-                  >{projectName.toLowerCase()}:{armor}</option
-                >
-              {/each}
-              {#each Object.keys(blocks) as block}
-                <option value={block}
-                  >{projectName.toLowerCase()}:{block}</option
-                >
-              {/each}
-              {#each Object.keys(trees) as tree}
-                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
-              {/each}
-              {#each Object.keys(mobs) as mob}
-                <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-              {/each}
-              {#each defaultItems as item}
-                <option value={item}>{item}</option>
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Has Searchbar?</label>
@@ -271,3 +247,26 @@
     {/if}
   </div>
 </div>
+<datalist id="itemList">
+  {#each Object.keys(items) as item}
+    <option value="{projectName.toLowerCase()}:{item}" />
+  {/each}
+  {#each Object.keys(tools) as tool}
+    <option value="{projectName.toLowerCase()}:{tool}" />
+  {/each}
+  {#each Object.keys(armors) as armor}
+    <option value="{projectName.toLowerCase()}:{armor}" />
+  {/each}
+  {#each Object.keys(blocks) as block}
+    <option value="{projectName.toLowerCase()}:{block}" />
+  {/each}
+  {#each Object.keys(trees) as tree}
+    <option value="{projectName.toLowerCase()}:{tree}" />
+  {/each}
+  {#each Object.keys(mobs) as mob}
+    <option value="{projectName.toLowerCase()}:{mob}" />
+  {/each}
+  {#each defaultItems as item}
+    <option value={item} />
+  {/each}
+</datalist>

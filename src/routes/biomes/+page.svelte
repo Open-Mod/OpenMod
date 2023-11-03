@@ -183,41 +183,21 @@
           </div>
           <div>
             <label class="text-lg">Block Above</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="blockList"
+              type="text"
+              class="input w-full"
               bind:value={biomes[selectedBiome].blockAbove}
-            >
-              {#each Object.keys(blocks) as block}
-                <option value={block}
-                  >{projectName.toLowerCase()}:{block}</option
-                >
-              {/each}
-              {#each Object.keys(trees) as tree}
-                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
-              {/each}
-              {#each defaultBlocks as block}
-                <option value={block}>{block}</option>
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Block Under</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="blockList"
+              type="text"
+              class="input w-full"
               bind:value={biomes[selectedBiome].blockUnder}
-            >
-              {#each Object.keys(blocks) as block}
-                <option value={block}
-                  >{projectName.toLowerCase()}:{block}</option
-                >
-              {/each}
-              {#each Object.keys(trees) as tree}
-                <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
-              {/each}
-              {#each defaultBlocks as block}
-                <option value={block}>{block}</option>
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Minimum Temperature</label>
@@ -396,3 +376,14 @@
     {/if}
   </div>
 </div>
+<datalist id="blockList">
+  {#each Object.keys(blocks) as block}
+    <option value="{projectName.toLowerCase()}:{block}" />
+  {/each}
+  {#each Object.keys(trees) as tree}
+    <option value="{projectName.toLowerCase()}:{tree}" />
+  {/each}
+  {#each defaultBlocks as block}
+    <option value={block} />
+  {/each}</datalist
+>

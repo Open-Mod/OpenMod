@@ -3294,7 +3294,7 @@
         templatePoolsPath,
         `${structure}.json`
       );
-      fs.writeFileSync(structurePath, structures[structure].structureJson);
+      fs.writeFileSync(structurePath, JSON.stringify({...JSON.parse(structures[structure].structureJson), start_pool: `${projectName.toLowerCase()}:${structure}`}));
       fs.writeFileSync(
         structureSetPath,
         structures[structure].structureSetJson
