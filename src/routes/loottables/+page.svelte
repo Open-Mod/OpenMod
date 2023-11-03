@@ -160,43 +160,22 @@
           {#if parse(loottables[selectedLoottable].json).type == "minecraft:block"}
             <div>
               <label class="text-lg">For Block</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="blockList"
+                type="text"
+                class="input w-full"
                 bind:value={loottables[selectedLoottable].for}
-              >
-                {#if !Object.keys(blocks).filter((block) => blocks[block].dropItem).length}
-                  <option disabled value={loottables[selectedLoottable].for}
-                    >No blocks</option
-                  >
-                {/if}
-                {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
-                  <option value={block}
-                    >{projectName.toLowerCase()}:{block}</option
-                  >
-                {/each}
-                {#each Object.keys(trees).filter((tree) => trees[tree].dropItem) as tree}
-                  <option value={tree}
-                    >{projectName.toLowerCase()}:{tree}</option
-                  >
-                {/each}
-              </select>
+              />
             </div>
           {:else if parse(loottables[selectedLoottable].json).type == "minecraft:entity"}
             <div>
               <label class="text-lg">For Mob</label>
-              <select
-                class="select font-normal text-base w-full"
+              <input
+                list="mobList"
+                type="text"
+                class="input w-full"
                 bind:value={loottables[selectedLoottable].for}
-              >
-                {#if !Object.keys(mobs).length}
-                  <option disabled value={loottables[selectedLoottable].for}
-                    >No mobs</option
-                  >
-                {/if}
-                {#each Object.keys(mobs) as mob}
-                  <option value={mob}>{projectName.toLowerCase()}:{mob}</option>
-                {/each}
-              </select>
+              />
             </div>
           {/if}
           <div class="col-start-1 col-span-3">
@@ -218,3 +197,16 @@
     {/if}
   </div>
 </div>
+<datalist id="blockList">
+  {#each Object.keys(blocks).filter((block) => blocks[block].dropItem) as block}
+    <option value={block}>{projectName.toLowerCase()}:{block}</option>
+  {/each}
+  {#each Object.keys(trees).filter((tree) => trees[tree].dropItem) as tree}
+    <option value={tree}>{projectName.toLowerCase()}:{tree}</option>
+  {/each}
+</datalist>
+<datalist id="mobList">
+  {#each Object.keys(mobs) as mob}
+    <option value="{projectName.toLowerCase()}:{mob}" />
+  {/each}
+</datalist>

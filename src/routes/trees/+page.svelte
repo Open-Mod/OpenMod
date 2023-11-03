@@ -688,75 +688,39 @@
           </div>
           <div>
             <label class="text-lg">Break Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              type="text"
+              class="input w-full"
               bind:value={trees[selectedTree].breakSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={trees[selectedTree].breakSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Walk Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              type="text"
+              class="input w-full"
               bind:value={trees[selectedTree].walkSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={trees[selectedTree].walkSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Place Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              type="text"
+              class="input w-full"
               bind:value={trees[selectedTree].placeSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={trees[selectedTree].placeSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">Hit Sound</label>
-            <select
-              class="select font-normal text-base w-full"
+            <input
+              list="soundList"
+              type="text"
+              class="input w-full"
               bind:value={trees[selectedTree].hitSound}
-            >
-              {#if !Object.keys(sounds).length}
-                <option disabled value={trees[selectedTree].hitSound}
-                  >No sounds</option
-                >
-              {/if}
-              {#each Object.keys(sounds) as sound}
-                <option value={sound}
-                  >{projectName.toLowerCase()}:{sound}</option
-                >
-              {/each}
-            </select>
+            />
           </div>
           <div>
             <label class="text-lg">When Pushed By Piston</label>
@@ -1211,3 +1175,8 @@
     {/if}
   </div>
 </div>
+<datalist id="soundList">
+  {#each Object.keys(sounds) as sound}
+    <option value="{projectName.toLowerCase()}:{sound}" />
+  {/each}
+</datalist>

@@ -3024,15 +3024,15 @@
     });
     Object.keys(recipes).forEach((recipe) => {
       const recipePath = pathModule.join(recipesPath, `${recipe}.json`);
-      const firstItem = recipes[recipe].firstItem == "none" ? " " : "1";
-      const secondItem = recipes[recipe].secondItem == "none" ? " " : "2";
-      const thirdItem = recipes[recipe].thirdItem == "none" ? " " : "3";
-      const fourthItem = recipes[recipe].fourthItem == "none" ? " " : "4";
-      const fifthItem = recipes[recipe].fifthItem == "none" ? " " : "5";
-      const sixthItem = recipes[recipe].sixthItem == "none" ? " " : "6";
-      const seventhItem = recipes[recipe].seventhItem == "none" ? " " : "7";
-      const eighthItem = recipes[recipe].eighthItem == "none" ? " " : "8";
-      const ninethItem = recipes[recipe].ninethItem == "none" ? " " : "9";
+      const firstItem = recipes[recipe].firstItem.trim() == "" ? " " : "1";
+      const secondItem = recipes[recipe].secondItem.trim() == "" ? " " : "2";
+      const thirdItem = recipes[recipe].thirdItem.trim() == "" ? " " : "3";
+      const fourthItem = recipes[recipe].fourthItem.trim() == "" ? " " : "4";
+      const fifthItem = recipes[recipe].fifthItem.trim() == "" ? " " : "5";
+      const sixthItem = recipes[recipe].sixthItem.trim() == "" ? " " : "6";
+      const seventhItem = recipes[recipe].seventhItem.trim() == "" ? " " : "7";
+      const eighthItem = recipes[recipe].eighthItem.trim() == "" ? " " : "8";
+      const ninethItem = recipes[recipe].ninethItem.trim() == "" ? " " : "9";
       if (recipes[recipe].type == "shaped") {
         const key = {};
         if (firstItem.trim()) {
@@ -3294,7 +3294,13 @@
         templatePoolsPath,
         `${structure}.json`
       );
-      fs.writeFileSync(structurePath, JSON.stringify({...JSON.parse(structures[structure].structureJson), start_pool: `${projectName.toLowerCase()}:${structure}`}));
+      fs.writeFileSync(
+        structurePath,
+        JSON.stringify({
+          ...JSON.parse(structures[structure].structureJson),
+          start_pool: `${projectName.toLowerCase()}:${structure}`,
+        })
+      );
       fs.writeFileSync(
         structureSetPath,
         structures[structure].structureSetJson

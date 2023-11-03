@@ -1556,9 +1556,6 @@
   </div>
 </div>
 <datalist id="soundList">
-  {#if !Object.keys(sounds).length}
-    <option disabled value="">No sounds</option>
-  {/if}
   {#each Object.keys(sounds) as sound}
     <option value="{projectName.toLowerCase()}:{sound}" />
   {/each}
