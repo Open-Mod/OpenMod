@@ -140,10 +140,16 @@
       tab: "none",
       rarity: "common",
       fuel: false,
+      food: false,
       fireResistant: false,
       setRepair: true,
-      modelType: "default",
       burnTime: 1,
+      food_alwaysEat: false,
+      food_fast: false,
+      food_meat: false,
+      food_nutrition: 0,
+      food_saturationMod: 0,
+      effects: [],
       node_data: {
         connected_nodes: [],
         graph: {
@@ -414,6 +420,16 @@
             </div>
           {/if}
           <div>
+            <label class="text-lg">Is Food?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={armors[selectedArmor].food}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
+          <div>
             <label class="text-lg">Is Fire Resistant?</label>
             <select
               class="select font-normal text-base w-full"
@@ -433,16 +449,6 @@
               ></select
             >
           </div>
-          <div>
-            <label class="text-lg">Model Type</label>
-            <select
-              class="select font-normal text-base w-full"
-              bind:value={armors[selectedArmor].modelType}
-            >
-              <option value="default">Default</option>
-              <option value="blockbench">Blockbench</option>
-            </select>
-          </div>
           <div class="col-start-1">
             <label class="text-lg">Item Texture</label>
             <img
@@ -454,49 +460,193 @@
               on:dragover|preventDefault
             />
           </div>
-          {#if armors[selectedArmor].modelType == "blockbench"}
+        </div>
+      </Accordion>
+      {#if armors[selectedArmor].food}
+        <Accordion title="Food">
+          <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="text-lg">Texture</label>
-              <img
-                class="w-48 h-48 cursor-pointer rounded-lg"
-                src={`data:image/png;base64,${armors[selectedArmor].texture?.data}`}
-                on:error={fallbackTexture}
-                on:click={chooseTexture.bind(this, "texture", "png")}
-                on:drop={setTexture.bind(this, "texture")}
-                on:dragover|preventDefault
+              <label class="text-lg">Is Always Eatable?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={armors[selectedArmor].food_alwaysEat}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Can Be Eaten Fast?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={armors[selectedArmor].food_fast}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Is Meat?</label>
+              <select
+                class="select font-normal text-base w-full"
+                bind:value={armors[selectedArmor].food_meat}
+                ><option value={true}>True</option><option value={false}
+                  >False</option
+                ></select
+              >
+            </div>
+            <div>
+              <label class="text-lg">Nutrition</label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.5"
+                class="input w-full"
+                bind:value={armors[selectedArmor].food_nutrition}
               />
             </div>
             <div>
-              <label class="text-lg">Geo</label>
-              <div
-                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                style="{armors[selectedArmor].geo
-                  ? 'background-color: rgba(0,0,0,0.3)'
-                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                on:click={chooseTexture.bind(this, "geo", "json")}
-                on:drop={setTexture.bind(this, "geo")}
-                on:dragover|preventDefault
-              >
-                {armors[selectedArmor].geo?.name ?? ""}
-              </div>
+              <label class="text-lg">Saturation (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                class="input w-full"
+                bind:value={armors[selectedArmor].food_saturationMod}
+              />
             </div>
-            <div>
-              <label class="text-lg">Animations</label>
-              <div
-                class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
-                style="{armors[selectedArmor].animation
-                  ? 'background-color: rgba(0,0,0,0.3)'
-                  : "background-image: url('/images/dropzone.png')"}; background-size:contain; line-height: 11rem"
-                on:click={chooseTexture.bind(this, "animation", "json")}
-                on:drop={setTexture.bind(this, "animation")}
-                on:dragover|preventDefault
-              >
-                {armors[selectedArmor].animation?.name ?? ""}
+          </div>
+        </Accordion>
+        <Accordion title="Effects">
+          <div class="flex flex-col gap-3">
+            {#each armors[selectedArmor].effects as effect, index}
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="text-lg">Effect</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.name}
+                  >
+                    <option value="absorption">Absorption</option>
+                    <option value="bad_omen">Bad Omen</option>
+                    <option value="blindness">Blindness</option>
+                    <option value="confusion">Nausea</option>
+                    <option value="conduit_power">Conduit Power</option>
+                    <option value="damage_boost">Damage Boost</option>
+                    <option value="damage_resistance">Damage Resistance</option>
+                    <option value="darkness">Darkness</option>
+                    <option value="dig_slowdown">Dig Slowdown</option>
+                    <option value="dig_speed">Dig Speed</option>
+                    <option value="dolphins_grace">Dolphin's Grace</option>
+                    <option value="fire_resistance">Fire Resistance</option>
+                    <option value="glowing">Glowing</option>
+                    <option value="harm">Harm</option>
+                    <option value="heal">Heal</option>
+                    <option value="health_boost">Health Boost</option>
+                    <option value="hero_of_the_village"
+                      >Hero Of The Village</option
+                    >
+                    <option value="hunger">Hunger</option>
+                    <option value="invisibility">Invisibility</option>
+                    <option value="jump">Jump</option>
+                    <option value="levitation">Levitation</option>
+                    <option value="luck">Luck</option>
+                    <option value="movement_slowdown">Movement Slowdown</option>
+                    <option value="movement_speed">Movement Speed</option>
+                    <option value="night_vision">Night Vision</option>
+                    <option value="poison">Poison</option>
+                    <option value="regeneration">Regeneration</option>
+                    <option value="saturation">Saturation</option>
+                    <option value="slow_falling">Slow Falling</option>
+                    <option value="unluck">Unluck</option>
+                    <option value="water_breathing">Water Breathing</option>
+                    <option value="weakness">Weakness</option>
+                    <option value="wither">Wither</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-lg">Probability (%)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    class="input w-full"
+                    bind:value={effect.probability}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg">Duration (In Seconds)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    class="input w-full"
+                    bind:value={effect.duration}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg">Level</label>
+                  <input
+                    type="number"
+                    min="1"
+                    class="input w-full"
+                    bind:value={effect.amplifier}
+                  />
+                </div>
+                <div>
+                  <label class="text-lg"> Is Ambient?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.ambient}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <div>
+                  <label class="text-lg">Is Visible?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.visible}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <div>
+                  <label class="text-lg">Can Show Icon?</label>
+                  <select
+                    class="select font-normal text-base w-full"
+                    bind:value={effect.showIcon}
+                    ><option value={true}>True</option><option value={false}
+                      >False</option
+                    ></select
+                  >
+                </div>
+                <a
+                  class="tooltip tooltip-top mr-auto mt-auto"
+                  data-tip="Delete"
+                >
+                  <button
+                    class="btn btn-error text-lg"
+                    on:click={deleteEffect.bind(this, index)}
+                  >
+                    <i class="fa-solid fa-trash" />
+                  </button>
+                </a>
               </div>
-            </div>
-          {/if}
-        </div>
-      </Accordion>
+            {/each}
+            <a class="tooltip tooltip-top" data-tip="Add">
+              <button
+                class="btn btn-warning w-full text-lg"
+                on:click={addEffect}
+              >
+                <i class="fa-solid fa-plus" />
+              </button>
+            </a>
+          </div>
+        </Accordion>
+      {/if}
       <Accordion title="Events" style="overflow:hidden;" mount={setEditor}>
         <div id="editor" class="w-full h-[40vh]" />
       </Accordion>

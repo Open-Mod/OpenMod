@@ -54,6 +54,9 @@
       })
     );
     filteredPlugins = plugins;
+    window.on_plugin = (plugins) => {
+      installedPlugins = plugins;
+    };
   });
   async function download(p) {
     if (
@@ -103,11 +106,11 @@
     send_plugin(
       {
         mod: {
-          file: p.file,
+          file: `${p.data.plugin}.java`,
           data: data,
         },
         ui: {
-          file: `${p.data.plugin}.java`,
+          file: p.file,
           data: p.data,
         },
       },

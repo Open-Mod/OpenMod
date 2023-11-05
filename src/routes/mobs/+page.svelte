@@ -217,6 +217,7 @@
       hurtSound: Object.keys(sounds)[0] ?? defaultSounds[0],
       deathSound: Object.keys(sounds)[0] ?? defaultSounds[0],
       rarity: "common",
+      peaceful: false,
       rideable: true,
       requiresSaddle: true,
       breed: true,
@@ -744,6 +745,17 @@
                 value="uncommon">Uncommon Rarity</option
               ><option value="rare">Rare Rarity</option><option value="epic"
                 >Epic Rarity</option
+              ></select
+            >
+          </div>
+          <div>
+            <label class="text-lg">Should Despawn In Peaceful Difficulty?</label
+            >
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].peaceful}
+              ><option value={true}>True</option><option value={false}
+                >False</option
               ></select
             >
           </div>

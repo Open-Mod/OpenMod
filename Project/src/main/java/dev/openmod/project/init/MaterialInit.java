@@ -33,6 +33,7 @@ public class MaterialInit {
             int enchantmentValue = ((Number) data.get("enchantmentValue")).intValue();
             float toughness = ((Number) data.get("toughness")).floatValue();
             float knockbackResistance = ((Number) data.get("knockbackResistance")).floatValue();
+            String modelType = (String) data.get("modelType");
             String equipSound = (String) data.get("equipSound");
             String repairIngredient = (String) data.get("repairIngredient");
             SoundEvent aEquipSound = SoundEvents.ARMOR_EQUIP_GENERIC;
@@ -43,7 +44,7 @@ public class MaterialInit {
                 }
             }
             if(aEquipSound == null) aEquipSound = RegistryObject.create(new ResourceLocation(equipSound), ForgeRegistries.SOUND_EVENTS).get();
-            materialItems.put(name, new CustomArmorMaterial(new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
+            materialItems.put(name, new CustomArmorMaterial(modelType, new int[] {durabilityForHelmet, durabilityForBoots, durabilityForChestplate, durabilityForLeggings}, new int[] {protectionForHelmet, protectionForBoots, protectionForChestplate, protectionForLeggings}, enchantmentValue, aEquipSound, () -> {
                 Item item = null;
                 for(RegistryObject<Item> itemEntry : ItemInit.ITEMS.getEntries()) {
                     if(repairIngredient.equals(Project.MODID + ":" + itemEntry.getKey().location().getPath())) {

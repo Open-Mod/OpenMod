@@ -95,6 +95,7 @@
       toughness: 100,
       knockbackResistance: 0,
       equipSound: "default",
+      modelType: "default",
       repairIngredient:
         Object.keys(armors)[0] ??
         Object.keys(tools)[0] ??
@@ -366,7 +367,7 @@
               </div>
             </div>
             <div>
-              <label class="text-lg">Idle Animation</label>
+              <label class="text-lg">Animations</label>
               <div
                 class="w-48 h-48 cursor-pointer rounded-lg text-ellipsis overflow-hidden text-center px-3"
                 style="{materials[selectedMaterial].animation

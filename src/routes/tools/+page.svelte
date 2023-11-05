@@ -385,8 +385,8 @@
               <option value="pickaxe">Pickaxe</option>
               <option value="axe">Axe</option>
               <option value="shovel">Shovel</option>
-              <option value="hoe">Hoe</option></select
-            >
+              <option value="hoe">Hoe</option>
+            </select>
           </div>
           <div>
             <label class="text-lg">Tier</label>

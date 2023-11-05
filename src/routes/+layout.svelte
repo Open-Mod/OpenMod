@@ -73,17 +73,20 @@
             fs.mkdirSync(pluginsModPath);
             fs.mkdirSync(pluginsUIPath);
             data.plugins.mod.forEach((file) => {
-              fs.writeJSONSync(
+              fs.writeFileSync(
                 pathModule.join(pluginsModPath, file.file),
                 file.data
               );
             });
             data.plugins.ui.forEach((file) => {
-              fs.writeJSONSync(
+              fs.writeFileSync(
                 pathModule.join(pluginsUIPath, file.file),
                 file.data
               );
             });
+            projects[selected].plugins = data.plugins.data;
+            fs.writeJSONSync(projectsPath, projects);
+            window.on_plugin?.(projects[selected].plugins);
           } else if (data.type == "CHANGE") {
             fs.writeJSONSync(
               pathModule.join(dataPath, data.file.file),
@@ -97,12 +100,13 @@
               pathModule.join(pluginsModPath, data.plugin.mod.file),
               data.plugin.mod.data
             );
-            fs.writeFileSync(
-              pathModule.join(pluginsModPath, data.plugin.ui.file),
+            fs.writeJSONSync(
+              pathModule.join(pluginsUIPath, data.plugin.ui.file),
               data.plugin.ui.data
             );
             projects[selected].plugins = data.data;
             fs.writeJSONSync(projectsPath, projects);
+            window.on_plugin?.(projects[selected].plugins);
           } else if (data.type == "USERS") {
             state.users = data.data;
             state = state;
@@ -148,12 +152,13 @@
               pathModule.join(pluginsModPath, data.plugin.mod.file),
               data.plugin.mod.data
             );
-            fs.writeFileSync(
-              pathModule.join(pluginsModPath, data.plugin.ui.file),
+            fs.writeJSONSync(
+              pathModule.join(pluginsUIPath, data.plugin.ui.file),
               data.plugin.ui.data
             );
             projects[selected].plugins = data.data;
             fs.writeJSONSync(projectsPath, projects);
+            window.on_plugin?.(projects[selected].plugins);
           }
         });
         conn.on("open", () => {
@@ -167,12 +172,17 @@
               plugins: {
                 mod: fs.readdirSync(pluginsModPath).map((file) => ({
                   file,
-                  data: fs.readFileSync(pathModule.join(pluginsModPath, file)),
+                  data: fs
+                    .readFileSync(pathModule.join(pluginsModPath, file))
+                    .toString(),
                 })),
                 ui: fs.readdirSync(pluginsUIPath).map((file) => ({
                   file,
-                  data: fs.readFileSync(pathModule.join(pluginsUIPath, file)),
+                  data: fs
+                    .readFileSync(pathModule.join(pluginsUIPath, file))
+                    .toString(),
                 })),
+                data: projects[selected].plugins,
               },
             })
           );
@@ -272,7 +282,7 @@
     <MenuItem tip="Loot Tables" page="/loottables">
       <i class="fa-solid fa-gift" />
     </MenuItem>
-    <MenuItem tip="Recpies" page="/recipes">
+    <MenuItem tip="Recipes" page="/recipes">
       <i class="fa-solid fa-scroll" />
     </MenuItem>
     <MenuItem tip="Biomes" page="/biomes">

@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.function.Supplier;
 
 public class CustomArmorMaterial implements ArmorMaterial {
+    public String modelType;
     private final int[] durabilityForType;
     private final int[] defenseForType;
     private final int enchantability;
@@ -18,7 +19,8 @@ public class CustomArmorMaterial implements ArmorMaterial {
     private final float toughness;
     private final float knockbackResistance;
 
-    public CustomArmorMaterial(int[] durabilityForType, int[] defenseForType, int enchantability, SoundEvent equipSound, Supplier<Ingredient> repairMaterial, String name, float toughness, float knockbackResistance) {
+    public CustomArmorMaterial(String modelType, int[] durabilityForType, int[] defenseForType, int enchantability, SoundEvent equipSound, Supplier<Ingredient> repairMaterial, String name, float toughness, float knockbackResistance) {
+        this.modelType = modelType;
         this.durabilityForType = durabilityForType;
         this.defenseForType = defenseForType;
         this.enchantability = enchantability;

@@ -60,6 +60,7 @@ public class MobInit {
             String ambientSound = (String) data.get("ambientSound");
             String hurtSound = (String) data.get("hurtSound");
             String deathSound = (String) data.get("deathSound");
+            boolean peaceful = (boolean) data.get("peaceful");
             boolean rideable = (boolean) data.get("rideable");
             boolean requiresSaddle = (boolean) data.get("requiresSaddle");
             boolean breed = (boolean) data.get("breed");
@@ -129,7 +130,7 @@ public class MobInit {
             else if(rarity.equals("uncommon")) itemProperties.rarity(Rarity.UNCOMMON);
             else if(rarity.equals("rare")) itemProperties.rarity(Rarity.RARE);
             else if(rarity.equals("epic")) itemProperties.rarity(Rarity.EPIC);
-            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, requiresSaddle, rideable, ridingItem, controller) {
+            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, peaceful, requiresSaddle, rideable, ridingItem, controller) {
                 @org.jetbrains.annotations.Nullable
                 @Override
                 public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {

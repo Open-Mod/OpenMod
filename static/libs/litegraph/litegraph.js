@@ -2514,7 +2514,7 @@ document.onclick = (ev) => {
         if (
           w.options &&
           w.options.property &&
-          this.properties[w.options.property]
+          Object.keys(this.properties).indexOf(w.options.property) != -1
         )
           w.value = JSON.parse(
             JSON.stringify(this.properties[w.options.property])

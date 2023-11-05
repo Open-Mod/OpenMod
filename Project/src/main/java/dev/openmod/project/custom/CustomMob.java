@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -49,14 +50,16 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private ItemBasedSteering steering = new ItemBasedSteering(this.entityData, DATA_BOOST_TIME, DATA_SADDLE_ID);
     private String name;
+    private boolean peaceful;
     public boolean requiresSaddle;
     private boolean rideable;
     private Supplier<Item> ridingItem;
     private static IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
-    public CustomMob(String name, EntityType entityType, Level level, boolean requiresSaddle, boolean rideable, String ridingItem, String controller) {
+    public CustomMob(String name, EntityType entityType, Level level, boolean peaceful, boolean requiresSaddle, boolean rideable, String ridingItem, String controller) {
         super(entityType, level);
         this.name = name;
+        this.peaceful = peaceful;
         this.requiresSaddle = requiresSaddle;
         this.rideable = rideable;
         if(!ridingItem.equals("none")) {
@@ -98,6 +101,44 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
         }
 
         return null;
+    }
+    protected boolean shouldDespawnInPeaceful() {
+        return this.peaceful;
+    }
+    @Override
+    public void checkDespawn() {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+            this.discard();
+        } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
+            Entity entity = this.level().getNearestPlayer(this, -1.0D);
+            net.minecraftforge.eventbus.api.Event.Result result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this, (ServerLevel) this.level());
+            if (result == net.minecraftforge.eventbus.api.Event.Result.DENY) {
+                noActionTime = 0;
+                entity = null;
+            } else if (result == net.minecraftforge.eventbus.api.Event.Result.ALLOW) {
+                this.discard();
+                entity = null;
+            }
+            if (entity != null) {
+                double d0 = entity.distanceToSqr(this);
+                int i = this.getType().getCategory().getDespawnDistance();
+                int j = i * i;
+                if (d0 > (double)j && this.removeWhenFarAway(d0)) {
+                    this.discard();
+                }
+
+                int k = this.getType().getCategory().getNoDespawnDistance();
+                int l = k * k;
+                if (this.noActionTime > 600 && this.random.nextInt(800) == 0 && d0 > (double)l && this.removeWhenFarAway(d0)) {
+                    this.discard();
+                } else if (d0 < (double)l) {
+                    this.noActionTime = 0;
+                }
+            }
+
+        } else {
+            this.noActionTime = 0;
+        }
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> p_29480_) {

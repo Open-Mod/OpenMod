@@ -86,7 +86,24 @@ public class Node {
     }
     public Object getInputData(String inputName) {
         String id = ((Number) this.data.get("id")).toString();
-        return this.nodeData.get(id +":" + inputName);
+        Object data = this.nodeData.get(id +":" + inputName);
+        Map foundInput = null;
+        ArrayList inputs = (ArrayList) this.data.get("inputs");
+        for(Object inputEntry : inputs) {
+            Map input = (Map) inputEntry;
+            boolean matched = ((String) input.get("name")).equals(inputName);
+            if (matched) {
+                foundInput = input;
+                break;
+            }
+        }
+        if(data == null && foundInput.get("type").equals("boolean"))
+            return false;
+        if(data == null && foundInput.get("type").equals("number"))
+            return 0;
+        if(data == null && foundInput.get("type").equals("string"))
+            return "";
+        return data;
     }
     public void setOutputData(String outputName, Object value) {
         ArrayList outputs = (ArrayList) this.data.get("outputs");

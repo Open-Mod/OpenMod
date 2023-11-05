@@ -802,7 +802,53 @@
                 new Date()
               )}]: Field "Burn Time" of armor "${armor}" must not be empty!`
             );
+          else if (property == "food_nutrition" && armors[armor].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Nutrition" of armor "${armor}" must not be empty!`
+            );
+          else if (property == "food_saturationMod" && armors[armor].food)
+            addError(
+              `[${formatDateToHHMMSS(
+                new Date()
+              )}]: Field "Saturation" of armor "${armor}" must not be empty!`
+            );
         }
+      });
+      if (!armors[armor].food) return;
+      armors[armor].effects.forEach((effect) => {
+        Object.keys(effect).forEach((property) => {
+          if (
+            effect[property] == null ||
+            String(effect[property]).trim() == ""
+          ) {
+            if (property == "probability")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Probability" of effect "${
+                  effect.name
+                }" from armor "${armor}" must not be empty!`
+              );
+            else if (property == "duration")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Duration" of effect "${
+                  effect.name
+                }" from armor "${armor}" must not be empty!`
+              );
+            else if (property == "amplifier")
+              addError(
+                `[${formatDateToHHMMSS(
+                  new Date()
+                )}]: Field "Level" of effect "${
+                  effect.name
+                }" from armor "${armor}" must not be empty!`
+              );
+          }
+        });
       });
     });
     Object.keys(tools).forEach((tool) => {
