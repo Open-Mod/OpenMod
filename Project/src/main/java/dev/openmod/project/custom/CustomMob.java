@@ -53,14 +53,16 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
     private boolean peaceful;
     public boolean requiresSaddle;
     private boolean rideable;
+    private boolean sunBurn;
     private Supplier<Item> ridingItem;
     private static IEventBus eventBus = MinecraftForge.EVENT_BUS;
 
-    public CustomMob(String name, EntityType entityType, Level level, boolean peaceful, boolean requiresSaddle, boolean rideable, String ridingItem, String controller) {
+    public CustomMob(String name, EntityType entityType, Level level, boolean peaceful, boolean requiresSaddle, boolean rideable, boolean sunBurn, String ridingItem, String controller) {
         super(entityType, level);
         this.name = name;
         this.peaceful = peaceful;
         this.requiresSaddle = requiresSaddle;
+        this.sunBurn = sunBurn;
         this.rideable = rideable;
         if(!ridingItem.equals("none")) {
             Supplier<Item> item = null;
@@ -312,5 +314,30 @@ public class CustomMob extends Animal implements GeoEntity, ItemSteerable, Saddl
 
             return super.getDismountLocationForPassenger(p_29487_);
         }
+    }
+    public void aiStep() {
+        if (this.isAlive()) {
+            boolean flag = this.sunBurn && this.isSunBurnTick();
+            if (flag) {
+                ItemStack itemstack = this.getItemBySlot(EquipmentSlot.HEAD);
+                if (!itemstack.isEmpty()) {
+                    if (itemstack.isDamageableItem()) {
+                        itemstack.setDamageValue(itemstack.getDamageValue() + this.random.nextInt(2));
+                        if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) {
+                            this.broadcastBreakEvent(EquipmentSlot.HEAD);
+                            this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                        }
+                    }
+
+                    flag = false;
+                }
+
+                if (flag) {
+                    this.setSecondsOnFire(8);
+                }
+            }
+        }
+
+        super.aiStep();
     }
 }

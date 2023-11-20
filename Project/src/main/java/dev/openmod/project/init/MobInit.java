@@ -63,6 +63,7 @@ public class MobInit {
             boolean peaceful = (boolean) data.get("peaceful");
             boolean rideable = (boolean) data.get("rideable");
             boolean requiresSaddle = (boolean) data.get("requiresSaddle");
+            boolean sunBurn = (boolean) data.get("sunBurn");
             boolean breed = (boolean) data.get("breed");
             boolean dropXp = (boolean) data.get("dropXp");
             boolean fuel = (boolean) data.get("fuel");
@@ -130,7 +131,7 @@ public class MobInit {
             else if(rarity.equals("uncommon")) itemProperties.rarity(Rarity.UNCOMMON);
             else if(rarity.equals("rare")) itemProperties.rarity(Rarity.RARE);
             else if(rarity.equals("epic")) itemProperties.rarity(Rarity.EPIC);
-            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, peaceful, requiresSaddle, rideable, ridingItem, controller) {
+            RegistryObject mobObject = MOBS.register(name, () -> EntityType.Builder.of((entityType, level) -> new CustomMob(name, entityType, level, peaceful, requiresSaddle, rideable, sunBurn, ridingItem, controller) {
                 @org.jetbrains.annotations.Nullable
                 @Override
                 public AgeableMob getBreedOffspring(ServerLevel p_146743_, AgeableMob p_146744_) {

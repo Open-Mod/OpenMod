@@ -220,6 +220,7 @@
       peaceful: false,
       rideable: true,
       requiresSaddle: true,
+      sunBurn: true,
       breed: true,
       dropXp: false,
       minXp: 0,
@@ -781,6 +782,16 @@
               >
             </div>
           {/if}
+          <div>
+            <label class="text-lg">Burns Under Sun?</label>
+            <select
+              class="select font-normal text-base w-full"
+              bind:value={mobs[selectedMob].sunBurn}
+              ><option value={true}>True</option><option value={false}
+                >False</option
+              ></select
+            >
+          </div>
           <div>
             <label class="text-lg">Can Breed?</label>
             <select
